@@ -17,7 +17,7 @@ const VALID_MODES = new Set([
 ]);
 const VALID_LEVELS = new Set(['primary', 'lower-secondary', 'igcse', 'as-a-level']);
 const VALID_EXP_KINDS = new Set(['coin', 'die', 'spinner', 'counters']);
-const VALID_QUARTILE = new Set(['tukey-exclusive', 'tukey-inclusive', 'linear-interpolation']);
+const VALID_QUARTILE = new Set(['tukey-exclusive', 'tukey-inclusive', 'linear-interpolation', 'positional-n-plus-1']);
 const VALID_VARIANCE = new Set(['population', 'sample']);
 const VALID_CHARTS = new Set([
   'bar',

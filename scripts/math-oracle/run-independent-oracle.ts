@@ -1242,7 +1242,141 @@ const nextId = (prefix: string) => `${prefix}-${String(idCounter++).padStart(5, 
   }
 }
 
-/* ==================== EXECUTE ALL 10,000 CASES ==================== */
+/* 12. SIMULTANEOUS LINEAR EQUATIONS 2×2 & 3×3 (200 unique cases — Step 5E-C D-032) */
+{
+  let count = 0;
+  // 120 unique 2x2 systems (unique integer/rational, no-solution, infinitely-many, swapped/wrong rejection)
+  while (count < 120) {
+    const modeIdx = count % 5;
+    if (modeIdx === 0 || modeIdx === 1 || modeIdx === 2) {
+      // Independent ground truth: pick x0 = p1/q1, y0 = p2/q2, invertible integer matrix [[a,b],[c,d]]
+      const a = randInt(1, 5);
+      const b = randInt(-4, 4) || 1;
+      const c = randInt(1, 5);
+      let d = randInt(-4, 4) || 2;
+      if (a * d - b * c === 0) d += 1;
+      const xNum = BigInt(randInt(-5, 5));
+      const xDen = BigInt(pick([1, 1, 2, 3]));
+      const yNum = BigInt(randInt(-5, 5));
+      const yDen = BigInt(pick([1, 1, 2, 3]));
+      const rhs1Num = BigInt(a) * xNum * yDen + BigInt(b) * yNum * xDen;
+      const rhs1Den = xDen * yDen;
+      const rhs2Num = BigInt(c) * xNum * yDen + BigInt(d) * yNum * xDen;
+      const rhs2Den = xDen * yDen;
+      const eq1 = `${a}*x + (${b})*y = ${fracStr(rhs1Num, rhs1Den)}`;
+      const eq2 = `${c}*x + (${d})*y = ${fracStr(rhs2Num, rhs2Den)}`;
+      const xStr = fracStr(xNum, xDen);
+      const yStr = fracStr(yNum, yDen);
+      const sub =
+        modeIdx === 0
+          ? `x = ${xStr}, y = ${yStr}`
+          : modeIdx === 1
+            ? `(${xStr}, ${yStr})`
+            : `x = ${fracStr(xNum + xDen, xDen)}, y = ${yStr}`; // deliberately wrong x
+      const expected: ExpectedOutcome = modeIdx === 2 ? 'reject' : 'accept';
+      if (
+        addUnique(`sim2-${count}-${eq1}-${eq2}-${sub}`, {
+          kind: 'single',
+          id: nextId('SIM'),
+          topic: 'simultaneous-linear-equations',
+          curriculumLevel: 'igcse',
+          verificationClass: modeIdx === 2 ? 'exact-reject' : 'exact-accept',
+          spec: { mode: 'simultaneous-linear', variables: ['x', 'y'], equations: [eq1, eq2] },
+          submission: { expression: sub },
+          expectedOutcome: expected,
+        })
+      ) {
+        count++;
+      }
+    } else if (modeIdx === 3) {
+      // Parallel / inconsistent 2x2: a*x + b*y = k1, (m*a)*x + (m*b)*y = m*k1 + delta
+      const a = randInt(1, 5);
+      const b = randInt(1, 5);
+      const m = randInt(2, 4);
+      const k1 = randInt(1, 9);
+      const delta = randInt(1, 5);
+      const eq1 = `${a}*x + ${b}*y = ${k1}`;
+      const eq2 = `${m * a}*x + ${m * b}*y = ${m * k1 + delta}`;
+      const acceptCase = count % 2 === 0;
+      if (
+        addUnique(`sim2-nosol-${count}-${eq1}-${eq2}-${acceptCase}`, {
+          kind: 'single',
+          id: nextId('SIM'),
+          topic: 'simultaneous-linear-equations',
+          curriculumLevel: 'igcse',
+          verificationClass: acceptCase ? 'exact-accept' : 'exact-reject',
+          spec: { mode: 'simultaneous-linear', variables: ['x', 'y'], equations: [eq1, eq2] },
+          submission: { expression: acceptCase ? 'no solution' : 'x = 0, y = 0' },
+          expectedOutcome: acceptCase ? 'accept' : 'reject',
+        })
+      ) {
+        count++;
+      }
+    } else {
+      // Dependent / infinitely many 2x2: a*x + b*y = k1, (m*a)*x + (m*b)*y = m*k1
+      const a = randInt(1, 5);
+      const b = randInt(1, 5);
+      const m = randInt(2, 4);
+      const k1 = randInt(1, 9);
+      const eq1 = `${a}*x + ${b}*y = ${k1}`;
+      const eq2 = `${m * a}*x + ${m * b}*y = ${m * k1}`;
+      const acceptCase = count % 2 === 0;
+      if (
+        addUnique(`sim2-inf-${count}-${eq1}-${eq2}-${acceptCase}`, {
+          kind: 'single',
+          id: nextId('SIM'),
+          topic: 'simultaneous-linear-equations',
+          curriculumLevel: 'igcse',
+          verificationClass: acceptCase ? 'exact-accept' : 'exact-reject',
+          spec: { mode: 'simultaneous-linear', variables: ['x', 'y'], equations: [eq1, eq2] },
+          submission: { expression: acceptCase ? 'infinitely many' : 'no solution' },
+          expectedOutcome: acceptCase ? 'accept' : 'reject',
+        })
+      ) {
+        count++;
+      }
+    }
+  }
+  // 80 unique 3x3 systems (upper-triangular + row-combined invertible systems with exact rational solutions)
+  while (count < 200) {
+    const x0 = randInt(-4, 4);
+    const y0 = randInt(-4, 4);
+    const z0 = randInt(-4, 4);
+    const a1 = randInt(1, 3);
+    const b1 = randInt(-2, 2);
+    const c1 = randInt(-2, 2);
+    const b2 = randInt(1, 3);
+    const c2 = randInt(-2, 2);
+    const c3 = randInt(1, 3);
+    const r1 = a1 * x0 + b1 * y0 + c1 * z0;
+    const r2 = b2 * y0 + c2 * z0;
+    const r3 = c3 * z0;
+    // Combine rows so matrix is non-trivial while guaranteed det = a1*b2*c3 != 0
+    const eq1 = `${a1}*x + (${b1})*y + (${c1})*z = ${r1}`;
+    const eq2 = `${a1}*x + (${b1 + b2})*y + (${c1 + c2})*z = ${r1 + r2}`;
+    const eq3 = `${a1}*x + (${b1})*y + (${c1 + c3})*z = ${r1 + r3}`;
+    const isAccept = count % 2 === 0;
+    const sub = isAccept
+      ? `x = ${x0}, y = ${y0}, z = ${z0}`
+      : `x = ${x0}, y = ${y0}, z = ${z0 + 1}`;
+    if (
+      addUnique(`sim3-${count}-${eq1}-${eq2}-${eq3}-${sub}`, {
+        kind: 'single',
+        id: nextId('SIM'),
+        topic: 'simultaneous-linear-equations',
+        curriculumLevel: 'as-a-level',
+        verificationClass: isAccept ? 'exact-accept' : 'exact-reject',
+        spec: { mode: 'simultaneous-linear', variables: ['x', 'y', 'z'], equations: [eq1, eq2, eq3] },
+        submission: { expression: sub },
+        expectedOutcome: isAccept ? 'accept' : 'reject',
+      })
+    ) {
+      count++;
+    }
+  }
+}
+
+/* ==================== EXECUTE ALL 10,000+ CASES ==================== */
 interface TopicStats {
   total: number;
   correctAccept: number;

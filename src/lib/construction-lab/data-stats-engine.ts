@@ -36,7 +36,7 @@ export type DataStatsMode =
   | 'scatter-regression';
 
 export type ProbabilityExperimentKind = 'coin' | 'die' | 'spinner' | 'counters';
-export type QuartileConvention = 'tukey-exclusive' | 'tukey-inclusive' | 'linear-interpolation';
+export type QuartileConvention = 'tukey-exclusive' | 'tukey-inclusive' | 'linear-interpolation' | 'positional-n-plus-1';
 export type VarianceMode = 'population' | 'sample';
 export type StatsChartKind =
   | 'bar'
@@ -395,6 +395,23 @@ export function computeQuartiles(
       q1: roundClean(quantile(0.25), 6),
       median: med,
       q3: roundClean(quantile(0.75), 6),
+    };
+  }
+
+  // Cambridge IGCSE 0580 / NaCCA SHS discrete positional convention:
+  // 1-indexed position k = p * (n + 1), linearly interpolated when fractional.
+  if (convention === 'positional-n-plus-1') {
+    const positional = (p: number) => {
+      const k = Math.max(1, Math.min(n, p * (n + 1)));
+      const lo = Math.floor(k) - 1;
+      const hi = Math.ceil(k) - 1;
+      const frac = k - Math.floor(k);
+      return sorted[lo] + frac * (sorted[hi] - sorted[lo]);
+    };
+    return {
+      q1: roundClean(positional(0.25), 6),
+      median: med,
+      q3: roundClean(positional(0.75), 6),
     };
   }
 

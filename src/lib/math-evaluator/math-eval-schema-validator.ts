@@ -24,6 +24,7 @@ import { checkSymbolicEquivalence, differentiateAst } from './math-eval-exact';
 import {
   buildAssumedDomainFromRestrictions,
   collectVarsInAst,
+  solveLinearSystemExact,
   type MathDomainRestrictions,
   type MathMultiStepWorkingSpec,
 } from './math-eval-engine';
@@ -110,6 +111,13 @@ const WORKSPACE_KEYS = new Set([
   'maxWorkingSteps',
   'markingScheme',
   'workedSolutions',
+]);
+
+const SIMULTANEOUS_KEYS = new Set([
+  ...SHARED_MATH_EVAL_KEYS,
+  'variables',
+  'equations',
+  'expectedClassification',
 ]);
 
 const MARKING_SCHEME_KEYS = new Set(['maxMarks', 'sharedIndependentMarks', 'strategyGroups']);
@@ -299,10 +307,11 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     mode !== 'equation-solution' &&
     mode !== 'inequality-interval' &&
     mode !== 'calculus-check' &&
-    mode !== 'multi-step-working'
+    mode !== 'multi-step-working' &&
+    mode !== 'simultaneous-linear'
   ) {
     errors.push(
-      'math-evaluator "mode" must be numeric-quantity, algebraic-expression, equation-solution, inequality-interval, calculus-check, or multi-step-working.',
+      'math-evaluator "mode" must be numeric-quantity, algebraic-expression, equation-solution, inequality-interval, calculus-check, multi-step-working, or simultaneous-linear.',
     );
     return;
   }
@@ -338,6 +347,46 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
         errors.push('prediction.explanation must be a non-empty string.');
       }
     }
+  }
+
+  // MODE 6 (Step 5E-C): BOUNDED EXACT LINEAR SIMULTANEOUS EQUATIONS (2×2 / 3×3)
+  if (mode === 'simultaneous-linear') {
+    checkAllowed(obj, SIMULTANEOUS_KEYS, 'math-evaluator(simultaneous-linear)', errors);
+    const vars = obj.variables;
+    if (
+      !Array.isArray(vars) ||
+      vars.length < 2 ||
+      vars.length > 3 ||
+      vars.some((v) => typeof v !== 'string' || !/^[a-zA-Z]$/.test(v)) ||
+      new Set(vars).size !== vars.length
+    ) {
+      errors.push('simultaneous-linear "variables" must be 2 or 3 distinct single-letter strings.');
+      return;
+    }
+    const eqs = obj.equations;
+    if (
+      !Array.isArray(eqs) ||
+      eqs.length < 2 ||
+      eqs.length > 3 ||
+      eqs.some((e) => typeof e !== 'string' || !e.trim())
+    ) {
+      errors.push('simultaneous-linear "equations" must be 2 or 3 non-empty equation strings.');
+      return;
+    }
+    try {
+      const solved = solveLinearSystemExact(eqs as string[], vars as string[]);
+      if (
+        obj.expectedClassification !== undefined &&
+        obj.expectedClassification !== solved.classification
+      ) {
+        errors.push(
+          `simultaneous-linear expectedClassification "${String(obj.expectedClassification)}" contradicts exact RREF solver ("${solved.classification}").`,
+        );
+      }
+    } catch (e) {
+      errors.push(`simultaneous-linear equations invalid: ${e instanceof Error ? e.message : String(e)}`);
+    }
+    return;
   }
 
   // MODE 1: NUMERIC QUANTITY

@@ -16,6 +16,7 @@ export * from './math-eval-domain-solutions';
 export * from './math-eval-units-precision';
 export * from './math-eval-step-verifier';
 export * from './math-eval-marking';
+export * from './math-eval-linear-systems';
 
 import { EvalOpBudget, MATH_EVAL_LIMITS, MathEvalLimitError } from './math-eval-limits';
 import { parseEvalExpr, type EvalAstNode } from './math-eval-parser';
@@ -83,6 +84,10 @@ import {
   type MarkingEvaluationResult,
   type MarkingSchemeDef,
 } from './math-eval-marking';
+import {
+  evaluateSimultaneousLinearSystem,
+  type MathSimultaneousLinearSpec,
+} from './math-eval-linear-systems';
 
 export type MathEvaluatorMode =
   | 'numeric-quantity'
@@ -90,7 +95,8 @@ export type MathEvaluatorMode =
   | 'equation-solution'
   | 'inequality-interval'
   | 'calculus-check'
-  | 'multi-step-working';
+  | 'multi-step-working'
+  | 'simultaneous-linear';
 
 export type MathEvalVerdict =
   | 'exact-equivalent'
@@ -240,7 +246,8 @@ export type MathEvaluatorSpec =
   | MathEquationSolutionSpec
   | MathInequalityIntervalSpec
   | MathCalculusCheckSpec
-  | MathMultiStepWorkingSpec;
+  | MathMultiStepWorkingSpec
+  | MathSimultaneousLinearSpec;
 
 export interface WorkspaceEvaluationResult {
   chain: WorkingChainResult;
@@ -1258,6 +1265,13 @@ export function evaluateMathSubmission(
           : 'Verified: valid particular antiderivative confirmed via exact symbolic differentiation!',
         opsUsed: budget.used,
       };
+    }
+
+    // ------------------------------------------------------------------------
+    // MODE 6 (Step 5E-C): BOUNDED EXACT LINEAR SIMULTANEOUS EQUATIONS (2×2 / 3×3)
+    // ------------------------------------------------------------------------
+    if (spec.mode === 'simultaneous-linear') {
+      return evaluateSimultaneousLinearSystem(spec, submission.expression, budget);
     }
 
     return { passed: false, verdict: 'unsupported-or-indeterminate', feedback: 'Unsupported mode.', opsUsed: budget.used };
