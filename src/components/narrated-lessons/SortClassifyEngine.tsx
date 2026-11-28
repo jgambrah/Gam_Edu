@@ -371,7 +371,7 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {itemsInBin.length === 0 ? (
-                      <span className="text-[11px] italic text-slate-400">No items placed yet</span>
+                      <span className="text-[11px] italic text-slate-600">No items placed yet</span>
                     ) : (
                       itemsInBin.map((it) => (
                         <span

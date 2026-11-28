@@ -362,7 +362,7 @@ export function BooleanCircuitLab({ lessonId, slideId }: BooleanCircuitLabProps)
                 }}
                 className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
                   labMode === 'explore'
-                    ? 'bg-emerald-600 text-white shadow-xs'
+                    ? 'bg-emerald-700 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -421,7 +421,7 @@ export function BooleanCircuitLab({ lessonId, slideId }: BooleanCircuitLabProps)
                   onClick={() => toggleInput(inp)}
                   className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-extrabold transition focus:outline-none focus:ring-2 focus:ring-emerald-400 ${
                     val === 1
-                      ? 'border-emerald-500 bg-emerald-600 text-white shadow-xs'
+                      ? 'border-emerald-500 bg-emerald-700 text-white shadow-xs'
                       : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
                   }`}
                 >
@@ -589,7 +589,7 @@ export function BooleanCircuitLab({ lessonId, slideId }: BooleanCircuitLabProps)
                     onClick={() => setGradingMode('functional-equivalence')}
                     className={`rounded-lg px-2.5 py-1 transition ${
                       gradingMode === 'functional-equivalence'
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-emerald-700 text-white'
                         : 'bg-white text-slate-600 border border-slate-200'
                     }`}
                   >
@@ -610,7 +610,7 @@ export function BooleanCircuitLab({ lessonId, slideId }: BooleanCircuitLabProps)
                 <button
                   type="button"
                   onClick={handleGrade}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-extrabold text-white hover:bg-emerald-700"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3.5 py-1.5 text-xs font-extrabold text-white hover:bg-emerald-800"
                 >
                   <CheckCircle2 className="h-3.5 w-3.5" /> Check Circuit
                 </button>

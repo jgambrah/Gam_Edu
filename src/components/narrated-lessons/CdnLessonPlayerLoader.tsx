@@ -118,7 +118,7 @@ export function CdnLessonPlayerLoader({
         {backHref && (
           <Link
             href={backHref}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-sky-600 px-4 py-2 text-xs font-bold text-white hover:bg-sky-700"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white hover:bg-sky-800"
           >
             <ArrowLeft className="h-4 w-4" />
             {backLabel}

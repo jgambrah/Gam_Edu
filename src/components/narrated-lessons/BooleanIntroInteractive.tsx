@@ -75,7 +75,7 @@ function LabAccessInteractive({ lessonId }: { lessonId: string }) {
                 onClick={() => setHasId((v) => !v)}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-extrabold transition ${
                   hasId
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    ? 'bg-emerald-700 text-white hover:bg-emerald-800'
                     : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
                 }`}
               >
@@ -97,7 +97,7 @@ function LabAccessInteractive({ lessonId }: { lessonId: string }) {
                 onClick={() => setHasPermission((v) => !v)}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-extrabold transition ${
                   hasPermission
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    ? 'bg-emerald-700 text-white hover:bg-emerald-800'
                     : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
                 }`}
               >
@@ -271,7 +271,7 @@ function ElectricityAndSignalsInteractive({ lessonId }: { lessonId: string }) {
             onClick={() => setSwitchClosed((v) => !v)}
             className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-extrabold transition ${
               switchClosed
-                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                ? 'bg-emerald-700 text-white hover:bg-emerald-800'
                 : 'bg-slate-800 text-white hover:bg-slate-700'
             }`}
           >
@@ -442,7 +442,7 @@ function ElectricityAndSignalsInteractive({ lessonId }: { lessonId: string }) {
                 aria-label={`Toggle signal bit ${i + 1}, currently ${b}`}
                 className={`rounded-lg px-3 py-1.5 font-mono text-xs font-extrabold transition ${
                   b === 1
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    ? 'bg-emerald-700 text-white hover:bg-emerald-800'
                     : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
                 }`}
               >

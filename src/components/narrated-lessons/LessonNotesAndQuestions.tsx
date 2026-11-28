@@ -346,7 +346,7 @@ export function LessonNotesAndQuestions({
                 onChangeStage('questions');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-extrabold text-white shadow-xs hover:bg-emerald-700"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2 text-xs font-extrabold text-white shadow-xs hover:bg-emerald-800"
             >
               Open Question Series
               <ArrowRight className="h-4 w-4" />
@@ -551,7 +551,7 @@ function WorkedQuestionCard({
           onClick={onToggleUnderstood}
           className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
             understood
-              ? 'bg-emerald-600 text-white'
+              ? 'bg-emerald-700 text-white'
               : 'border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
           }`}
         >
@@ -584,7 +584,7 @@ function WorkedQuestionCard({
           className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
             revealed
               ? 'border border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200'
-              : 'bg-sky-600 text-white shadow-2xs hover:bg-sky-700'
+              : 'bg-sky-700 text-white shadow-2xs hover:bg-sky-800'
           }`}
         >
           {revealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}

@@ -684,7 +684,7 @@ export function ProcessStepperEngine({ config, lessonId }: ProcessStepperEngineP
               onClick={() =>
                 setSeqResult(evaluateSequenceOrder(seqOrder, config.sequenceChallenge!.stageIdsToOrder))
               }
-              className="rounded-lg bg-sky-600 px-3 py-1.5 font-bold text-white hover:bg-sky-700"
+              className="rounded-lg bg-sky-700 px-3 py-1.5 font-bold text-white hover:bg-sky-800"
             >
               Check order
             </button>
@@ -736,7 +736,7 @@ export function ProcessStepperEngine({ config, lessonId }: ProcessStepperEngineP
             type="button"
             onClick={() => setShowHints((v) => !v)}
             aria-expanded={showHints}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 hover:underline"
+            className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-sky-700 hover:underline"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             {showHints ? 'Hide hint' : 'Need a hint?'}

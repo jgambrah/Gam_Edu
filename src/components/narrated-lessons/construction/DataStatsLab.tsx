@@ -592,7 +592,7 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                         <span className="w-24 font-bold text-slate-800">{cat.label}</span>
                         <div className="flex flex-wrap items-center gap-1" aria-label={`${cat.label}: ${cat.frequency}`}>
                           {Array.from({ length: fullCount }).map((_, i) => (
-                            <span key={i} className="inline-block h-4 w-4 rounded-full bg-emerald-600" aria-hidden="true" />
+                            <span key={i} className="inline-block h-4 w-4 rounded-full bg-emerald-700" aria-hidden="true" />
                           ))}
                           {hasPartial && (
                             <span
@@ -601,7 +601,7 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                               style={{ width: `${partial * 16}px` }}
                               aria-hidden="true"
                             >
-                              <span className="block h-4 w-4 rounded-full bg-emerald-600" />
+                              <span className="block h-4 w-4 rounded-full bg-emerald-700" />
                             </span>
                           )}
                           <span className="ml-1 font-mono text-[11px] text-slate-600">= {cat.frequency}</span>

@@ -484,7 +484,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
             type="button"
             onClick={() => setShowTable((v) => !v)}
             aria-expanded={showTable}
-            className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:underline"
+            className="inline-flex min-h-[24px] items-center gap-1 font-semibold text-sky-700 hover:underline"
           >
             <TableIcon className="h-3.5 w-3.5" />
             {showTable ? 'Hide data table' : 'Show data table'}
@@ -607,7 +607,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
                         onClick={() => updateSlider(s.id, p, s.min, s.max)}
                         className={`min-h-[44px] rounded-md px-3 py-1.5 text-xs font-bold transition ${
                           Math.abs(val - p) < 1e-6
-                            ? 'bg-sky-600 text-white'
+                            ? 'bg-sky-700 text-white'
                             : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                         }`}
                       >
@@ -694,7 +694,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
             type="button"
             onClick={() => setShowHints((v) => !v)}
             aria-expanded={showHints}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 hover:underline"
+            className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-sky-700 hover:underline"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             {showHints ? 'Hide hint' : 'Need a hint?'}

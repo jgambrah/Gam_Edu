@@ -768,7 +768,7 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                       clearStale();
                       setEyeOffsetDeg(Number(e.target.value));
                     }}
-                    className="w-24"
+                    className="h-6 w-24"
                   />
                   <button
                     type="button"

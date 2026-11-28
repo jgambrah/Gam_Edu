@@ -80,6 +80,13 @@ if (flag('--ratchet')) {
     console.error(`\nRATCHET FAILED: ${report.total} errors > baseline ${base.total}. Fix the new errors (do not raise the baseline).`);
     process.exit(1);
   }
+  // Audit CP3: an undeclared name in SHIPPED code is a ReferenceError at runtime (cause of D-023 supplier delete and D-024
+  // practice quiz). Independent of the total, none may exist outside one-off scripts/.
+  const shippedUndeclared = report.possibleRuntimeBugs.filter((l) => !l.startsWith('scripts/'));
+  if (shippedUndeclared.length > 0) {
+    console.error(`\nRATCHET FAILED: ${shippedUndeclared.length} undeclared-name error(s) (TS2304/TS2552) in shipped code:\n  ` + shippedUndeclared.slice(0, 10).join('\n  '));
+    process.exit(1);
+  }
   const enrichment = report.byArea['student enrichment'] ?? 0;
   if (enrichment > (base.studentEnrichment ?? 0)) {
     console.error(`\nRATCHET FAILED: ${enrichment} student-enrichment errors > baseline ${base.studentEnrichment ?? 0}.`);

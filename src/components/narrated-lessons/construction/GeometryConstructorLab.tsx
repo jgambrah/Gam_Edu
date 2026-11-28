@@ -404,7 +404,7 @@ function CompassWorkbench({ config }: { config: GeometryCompassConfig }) {
               arcPts.push(`${(vx + prR * Math.cos(a)).toFixed(1)},${(vy - prR * Math.sin(a)).toFixed(1)}`);
             }
             return (
-              <g aria-label="Virtual protractor overlay" opacity={0.9}>
+              <g role="img" aria-label="Virtual protractor overlay" opacity={0.9}>
                 <polyline
                   points={arcPts.join(' ')}
                   fill="rgba(245,158,11,0.12)"
@@ -520,7 +520,7 @@ function CompassWorkbench({ config }: { config: GeometryCompassConfig }) {
               <button
                 type="button"
                 onClick={addSegment}
-                className="min-h-[44px] rounded-lg bg-emerald-600 px-3 font-bold text-white hover:bg-emerald-700"
+                className="min-h-[44px] rounded-lg bg-emerald-700 px-3 font-bold text-white hover:bg-emerald-800"
               >
                 Connect Segment
               </button>
@@ -1197,7 +1197,7 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
             </>
           )}
           {ct.theorem === 'alternate-segment' && ptA && ptB && ptP && ptT && (
-            <g aria-label="Alternate segment theorem geometry">
+            <g role="img" aria-label="Alternate segment theorem geometry">
               <line x1={cx} y1={cy} x2={ptA.x} y2={ptA.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
               <line
                 x1={ptA.x - (ptT.x - ptA.x) * 0.75}
@@ -1213,7 +1213,7 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
             </g>
           )}
           {ct.theorem === 'equal-tangents' && ptE && ptT1 && ptT2 && (
-            <g aria-label="Equal tangents from external point geometry">
+            <g role="img" aria-label="Equal tangents from external point geometry">
               <line x1={cx} y1={cy} x2={ptE.x} y2={ptE.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
               <line x1={cx} y1={cy} x2={ptT1.x} y2={ptT1.y} stroke="#4f46e5" strokeWidth={2} />
               <line x1={cx} y1={cy} x2={ptT2.x} y2={ptT2.y} stroke="#4f46e5" strokeWidth={2} />
@@ -1222,7 +1222,7 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
             </g>
           )}
           {ct.theorem === 'chord-perp-bisector' && ptA && ptB && ptM && (
-            <g aria-label="Chord perpendicular bisector geometry">
+            <g role="img" aria-label="Chord perpendicular bisector geometry">
               <line x1={cx} y1={cy} x2={ptA.x} y2={ptA.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
               <line x1={cx} y1={cy} x2={ptB.x} y2={ptB.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
               <line x1={ptA.x} y1={ptA.y} x2={ptB.x} y2={ptB.y} stroke="#4f46e5" strokeWidth={2.5} />
@@ -1550,7 +1550,7 @@ function LociRegionWorkbench({ config }: { config: GeometryLociRegionConfig }) {
           <GridAxesSvg bounds={config.gridBounds} proj={proj} />
           {/* Shaded feasible region cells (for inequality constraints) */}
           {shadedCells.length > 0 && (
-            <g aria-label="Shaded feasible region">
+            <g role="img" aria-label="Shaded feasible region">
               {shadedCells.map((cell, idx) => (
                 <rect
                   key={`fr-${idx}`}
@@ -1612,7 +1612,7 @@ function LociRegionWorkbench({ config }: { config: GeometryLociRegionConfig }) {
               const a2y = proj.toSvgY(c.p1.y - ny);
               const stadiumD = `M ${a1x} ${a1y} L ${b1x} ${b1y} A ${rSvg} ${rSvg} 0 0 1 ${b2x} ${b2y} L ${a2x} ${a2y} A ${rSvg} ${rSvg} 0 0 1 ${a1x} ${a1y} Z`;
               return (
-                <g key={`lc-${idx}`} aria-label="Finite segment stadium locus with semicircular endpoint arcs">
+                <g role="img" key={`lc-${idx}`} aria-label="Finite segment stadium locus with semicircular endpoint arcs">
                   <path d={stadiumD} fill="rgba(79,70,229,0.08)" stroke="#4f46e5" strokeWidth={2} strokeDasharray="5 3" />
                   <line x1={proj.toSvgX(c.p1.x)} y1={proj.toSvgY(c.p1.y)} x2={proj.toSvgX(c.p2.x)} y2={proj.toSvgY(c.p2.y)} stroke="#0f172a" strokeWidth={3} />
                   <circle cx={proj.toSvgX(c.p1.x)} cy={proj.toSvgY(c.p1.y)} r={4} fill="#0f172a" />

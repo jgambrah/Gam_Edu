@@ -115,7 +115,7 @@ export function RuleExplorerEngine({ config }: RuleExplorerEngineProps) {
               <span
                 className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-extrabold ${
                   active
-                    ? 'bg-emerald-600 text-white'
+                    ? 'bg-emerald-700 text-white'
                     : 'bg-slate-200 text-slate-700'
                 }`}
               >
@@ -177,7 +177,7 @@ export function RuleExplorerEngine({ config }: RuleExplorerEngineProps) {
             type="button"
             onClick={() => setShowHints((v) => !v)}
             aria-expanded={showHints}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 hover:underline focus:outline-none focus:ring-2 focus:ring-sky-400"
+            className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-sky-700 hover:underline focus:outline-none focus:ring-2 focus:ring-sky-400"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             {showHints ? 'Hide hint' : 'Need a hint?'}

@@ -223,12 +223,12 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
           <span
             className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-extrabold shadow-md transition motion-reduce:transition-none ${
               isTargetRevealed
-                ? 'border-white bg-emerald-600 text-white ring-2 ring-emerald-900'
+                ? 'border-white bg-emerald-700 text-white ring-2 ring-emerald-900'
                 : isSelected
                   ? 'scale-110 border-slate-950 bg-amber-400 text-slate-950 ring-2 ring-white'
                   : isLinked
-                    ? 'border-white bg-emerald-600 text-white ring-2 ring-emerald-950'
-                    : 'border-white bg-sky-600 text-white ring-2 ring-slate-900/70 group-hover:bg-sky-700'
+                    ? 'border-white bg-emerald-700 text-white ring-2 ring-emerald-950'
+                    : 'border-white bg-sky-700 text-white ring-2 ring-slate-900/70 group-hover:bg-sky-800'
             }`}
           >
             {idx + 1}
@@ -291,7 +291,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
               setIdentifyChecked(false);
             }}
             className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 transition ${
-              mode === 'explore' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-700 hover:bg-white'
+              mode === 'explore' ? 'bg-teal-700 text-white shadow-xs' : 'text-slate-700 hover:bg-white'
             }`}
           >
             <Compass className="h-3.5 w-3.5" />
@@ -426,7 +426,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
                   setPickedNonVisualIdx(null);
                   setIdentifyChecked(false);
                 }}
-                className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-teal-700"
+                className="rounded-lg bg-teal-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-teal-800"
               >
                 Next question
               </button>
@@ -543,7 +543,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
                     type="button"
                     disabled={guidedPos >= guidedIds.length - 1}
                     onClick={() => handleGuidedStep(1)}
-                    className="inline-flex items-center gap-0.5 rounded-lg bg-teal-600 px-2.5 py-1 text-xs font-bold text-white hover:bg-teal-700 disabled:opacity-40"
+                    className="inline-flex items-center gap-0.5 rounded-lg bg-teal-700 px-2.5 py-1 text-xs font-bold text-white hover:bg-teal-800 disabled:opacity-40"
                   >
                     Next Part
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -589,7 +589,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
                         key={lid}
                         type="button"
                         onClick={() => selectHotspot(lid)}
-                        className="rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-900 hover:bg-emerald-200"
+                        className="min-h-[24px] rounded bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-900 hover:bg-emerald-200"
                       >
                         {hotspotById.get(lid)?.label ?? lid}
                       </button>
@@ -620,7 +620,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
               <button
                 type="button"
                 onClick={() => handleGuidedStep(1)}
-                className="rounded-lg bg-teal-600 px-3 py-1.5 font-bold text-white hover:bg-teal-700"
+                className="rounded-lg bg-teal-700 px-3 py-1.5 font-bold text-white hover:bg-teal-800"
               >
                 Start Guided Tour
               </button>
@@ -641,7 +641,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
             type="button"
             onClick={() => setShowHints((v) => !v)}
             aria-expanded={showHints}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 hover:underline"
+            className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-sky-700 hover:underline"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             {showHints ? 'Hide hint' : 'Need a hint?'}

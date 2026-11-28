@@ -21,27 +21,27 @@ export function independentSolve(reac: ChemicalSpeciesDef[], prod: ChemicalSpeci
   if (cols.some((s) => s.charge)) rows.push(cols.map((s, j) => BigInt((s.charge ?? 0) * (j < reac.length ? 1 : -1))));
   const n = cols.length;
   type Fr = [bigint, bigint];
-  const g = (a: bigint, b: bigint): bigint => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) [a, b] = [b, a % b]; return a || 1n; };
-  const norm = ([p, q]: Fr): Fr => { if (q < 0n) { p = -p; q = -q; } const d = g(p, q); return [p / d, q / d]; };
+  const g = (a: bigint, b: bigint): bigint => { a = a < BigInt(0) ? -a : a; b = b < BigInt(0) ? -b : b; while (b) [a, b] = [b, a % b]; return a || BigInt(1); };
+  const norm = ([p, q]: Fr): Fr => { if (q < BigInt(0)) { p = -p; q = -q; } const d = g(p, q); return [p / d, q / d]; };
   const sub = (a: Fr, b: Fr): Fr => norm([a[0] * b[1] - b[0] * a[1], a[1] * b[1]]);
   const mul = (a: Fr, b: Fr): Fr => norm([a[0] * b[0], a[1] * b[1]]);
   const div = (a: Fr, b: Fr): Fr => norm([a[0] * b[1], a[1] * b[0]]);
-  const M: Fr[][] = rows.map((r) => r.map((x) => [x, 1n] as Fr));
+  const M: Fr[][] = rows.map((r) => r.map((x) => [x, BigInt(1)] as Fr));
   const piv: number[] = []; let r = 0;
   for (let c = 0; c < n && r < M.length; c++) {
-    let p = -1; for (let k = r; k < M.length; k++) if (M[k][c][0] !== 0n) { p = k; break; }
+    let p = -1; for (let k = r; k < M.length; k++) if (M[k][c][0] !== BigInt(0)) { p = k; break; }
     if (p < 0) continue; [M[r], M[p]] = [M[p], M[r]];
     const pv = M[r][c]; M[r] = M[r].map((x) => div(x, pv));
-    for (let k = 0; k < M.length; k++) if (k !== r && M[k][c][0] !== 0n) { const f = M[k][c]; M[k] = M[k].map((x, j) => sub(x, mul(f, M[r][j]))); }
+    for (let k = 0; k < M.length; k++) if (k !== r && M[k][c][0] !== BigInt(0)) { const f = M[k][c]; M[k] = M[k].map((x, j) => sub(x, mul(f, M[r][j]))); }
     piv.push(c); r++;
   }
   const free = [...Array(n).keys()].filter((c) => !piv.includes(c));
   if (free.length !== 1) return free.length === 0 ? null : null; // only the unique-ray case is used by this oracle
-  const fcol = free[0]; const sol: Fr[] = Array(n).fill([0n, 1n]); sol[fcol] = [1n, 1n];
+  const fcol = free[0]; const sol: Fr[] = Array(n).fill([BigInt(0), BigInt(1)]); sol[fcol] = [BigInt(1), BigInt(1)];
   piv.forEach((c, k) => { sol[c] = norm([-M[k][fcol][0], M[k][fcol][1]]); });
-  let L = 1n; for (const [, q] of sol) L = (L * q) / g(L, q);
+  let L = BigInt(1); for (const [, q] of sol) L = (L * q) / g(L, q);
   const ints = sol.map(([p, q]) => (p * L) / q);
-  if (ints.some((x) => x <= 0n)) return null;
+  if (ints.some((x) => x <= BigInt(0))) return null;
   let G = ints[0]; for (const x of ints) G = g(G, x);
   return ints.map((x) => Number(x / G));
 }

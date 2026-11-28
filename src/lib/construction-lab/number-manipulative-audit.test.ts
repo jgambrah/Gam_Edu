@@ -15,6 +15,7 @@ import {
   evaluateGhanaMoney,
   evaluateNumberBond,
   evaluateTenFrame,
+  type GhanaMoneySpec,
   improperToMixed,
   regroupBaseTen,
   reduceFraction,
@@ -39,7 +40,7 @@ describe('Ghana money: independent exact change-making oracle', () => {
   });
   it('FAIL-CLOSED: when the minimum cannot be computed, a non-minimal answer must not be reported as the minimum', () => {
     // 6000 pesewas using only 1 Gp coins: minimum is 6000 pieces. The DP bound returns null; the grader must not say "minimum".
-    const spec = { mode: 'ghana-money', taskKind: 'minimum-coins', allowedDenomIds: ['1p', '5c'], targetPesewas: 6000 } as const;
+    const spec: GhanaMoneySpec = { mode: 'ghana-money', taskKind: 'minimum-coins', allowedDenomIds: ['1p', '5c'], targetPesewas: 6000 };
     // learner uses 12 x GH5 notes (=6000p)? 5c = 500p -> 12 notes = minimum is 12? with {1p,500p}: 6000 = 12*500 -> min 12.
     const minimal = evaluateGhanaMoney(spec, { '5c': 12 });
     expect(minimal.passed).toBe(true);
@@ -47,12 +48,12 @@ describe('Ghana money: independent exact change-making oracle', () => {
     expect(wasteful.passed, 'a 511-piece answer when 12 suffices must not be accepted as the minimum').toBe(false);
   });
   it('a denomination outside the task allow-list must not be accepted', () => {
-    const spec = { mode: 'ghana-money', taskKind: 'minimum-coins', allowedDenomIds: ['20p', '50p', '1c'], targetPesewas: 500 } as const;
+    const spec: GhanaMoneySpec = { mode: 'ghana-money', taskKind: 'minimum-coins', allowedDenomIds: ['20p', '50p', '1c'], targetPesewas: 500 };
     // 500p with allowed {20p,50p,100p} needs 5 x 1c; one GH5 note (not allowed) must not pass as "1 piece"
     expect(evaluateGhanaMoney(spec, { '5c': 1 }).passed).toBe(false);
   });
   it('make-change arithmetic', () => {
-    const spec = { mode: 'ghana-money', taskKind: 'make-change', allowedDenomIds: ['1c', '2c', '5c', '10c'], costPesewas: 1350, paidPesewas: 2000 } as const;
+    const spec: GhanaMoneySpec = { mode: 'ghana-money', taskKind: 'make-change', allowedDenomIds: ['1c', '2c', '5c', '10c'], costPesewas: 1350, paidPesewas: 2000 };
     expect(evaluateGhanaMoney(spec, { '5c': 1, '1c': 1, '50p': 1 }).passed, 'change is GHS 6.50').toBe(false); // 50p not allowed in this task
     expect(evaluateGhanaMoney({ ...spec, allowedDenomIds: ['50p', '1c', '5c'] }, { '5c': 1, '1c': 1, '50p': 1 }).passed).toBe(true);
   });

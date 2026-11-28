@@ -137,7 +137,7 @@ export function PronunciationReviewClient({ manifest }: { manifest: TestClipsMan
             <button
               type="button"
               onClick={handleExport}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-sky-700"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-sky-800"
             >
               <Download className="h-3.5 w-3.5" />
               Export Review JSON
@@ -223,7 +223,7 @@ export function PronunciationReviewClient({ manifest }: { manifest: TestClipsMan
                             className={`rounded-lg border px-2 py-1.5 text-[11px] font-bold transition ${
                               currentRating === val
                                 ? val === 'best'
-                                  ? 'border-emerald-600 bg-emerald-600 text-white'
+                                  ? 'border-emerald-600 bg-emerald-700 text-white'
                                   : val === 'acceptable'
                                     ? 'border-amber-500 bg-amber-500 text-white'
                                     : 'border-rose-600 bg-rose-600 text-white'

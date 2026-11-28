@@ -530,7 +530,7 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
                     onClick={() => handleSelectActivity(act.id)}
                     className={`rounded-lg px-2 py-1 text-[11px] font-bold transition ${
                       isSelected
-                        ? 'bg-sky-600 text-white'
+                        ? 'bg-sky-700 text-white'
                         : isSlideMatch
                           ? 'border border-emerald-500/50 bg-emerald-950/40 text-emerald-200 hover:bg-emerald-900/50'
                           : 'border border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
@@ -545,7 +545,7 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
                 onClick={() => handleSelectActivity('sandbox')}
                 className={`rounded-lg px-2 py-1 text-[11px] font-bold transition ${
                   activeActivityId === 'sandbox'
-                    ? 'bg-sky-600 text-white'
+                    ? 'bg-sky-700 text-white'
                     : 'border border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
                 }`}
               >
@@ -589,7 +589,7 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
                   onClick={() => setMode(tabId)}
                   className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
                     mode === tabId
-                      ? 'bg-emerald-600 text-white shadow-sm'
+                      ? 'bg-emerald-700 text-white shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -652,7 +652,7 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
                 type="button"
                 onClick={handleRun}
                 disabled={running}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-60"
               >
                 {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
                 {running ? (mode === 'python' && pyStatus === 'loading' ? 'Loading Python...' : 'Running...') : 'Run'}
@@ -662,7 +662,7 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
                   type="button"
                   onClick={handleCheck}
                   disabled={running}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold text-white hover:bg-sky-500 disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-3 py-1 text-xs font-bold text-white hover:bg-sky-500 disabled:opacity-60"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   Check

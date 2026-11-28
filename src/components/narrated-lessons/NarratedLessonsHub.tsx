@@ -202,7 +202,7 @@ export function NarratedLessonsHub({
           onClick={() => handleCurriculumSwitch('ges')}
           className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
             !isCambridge
-              ? 'bg-sky-600 text-white shadow-sm'
+              ? 'bg-sky-700 text-white shadow-sm'
               : 'text-slate-600 hover:bg-white/70 hover:text-slate-900'
           }`}
         >
@@ -312,7 +312,7 @@ export function NarratedLessonsHub({
               selectedClass === 'ALL'
                 ? isCambridge
                   ? 'bg-indigo-600 text-white'
-                  : 'bg-sky-600 text-white'
+                  : 'bg-sky-700 text-white'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
@@ -340,7 +340,7 @@ export function NarratedLessonsHub({
                       }}
                       className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-semibold transition ${
                         active
-                          ? 'border-sky-600 bg-sky-600 text-white shadow-2xs'
+                          ? 'border-sky-600 bg-sky-700 text-white shadow-2xs'
                           : count > 0
                             ? 'border-sky-200 bg-white text-slate-800 hover:border-sky-400 hover:bg-sky-50'
                             : 'border-slate-200 bg-white/60 text-slate-400 hover:bg-white'
@@ -405,7 +405,7 @@ export function NarratedLessonsHub({
               onClick={() => setSelectedTerm(t)}
               className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 selectedTerm === t
-                  ? 'bg-sky-600 text-white'
+                  ? 'bg-sky-700 text-white'
                   : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               }`}
             >
@@ -445,7 +445,7 @@ export function NarratedLessonsHub({
                 setSelectedTerm('ALL');
                 setQuery('');
               }}
-              className="mt-4 rounded-xl bg-sky-600 px-4 py-2 text-xs font-bold text-white hover:bg-sky-700"
+              className="mt-4 rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white hover:bg-sky-800"
             >
               Show All Published Lessons
             </button>
@@ -489,7 +489,7 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
             {entry.term > 0 ? ` · Term ${entry.term}` : ''}
           </span>
           {hasNotes && (
-            <span className="absolute right-3 top-3 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
+            <span className="absolute right-3 top-3 rounded-full bg-emerald-700/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
               + Notes &amp; Q&amp;A
             </span>
           )}
@@ -530,7 +530,7 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
             <div className="grid grid-cols-3 gap-1.5">
               <Link
                 href={href}
-                className="inline-flex items-center justify-center gap-1 rounded-lg bg-sky-600 px-2 py-1.5 text-[11px] font-bold text-white transition hover:bg-sky-700"
+                className="inline-flex items-center justify-center gap-1 rounded-lg bg-sky-700 px-2 py-1.5 text-[11px] font-bold text-white transition hover:bg-sky-800"
               >
                 <PlayCircle className="h-3.5 w-3.5 shrink-0" />
                 Listen

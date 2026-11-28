@@ -323,7 +323,7 @@ export function ConstructionLabShell({
             type="button"
             onClick={() => setShowHints((v) => !v)}
             aria-expanded={showHints}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 hover:underline"
+            className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-indigo-700 hover:underline"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             {showHints ? 'Hide hint' : 'Need a hint?'}
