@@ -446,7 +446,7 @@ export function computeDescriptiveStats(
   const { q1, median, q3 } = computeQuartiles(sorted, quartileConvention);
   const iqr = q1 !== null && q3 !== null ? roundClean(q3 - q1, 6) : null;
 
-  // Mode(s): returns [] if all values have equal frequency (no mode)
+  // Mode(s): returns [] only when no value repeats (no mode)
   const freqMap = new Map<number, number>();
   let maxFreq = 0;
   for (const v of sorted) {
@@ -455,8 +455,10 @@ export function computeDescriptiveStats(
     if (f > maxFreq) maxFreq = f;
   }
   const uniqueVals = Array.from(freqMap.keys());
-  const allEqualFreq = uniqueVals.every((k) => freqMap.get(k) === maxFreq);
-  const modes = allEqualFreq || maxFreq <= 1 ? [] : uniqueVals.filter((k) => freqMap.get(k) === maxFreq);
+  // School convention: "no mode" ONLY when no value repeats (every value occurs once). Any value that occurs most
+  // often is a mode, so [3,3,3] has mode 3 and [1,1,2,2] is bimodal (1 and 2). (Audit fix: previously any data set
+  // whose values were all equally frequent - including the constant set [3,3,3] - reported "no mode".)
+  const modes = maxFreq <= 1 ? [] : uniqueVals.filter((k) => freqMap.get(k) === maxFreq);
 
   // Two-pass centred sum of squares for numerical stability
   let ss = 0;
@@ -870,7 +872,7 @@ export function evaluateDataStatsAnswer(
         passed: ok,
         expectedValue: null,
         feedback: ok
-          ? 'Verified! This dataset has no mode because no value repeats more often than the others.'
+          ? 'Verified! This dataset has no mode because no value repeats.'
           : `This dataset does have a mode (${expectedModes.join(', ')}).`,
       };
     }

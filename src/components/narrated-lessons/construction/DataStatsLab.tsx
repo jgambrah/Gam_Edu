@@ -32,6 +32,16 @@ import {
   type QuartileConvention,
 } from '@/lib/construction-lab/data-stats-engine';
 
+/** Three evenly spaced numeric y-axis ticks: 0, half, and the maximum. */
+function axisTicks(max: number): number[] {
+  const m = Number.isFinite(max) && max > 0 ? max : 1;
+  return [0, m / 2, m];
+}
+
+function formatTick(v: number): string {
+  return Number.isInteger(v) ? String(v) : String(Math.round(v * 100) / 100);
+}
+
 export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfig }) {
   // Mode 1: Probability experiment state (stateful PRNG that advances across trials!)
   const initialSeed = config.mode === 'probability-experiment' ? (config.seed ?? 20260504) : 20260504;
@@ -393,6 +403,24 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
               const maxX = bins[bins.length - 1].upper;
               const maxFD = Math.max(...bins.map((b) => b.frequencyDensity), 1e-6);
               const maxCum = cumPts[cumPts.length - 1]?.cumulativeFrequency ?? 1;
+              // Frequency polygon: standard convention plots FREQUENCY against class mid-points (equal widths);
+              // with unequal widths frequency density is plotted instead so areas stay comparable. The polygon is
+              // closed to the axis at the mid-points of the empty classes either side.
+              const polyEqualWidths = bins.every((b) => Math.abs(b.classWidth - bins[0].classWidth) < 1e-9);
+              const polyVals = bins.map((b) => (polyEqualWidths ? b.frequency : b.frequencyDensity));
+              const maxPoly = Math.max(...polyVals, 1e-6);
+              const polyLo = bins[0].midpoint - bins[0].classWidth;
+              const polyHi = bins[bins.length - 1].midpoint + bins[bins.length - 1].classWidth;
+              const polyX = (v: number) => 42 + ((v - polyLo) / Math.max(1e-9, polyHi - polyLo)) * 290;
+              const polyY = (v: number) => 120 - (v / maxPoly) * 94;
+              const yMax =
+                config.chartKind === 'histogram' ? maxFD : config.chartKind === 'frequency-polygon' ? maxPoly : Math.max(1, maxCum);
+              const yTitle =
+                config.chartKind === 'histogram'
+                  ? 'Frequency density'
+                  : config.chartKind === 'frequency-polygon'
+                    ? polyEqualWidths ? 'Frequency' : 'Frequency density'
+                    : 'Cumulative frequency';
               return (
                 <>
                   <svg
@@ -404,6 +432,16 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                     <rect x="4" y="4" width="352" height="142" rx="8" fill="#ffffff" stroke="#cbd5e1" />
                     <line x1="42" y1="18" x2="42" y2="120" stroke="#334155" strokeWidth="1.4" />
                     <line x1="42" y1="120" x2="340" y2="120" stroke="#334155" strokeWidth="1.4" />
+                    {/* Numeric y-axis so values can actually be read from the chart */}
+                    {axisTicks(yMax).map((t) => (
+                      <g key={`yt-${t}`} data-testid="y-tick" data-tick-value={t}>
+                        <line x1="39" x2="42" y1={120 - (t / yMax) * 94} y2={120 - (t / yMax) * 94} stroke="#334155" />
+                        <text x="37" y={120 - (t / yMax) * 94 + 2.5} textAnchor="end" fontSize="7" fill="#475569">
+                          {formatTick(t)}
+                        </text>
+                      </g>
+                    ))}
+                    <text x="8" y="14" fontSize="7" fill="#475569">{yTitle}</text>
                     {config.chartKind === 'histogram' &&
                       bins.map((b, i) => {
                         const x1 = 42 + ((b.lower - minX) / Math.max(1e-9, maxX - minX)) * 290;
@@ -433,19 +471,27 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                           fill="none"
                           stroke="#7c3aed"
                           strokeWidth="2.2"
-                          points={bins
-                            .map((b) => {
-                              const x = 42 + ((b.midpoint - minX) / Math.max(1e-9, maxX - minX)) * 290;
-                              const y = 120 - (b.frequencyDensity / maxFD) * 94;
-                              return `${x.toFixed(1)},${y.toFixed(1)}`;
-                            })
-                            .join(' ')}
+                          points={[
+                            `${polyX(polyLo).toFixed(1)},120`,
+                            ...bins.map((b, i) => `${polyX(b.midpoint).toFixed(1)},${polyY(polyVals[i]).toFixed(1)}`),
+                            `${polyX(polyHi).toFixed(1)},120`,
+                          ].join(' ')}
                         />
-                        {bins.map((b, i) => {
-                          const x = 42 + ((b.midpoint - minX) / Math.max(1e-9, maxX - minX)) * 290;
-                          const y = 120 - (b.frequencyDensity / maxFD) * 94;
-                          return <circle key={i} data-testid={`fp-pt-${i}`} cx={x} cy={y} r="3.5" fill="#7c3aed" />;
-                        })}
+                        {bins.map((b, i) => (
+                          <g key={i}>
+                            <circle
+                              data-testid={`fp-pt-${i}`}
+                              data-plotted-value={polyVals[i]}
+                              cx={polyX(b.midpoint)}
+                              cy={polyY(polyVals[i])}
+                              r="3.5"
+                              fill="#7c3aed"
+                            />
+                            <text x={polyX(b.midpoint)} y="133" textAnchor="middle" fontSize="8" fill="#334155">
+                              {b.midpoint}
+                            </text>
+                          </g>
+                        ))}
                       </g>
                     )}
                     {config.chartKind === 'cumulative-frequency' && (
@@ -467,7 +513,7 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                       {config.chartKind === 'histogram'
                         ? 'Continuous Histogram (Y = Frequency Density; Area = Frequency)'
                         : config.chartKind === 'frequency-polygon'
-                          ? 'Frequency Polygon (Midpoints · Y = Frequency Density)'
+                          ? `Frequency Polygon (Class mid-points · Y = ${polyEqualWidths ? 'Frequency' : 'Frequency Density'})`
                           : config.xLabel ?? 'Class Upper Bound'}
                     </text>
                   </svg>
@@ -501,6 +547,15 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
             return (
               <svg viewBox="0 0 360 140" role="img" aria-label="Categorical bar chart" data-testid="svg-bar" className="h-auto w-full max-w-xl">
                 <rect x="4" y="4" width="352" height="132" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+                <line x1="40" y1="20" x2="40" y2="110" stroke="#334155" strokeWidth="1.2" />
+                <line x1="40" y1="110" x2="340" y2="110" stroke="#334155" strokeWidth="1.2" />
+                {axisTicks(maxF).map((t) => (
+                  <g key={`bt-${t}`} data-testid="y-tick" data-tick-value={t}>
+                    <line x1="37" x2="40" y1={110 - (t / maxF) * 86} y2={110 - (t / maxF) * 86} stroke="#334155" />
+                    <text x="35" y={110 - (t / maxF) * 86 + 2.5} textAnchor="end" fontSize="7" fill="#475569">{formatTick(t)}</text>
+                  </g>
+                ))}
+                <text x="8" y="14" fontSize="7" fill="#475569">Frequency</text>
                 {config.categories.map((cat, idx) => {
                   const bw = 280 / config.categories!.length;
                   const x = 44 + idx * bw + 6;
@@ -525,19 +580,23 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                 <p className="font-bold text-slate-700">Key: ● = {unit} unit{unit === 1 ? '' : 's'} (◐ = {roundClean(unit / 2, 2)})</p>
                 <div className="space-y-1.5 rounded-lg border border-slate-200 bg-white p-2.5">
                   {config.categories.map((cat) => {
-                    const exactSymbols = cat.frequency / unit;
-                    const fullCount = Math.floor(exactSymbols);
-                    const hasHalf = exactSymbols - fullCount >= 0.25;
+                    // Symbols are rounded to the nearest half-symbol; the exact frequency is always printed too, so a
+                    // learner can never be shown a frequency different from the data. (Previously symbols beyond 20 were
+                    // silently dropped, so a frequency of 25 looked like 20.)
+                    const halves = Math.round((cat.frequency / unit) * 2);
+                    const fullCount = Math.floor(halves / 2);
+                    const hasHalf = halves % 2 === 1;
                     return (
-                      <div key={cat.label} className="flex items-center gap-2" data-picto-row={cat.label} data-full-symbols={fullCount}>
+                      <div key={cat.label} className="flex items-center gap-2" data-picto-row={cat.label} data-full-symbols={fullCount} data-half-symbol={hasHalf ? 'true' : 'false'}>
                         <span className="w-24 font-bold text-slate-800">{cat.label}</span>
                         <div className="flex flex-wrap items-center gap-1" aria-label={`${cat.label}: ${cat.frequency}`}>
-                          {Array.from({ length: Math.min(fullCount, 20) }).map((_, i) => (
+                          {Array.from({ length: fullCount }).map((_, i) => (
                             <span key={i} className="inline-block h-4 w-4 rounded-full bg-emerald-600" aria-hidden="true" />
                           ))}
                           {hasHalf && (
                             <span className="inline-block h-4 w-2 rounded-l-full bg-emerald-600" aria-hidden="true" />
                           )}
+                          <span className="ml-1 font-mono text-[11px] text-slate-600">= {cat.frequency}</span>
                         </div>
                       </div>
                     );
@@ -610,9 +669,11 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                   const x = toX(st.value);
                   return (
                     <g key={st.value} data-dot-value={st.value} data-dot-stack={st.count}>
-                      {Array.from({ length: Math.min(st.count, 10) }).map((_, k) => (
-                        <circle key={k} cx={x} cy={82 - k * 8} r="3.5" fill="#2563eb" />
-                      ))}
+                      {/* Every observation is drawn (stacks are compressed to fit instead of being cut off at 10). */}
+                      {Array.from({ length: st.count }).map((_, k) => {
+                        const step = Math.min(8, 70 / Math.max(1, st.count));
+                        return <circle key={k} cx={x} cy={82 - k * step} r={Math.min(3.5, step / 2.2)} fill="#2563eb" />;
+                      })}
                       <text x={x} y="106" textAnchor="middle" fontSize="8" fill="#0f172a">{st.value}</text>
                     </g>
                   );
