@@ -38,6 +38,7 @@ import { validateGeometryConstructorConfig } from './geometry-schema-validator';
 import { validateMeasurementLabConfig } from './measurement-schema-validator';
 import { validateDataStatsLabConfig } from './data-stats-schema-validator';
 import { validateNumberManipulativeConfig } from './number-manipulative-schema-validator';
+import { validatePhysicsWorkbenchConfig } from './physics-workbench-schema-validator';
 
 export type ConstructionLabKind =
   | 'boolean-circuit'
@@ -48,7 +49,8 @@ export type ConstructionLabKind =
   | 'geometry-constructor'
   | 'measurement-lab'
   | 'data-stats-lab'
-  | 'number-manipulative';
+  | 'number-manipulative'
+  | 'physics-workbench';
 
 export interface ConstructionPredictionDef {
   prompt: string;
@@ -262,9 +264,12 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' | '1.8.0' | '1.9.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' | '1.8.0' | '1.9.0' | '1.10.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (obj.labKind === 'physics-workbench') {
+    return '1.10.0';
   }
   if (
     obj.exploreFurther === true ||
@@ -331,7 +336,8 @@ export function validateConstructionLabConfig(
     labKind !== 'geometry-constructor' &&
     labKind !== 'measurement-lab' &&
     labKind !== 'data-stats-lab' &&
-    labKind !== 'number-manipulative'
+    labKind !== 'number-manipulative' &&
+    labKind !== 'physics-workbench'
   ) {
     errors.push(`Unsupported construction-lab labKind "${String(labKind)}".`);
     return;
@@ -394,6 +400,12 @@ export function validateConstructionLabConfig(
   // Domain 9 (Step 5F): Primary Number Manipulatives Laboratory
   if (labKind === 'number-manipulative') {
     validateNumberManipulativeConfig(obj, errors);
+    return;
+  }
+
+  // Domain 10 (Step 5G): Bounded Dynamic Physics Workbench
+  if (labKind === 'physics-workbench') {
+    validatePhysicsWorkbenchConfig(obj, errors);
     return;
   }
 
