@@ -850,11 +850,20 @@ export function NarratedLessonPlayer({
       } catch {
         // ignore storage errors
       }
+      // The Ask Teacher endpoint requires a signed-in user (it spends shared AI budget); send the Firebase ID token.
+      let idToken = '';
+      try {
+        const { getAuth } = await import('firebase/auth');
+        idToken = (await getAuth().currentUser?.getIdToken()) || '';
+      } catch {
+        // no signed-in Firebase user available (e.g. isolated preview/test): the server will answer 401
+      }
       const res = await fetch('/api/narrated-lessons/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(sessionId ? { 'x-lesson-session': sessionId } : {}),
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
         },
         body: JSON.stringify({
           lessonId: lesson.lessonId,

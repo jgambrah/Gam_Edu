@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
+import { getAdminAuth } from '@/lib/firebaseAdmin';
 import {
   isSafeguardingConcern,
   SAFEGUARDING_RESPONSE,
@@ -96,6 +97,18 @@ function sanitizePlainText(raw: string): string {
     .trim();
 }
 
+/** Returns the Firebase uid from a valid `Authorization: Bearer <ID token>` header, or null. */
+async function verifiedUid(req: NextRequest): Promise<string | null> {
+  const header = req.headers.get('Authorization') || '';
+  if (!header.startsWith('Bearer ')) return null;
+  try {
+    const decoded = await getAdminAuth().verifyIdToken(header.slice(7));
+    return decoded?.uid || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json().catch(() => null)) as {
@@ -125,10 +138,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ answer: SAFEGUARDING_RESPONSE, source: 'safeguarding' });
     }
 
-    // 2. Fair rate limit keyed by per-browser session header (so pupils behind one school IP don't collide)
-    const sessionHeader = req.headers.get('x-lesson-session')?.trim().slice(0, 64);
-    const fallbackIp = req.headers.get('x-real-ip') || 'anon';
-    const clientKey = sessionHeader ? `sess:${sessionHeader}` : `ip:${fallbackIp}`;
+    // 2. Authenticate, then rate-limit per VERIFIED user. (Audit fix: this Gemini-backed endpoint used to be
+    // anonymous and rate-limited by a client-supplied `x-lesson-session` header, so anyone could rotate that header
+    // to bypass the per-client limit and burn the shared daily AI budget.) Pupils behind one school IP still do not
+    // collide because the key is the Firebase uid, not the IP.
+    const uid = await verifiedUid(req);
+    if (!uid) {
+      return NextResponse.json({ error: 'Please sign in to ask your teacher.' }, { status: 401 });
+    }
+    const clientKey = `uid:${uid}`;
     const limit = checkRateLimit(clientKey);
     if (!limit.ok) {
       return NextResponse.json({ error: limit.message }, { status: 429 });
