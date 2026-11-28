@@ -453,6 +453,21 @@ export function evaluateMeasurementSubmission(
     incompleteTrials: false,
   };
 
+  // Audit D-030: a practical measurement is only valid when read with the eye level (no parallax). Previously a learner who
+  // left the eye 15 degrees off-level was still marked "Verified" if they typed the true value, so a correct number could be
+  // credited from an invalid instrument configuration. The alignment/tare/range states already refuse in the same way.
+  if (diag.parallaxNotLevel) {
+    diag.stateValid = false;
+    return {
+      passed: false,
+      feedback: 'Parallax error! Your eye is not level with the scale or meniscus. Move the eye-position control to 0° (level) before recording your reading.',
+      diagnostics: diag,
+      expectedValue: expectedVal,
+      expectedUnit: spec.unit,
+      expectedUncertainty: expectedUnc,
+    };
+  }
+
   // Validate instrument state before accepting any measurement!
   if (model.overRange) {
     diag.stateValid = false;

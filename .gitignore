@@ -51,3 +51,5 @@ scratch/membership-audit/
 test-results/
 playwright-report/
 scripts/audit/python-sandbox-harness/*.bundle.js
+audit-output/
+audit-output/

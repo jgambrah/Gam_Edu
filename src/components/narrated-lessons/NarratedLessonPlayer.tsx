@@ -152,8 +152,24 @@ function deterministicShuffleIds(ids: string[]): string[] {
   return [...ids].reverse();
 }
 
+/**
+ * Audit fix: eight of the thirteen pilot fixtures (and any partial or legacy lesson JSON) have no `masteryCheck`,
+ * `checkpoints` or `pronunciationGuide`; the player dereferenced them unguarded and crashed to a blank page
+ * ("Cannot read properties of undefined (reading 'items')"). Missing parts now default to empty and the Mastery step
+ * is simply skipped when a lesson has no mastery items.
+ */
+function withLessonDefaults(l: NarratedLesson): NarratedLesson {
+  if (l.checkpoints && l.masteryCheck && l.pronunciationGuide) return l;
+  return {
+    ...l,
+    checkpoints: l.checkpoints ?? [],
+    pronunciationGuide: l.pronunciationGuide ?? [],
+    masteryCheck: l.masteryCheck ?? ({ items: [], passMark: 0 } as unknown as NarratedLesson['masteryCheck']),
+  };
+}
+
 export function NarratedLessonPlayer({
-  lesson,
+  lesson: rawLesson,
   notes = null,
   initialStage = 'listen',
   allowReviewerTools = false,
@@ -163,6 +179,7 @@ export function NarratedLessonPlayer({
   initialStage?: LessonStage;
   allowReviewerTools?: boolean;
 }) {
+  const lesson = useMemo(() => withLessonDefaults(rawLesson), [rawLesson]);
   const steps = useMemo<PlayerStep[]>(() => {
     const out: PlayerStep[] = [{ kind: 'intro', id: 'intro', label: 'Start' }];
     const cpByAfter = new Map<string, LessonCheckpoint>();
@@ -187,7 +204,7 @@ export function NarratedLessonPlayer({
         });
       }
     }
-    out.push({ kind: 'mastery', id: 'mastery', label: 'Mastery' });
+    if (lesson.masteryCheck.items.length > 0) out.push({ kind: 'mastery', id: 'mastery', label: 'Mastery' });
     out.push({ kind: 'summary', id: 'summary', label: 'Wrap-Up' });
     return out;
   }, [lesson]);
