@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
-import { getAdminAuth } from '@/lib/firebaseAdmin';
+import { authenticateCaller, mayUseAskTeacher, reserveSharedAiCall } from '@/lib/ask-teacher-guard';
 import {
   isSafeguardingConcern,
   SAFEGUARDING_RESPONSE,
@@ -25,6 +25,9 @@ async function loadLessonFromCdn(lessonId: string): Promise<NarratedLesson | nul
 // Per-client session rate limiter (avoids punishing 40 pupils sharing one school NAT IP) + global daily budget cap
 const rateBucket = new Map<string, { count: number; resetAt: number }>();
 const WINDOW_MS = 10 * 60 * 1000;
+const MAX_BODY_CHARS = 4096;
+const ID_RE = /^[A-Za-z0-9_.-]{1,80}$/;
+const MAX_ANSWER_CHARS = 1200;
 const MAX_REQUESTS_PER_CLIENT = 15;
 
 let dailyCount = 0;
@@ -97,25 +100,20 @@ function sanitizePlainText(raw: string): string {
     .trim();
 }
 
-/** Returns the Firebase uid from a valid `Authorization: Bearer <ID token>` header, or null. */
-async function verifiedUid(req: NextRequest): Promise<string | null> {
-  const header = req.headers.get('Authorization') || '';
-  if (!header.startsWith('Bearer ')) return null;
-  try {
-    const decoded = await getAdminAuth().verifyIdToken(header.slice(7));
-    return decoded?.uid || null;
-  } catch {
-    return null;
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json().catch(() => null)) as {
-      lessonId?: string;
-      slideId?: string;
-      question?: string;
-    } | null;
+    // Bounded body: the largest legitimate request is a 400-character question plus two short ids.
+    const rawBody = await req.text().catch(() => '');
+    if (rawBody.length > MAX_BODY_CHARS) {
+      return NextResponse.json({ error: 'Request too large.' }, { status: 413 });
+    }
+    let body: { lessonId?: string; slideId?: string; question?: string } | null = null;
+    try {
+      const parsed = JSON.parse(rawBody);
+      body = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
+    } catch {
+      body = null;
+    }
 
     const lessonId =
       typeof body?.lessonId === 'string' && body.lessonId.trim()
@@ -124,6 +122,9 @@ export async function POST(req: NextRequest) {
     const slideId = typeof body?.slideId === 'string' ? body.slideId.trim() : '';
     const question = typeof body?.question === 'string' ? body.question.trim() : '';
 
+    if (!ID_RE.test(lessonId) || (slideId && !ID_RE.test(slideId))) {
+      return NextResponse.json({ error: 'Invalid lesson reference.' }, { status: 400 });
+    }
     if (!question || question.length < 2) {
       return NextResponse.json({ error: 'Please type a short question for your teacher.' }, { status: 400 });
     }
@@ -142,11 +143,17 @@ export async function POST(req: NextRequest) {
     // anonymous and rate-limited by a client-supplied `x-lesson-session` header, so anyone could rotate that header
     // to bypass the per-client limit and burn the shared daily AI budget.) Pupils behind one school IP still do not
     // collide because the key is the Firebase uid, not the IP.
-    const uid = await verifiedUid(req);
-    if (!uid) {
+    const caller = await authenticateCaller(req);
+    if (!caller) {
       return NextResponse.json({ error: 'Please sign in to ask your teacher.' }, { status: 401 });
     }
-    const clientKey = `uid:${uid}`;
+    // Authentication is not authorisation: the caller must belong to a school and, while Student Enrichment is Under
+    // Construction, hold a release-gate staff role (the client gate mirrored on the server).
+    const access = mayUseAskTeacher(caller);
+    if (!access.allowed) {
+      return NextResponse.json({ error: 'Ask Teacher is not available for your account yet.' }, { status: 403 });
+    }
+    const clientKey = `uid:${caller.uid}`;
     const limit = checkRateLimit(clientKey);
     if (!limit.ok) {
       return NextResponse.json({ error: limit.message }, { status: 429 });
@@ -176,6 +183,21 @@ export async function POST(req: NextRequest) {
           'Live AI teacher answers are temporarily unavailable on this preview server. Please try one of the suggested questions above, or ask your classroom teacher.',
         source: 'fallback',
       });
+    }
+
+    // Shared (cross-instance) daily cap, counted only now that a paid AI call is about to be made.
+    const reserved = await reserveSharedAiCall(caller);
+    if (!reserved.ok) {
+      return NextResponse.json(
+        {
+          answer:
+            reserved.reason === 'unavailable'
+              ? 'Live AI teacher answers are temporarily unavailable. Please try one of the suggested questions above, or ask your classroom teacher.'
+              : 'Ask Teacher has reached its daily limit. Please try the suggested questions above or ask your classroom teacher.',
+          source: 'limit',
+        },
+        { status: 429 },
+      );
     }
 
     const systemInstruction = [
@@ -259,7 +281,7 @@ export async function POST(req: NextRequest) {
         .trim();
 
       if (text && finishReason !== 'MAX_TOKENS') {
-        answerText = sanitizePlainText(text);
+        answerText = sanitizePlainText(text).slice(0, MAX_ANSWER_CHARS);
         break;
       }
 
