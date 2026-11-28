@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
-import { authenticateCaller, mayUseAskTeacher, reserveSharedAiCall } from '@/lib/ask-teacher-guard';
+import { authenticateCaller, mayUseAskTeacher, releaseSharedAiCall, reserveSharedAiCall } from '@/lib/ask-teacher-guard';
 import {
   isSafeguardingConcern,
   SAFEGUARDING_RESPONSE,
@@ -296,6 +296,8 @@ export async function POST(req: NextRequest) {
     }
 
     if (!answerText) {
+      // No paid answer was produced (every model failed or returned nothing): do not charge the allowance.
+      await releaseSharedAiCall(caller);
       const qWords = new Set(normalizedQ.split(/\s+/).filter((w) => w.length > 2));
       let bestFaq = slide.askTeacherContext.seedFaqs[0];
       let bestScore = -1;

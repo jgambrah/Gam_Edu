@@ -115,6 +115,28 @@ export async function reserveSharedAiCall(caller: AskCaller, now: Date = new Dat
   }
 }
 
+/**
+ * Gives back a slot taken by reserveSharedAiCall when NO paid answer was produced (every model errored), so a provider
+ * outage never burns a user's or school's daily allowance. Never goes below zero; failure to release is non-fatal.
+ */
+export async function releaseSharedAiCall(caller: AskCaller, now: Date = new Date(), dbOverride?: any): Promise<void> {
+  const day = now.toISOString().slice(0, 10);
+  try {
+    const db = dbOverride ?? getAdminDb();
+    const userRef = db.collection('askTeacherUsage').doc(`u_${caller.uid}_${day}`);
+    const schoolRef = caller.schoolId ? db.collection('askTeacherUsage').doc(`s_${caller.schoolId}_${day}`) : null;
+    await db.runTransaction(async (tx: any) => {
+      const [uSnap, sSnap] = await Promise.all([tx.get(userRef), schoolRef ? tx.get(schoolRef) : Promise.resolve(null)]);
+      const u = uSnap.exists ? Number(uSnap.data()?.count) || 0 : 0;
+      const s = sSnap && sSnap.exists ? Number(sSnap.data()?.count) || 0 : 0;
+      if (u > 0) tx.set(userRef, { count: u - 1, updatedAt: now.toISOString() }, { merge: true });
+      if (schoolRef && s > 0) tx.set(schoolRef, { count: s - 1, updatedAt: now.toISOString() }, { merge: true });
+    });
+  } catch {
+    // best effort: a failed release only means the allowance stays used
+  }
+}
+
 /** Test hook. */
 export function __clearAskProfileCache() {
   profileCache.clear();
