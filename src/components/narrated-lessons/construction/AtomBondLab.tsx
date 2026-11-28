@@ -182,7 +182,7 @@ export function AtomBondLab({
   config: AtomBondBuilderConstructionConfig;
   isSandbox?: boolean;
 }) {
-  const examples = config.examples && config.examples.length > 0 ? config.examples : null;
+  const examples = !config.isAssessment && config.examples && config.examples.length > 0 ? config.examples : null;
   const [exampleIdx, setExampleIdx] = useState<number>(0);
   const [completedExamples, setCompletedExamples] = useState<Record<number, boolean>>({});
   const effectiveConfig = useMemo(
@@ -547,6 +547,7 @@ export function AtomBondLab({
       checkLabel={checkLabel}
       feedback={feedback}
       disableExploreFurther={isSandbox || Boolean(config.isAssessment) || !config.exploreFurther}
+      isAssessment={Boolean(config.isAssessment)}
       renderExploreFurther={
         sandboxConfig ? () => <AtomBondLab config={sandboxConfig} isSandbox /> : undefined
       }
@@ -932,13 +933,33 @@ export function AtomBondLab({
         const anRec = getElementBySymbol(anSym);
         const catCharge = effectiveConfig.targetCationCharge ?? 1;
         const anCharge = effectiveConfig.targetAnionCharge ?? -1;
-        const eLostNeeded = state.cationCount * catCharge;
-        const eGainedNeeded = state.anionCount * Math.abs(anCharge);
-        const netCharge = state.cationCount * catCharge + state.anionCount * anCharge;
+        const liveIonic = evaluateIonicBonding({
+          cationElement: catSym,
+          anionElement: anSym,
+          targetCationCount: effectiveConfig.targetCationCount ?? 1,
+          targetAnionCount: effectiveConfig.targetAnionCount ?? 1,
+          targetCationCharge: catCharge,
+          targetAnionCharge: anCharge,
+          cationCount: state.cationCount,
+          anionCount: state.anionCount,
+          electronsTransferred: state.electronsTransferred,
+          requireSimplestRatio: effectiveConfig.requireSimplestRatio,
+        });
+        const maxTransferable = liveIonic.maxTransferableElectrons;
         const transferComplete =
           state.electronsTransferred > 0 &&
-          state.electronsTransferred === eLostNeeded &&
-          eLostNeeded === eGainedNeeded;
+          state.electronsTransferred === liveIonic.electronsAvailableFromMetals &&
+          liveIonic.isChargeBalanced;
+
+        const updateIonicCounts = (nextCat: number, nextAn: number) => {
+          const nextMax = Math.min(nextCat * catCharge, nextAn * Math.abs(anCharge));
+          commit((p) => ({
+            ...p,
+            cationCount: nextCat,
+            anionCount: nextAn,
+            electronsTransferred: Math.min(p.electronsTransferred, nextMax),
+          }));
+        };
 
         return (
         <div className="space-y-4">
@@ -965,20 +986,19 @@ export function AtomBondLab({
                 <button
                   type="button"
                   aria-label={`Decrease ${catSym} count`}
-                  onClick={() => commit((p) => ({ ...p, cationCount: Math.max(1, p.cationCount - 1) }))}
+                  onClick={() => updateIonicCounts(Math.max(1, state.cationCount - 1), state.anionCount)}
                   className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 font-extrabold"
                 >
                   −
                 </button>
-                <span className="w-6 text-center font-mono text-sm font-extrabold">{state.cationCount}</span>
+                <span data-ionic-cation-count className="w-6 text-center font-mono text-sm font-extrabold">
+                  {state.cationCount}
+                </span>
                 <button
                   type="button"
                   aria-label={`Increase ${catSym} count`}
                   onClick={() =>
-                    commit((p) => ({
-                      ...p,
-                      cationCount: Math.min(3, 6 - p.anionCount, p.cationCount + 1),
-                    }))
+                    updateIonicCounts(Math.min(3, 6 - state.anionCount, state.cationCount + 1), state.anionCount)
                   }
                   className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 font-extrabold"
                 >
@@ -993,20 +1013,19 @@ export function AtomBondLab({
                 <button
                   type="button"
                   aria-label={`Decrease ${anSym} count`}
-                  onClick={() => commit((p) => ({ ...p, anionCount: Math.max(1, p.anionCount - 1) }))}
+                  onClick={() => updateIonicCounts(state.cationCount, Math.max(1, state.anionCount - 1))}
                   className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 font-extrabold"
                 >
                   −
                 </button>
-                <span className="w-6 text-center font-mono text-sm font-extrabold">{state.anionCount}</span>
+                <span data-ionic-anion-count className="w-6 text-center font-mono text-sm font-extrabold">
+                  {state.anionCount}
+                </span>
                 <button
                   type="button"
                   aria-label={`Increase ${anSym} count`}
                   onClick={() =>
-                    commit((p) => ({
-                      ...p,
-                      anionCount: Math.min(3, 6 - p.cationCount, p.anionCount + 1),
-                    }))
+                    updateIonicCounts(state.cationCount, Math.min(3, 6 - state.cationCount, state.anionCount + 1))
                   }
                   className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 font-extrabold"
                 >
@@ -1016,26 +1035,36 @@ export function AtomBondLab({
             </div>
 
             <div className="flex items-center justify-between rounded-xl border border-indigo-200 bg-indigo-50/50 px-3 py-2">
-              <span className="text-xs font-bold text-indigo-900">e⁻ transferred</span>
+              <div>
+                <div className="text-xs font-bold text-indigo-900">e⁻ transferred</div>
+                <div className="text-[10px] text-indigo-700">max {maxTransferable} for ratio</div>
+              </div>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
+                  disabled={state.electronsTransferred <= 0}
                   aria-label="Decrease transferred electrons"
                   onClick={() =>
                     commit((p) => ({ ...p, electronsTransferred: Math.max(0, p.electronsTransferred - 1) }))
                   }
-                  className="min-h-[44px] min-w-[44px] rounded-lg border border-indigo-300 bg-white font-extrabold"
+                  className="min-h-[44px] min-w-[44px] rounded-lg border border-indigo-300 bg-white font-extrabold disabled:opacity-40"
                 >
                   −
                 </button>
-                <span className="w-6 text-center font-mono text-sm font-extrabold">{state.electronsTransferred}</span>
+                <span data-ionic-transferred className="w-6 text-center font-mono text-sm font-extrabold">
+                  {state.electronsTransferred}
+                </span>
                 <button
                   type="button"
+                  disabled={state.electronsTransferred >= maxTransferable}
                   aria-label="Increase transferred electrons"
                   onClick={() =>
-                    commit((p) => ({ ...p, electronsTransferred: Math.min(12, p.electronsTransferred + 1) }))
+                    commit((p) => ({
+                      ...p,
+                      electronsTransferred: Math.min(maxTransferable, p.electronsTransferred + 1),
+                    }))
                   }
-                  className="min-h-[44px] min-w-[44px] rounded-lg border border-indigo-300 bg-white font-extrabold"
+                  className="min-h-[44px] min-w-[44px] rounded-lg border border-indigo-300 bg-white font-extrabold disabled:opacity-40"
                 >
                   +
                 </button>
@@ -1043,20 +1072,27 @@ export function AtomBondLab({
             </div>
           </div>
 
-          {/* Step 2: Live Electron-Transfer Conservation & Charge Balance Readout */}
+          {/* Step 2: Live Electron-Transfer Conservation, Imbalance & Simplest Ratio Readout */}
           <div className="grid gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:grid-cols-3">
             <div>
-              <span className="text-slate-500">e⁻ to lose ({state.cationCount} × {catSym}):</span>{' '}
-              <span className="font-mono font-extrabold text-indigo-800">{eLostNeeded}</span>
+              <span className="text-slate-500">Available from {catSym}:</span>{' '}
+              <span className="font-mono font-extrabold text-indigo-800">
+                {liveIonic.electronsAvailableFromMetals} e⁻
+              </span>
             </div>
             <div>
-              <span className="text-slate-500">e⁻ to gain ({state.anionCount} × {anSym}):</span>{' '}
-              <span className="font-mono font-extrabold text-teal-800">{eGainedNeeded}</span>
+              <span className="text-slate-500">Required by {anSym}:</span>{' '}
+              <span className="font-mono font-extrabold text-teal-800">
+                {liveIonic.electronsRequiredByNonMetals} e⁻
+              </span>
             </div>
             <div>
-              <span className="text-slate-500">Transferred / Net charge:</span>{' '}
+              <span className="text-slate-500">Transferred / Imbalance:</span>{' '}
               <span className="font-mono font-extrabold text-slate-900">
-                {state.electronsTransferred} e⁻ · {netCharge > 0 ? `+${netCharge}` : netCharge}
+                {state.electronsTransferred} e⁻ ·{' '}
+                {liveIonic.remainingElectronImbalance === 0
+                  ? 'Balanced (0)'
+                  : `${liveIonic.remainingElectronImbalance > 0 ? '+' : ''}${liveIonic.remainingElectronImbalance} e⁻`}
               </span>
             </div>
           </div>
@@ -1095,7 +1131,10 @@ export function AtomBondLab({
               <span className="font-mono font-extrabold text-slate-900">
                 {formatEmpiricalFormula(catSym, state.cationCount, anSym, state.anionCount)}
               </span>{' '}
-              (extended 3D ionic lattice held by electrostatic attraction — never an isolated covalent molecule)
+              ({liveIonic.isChargeBalanced ? 'charge balanced' : `net charge ${liveIonic.netCharge > 0 ? `+${liveIonic.netCharge}` : liveIonic.netCharge}`}
+              {' · '}
+              {liveIonic.isSimplestRatio ? 'simplest whole-number ratio' : 'not simplest ratio'}
+              {' — '}extended 3D ionic lattice held by electrostatic attraction, never an isolated covalent molecule)
             </p>
           </div>
         </div>

@@ -1,0 +1,17 @@
+# GAM EDU — PCV-1 Capability-Gap Register (Updated for Refinement 3)
+
+**Date:** 2026-11-28  
+**Baseline Commit:** `3244e6ee` + Refinement 3 Final Corrections  
+**Scope:** Practical Curriculum Validation — Pilot 1 (Hydrocarbons + Basic 8 Atoms)
+
+| Gap ID | Domain / Engine | Previous Limitation (PCV-1 Initial / Ref 1–2) | Refinement 3 Resolution | Status |
+|---|---|---|---|---|
+| PCV1-GAP-01 | `atom-bond-builder: atomic-structure` | Fixed-target Carbon-12 activity rejected other elements | Open-ended `free-exploration` mode (`1.8.0`) + Periodic Table selector + 3-tier `evaluationTier` (`verified` / `unverified-consistent` / `incorrect`) + strict input bounds + Helium Group 18 duet note | **Resolved** (awaiting manual Vercel promotion & scoped capability activation) |
+| PCV1-GAP-02 | `atom-bond-builder: ionic-bonding` | Fixed single compound per activity; unconstrained transfer stepper up to 12 | Shared selectable `examples` bank (`NaCl`, `MgO`, `MgCl₂`, `CaCl₂`, `Al₂O₃`) + donor/acceptor/imbalance/impossible-transfer validation + dynamic clamping & Undo/Reset (`1.9.0`) | **Resolved** (awaiting manual Vercel promotion & scoped capability activation) |
+| PCV1-GAP-03 | `atom-bond-builder: covalent-bonding` | Single molecule per slide | Shared selectable `examples` bank (`H₂`, `O₂`, `N₂`, `H₂O`, `CO₂`, `CH₄`, `NH₃`) reusing valence/octet/formal-charge/connectivity & coordinate-bond evaluators (`1.9.0`) | **Resolved** (awaiting manual Vercel promotion & scoped capability activation) |
+| PCV1-GAP-04 | `atom-bond-builder: molecular-geometry` | Single molecule per slide | Shared selectable `examples` bank (`CH₄`, `CO₂`, `NH₃`, `H₂O`, `PCl₅`, `SF₆`) distinguishing electron-domain geometry vs molecular shape & idealised vs measured angles (`1.9.0`) | **Resolved** (awaiting manual Vercel promotion & scoped capability activation) |
+| PCV1-GAP-05 | `equation-balancer` | Fixed single equation; `maxCoefficientHardCap: 12` blocked butane complete combustion (`13 O₂`) | Shared selectable `examples` banks (complete combustion `CH₄`–`C₄H₁₀`, incomplete `CO`/`C`, cracking) + `maxCoefficientHardCap: 15` (default `12` preserved) (`1.9.0`) | **Resolved** (awaiting manual Vercel promotion & scoped capability activation) |
+| PCV1-GAP-06 | `ConstructionLabShell` | No optional sandbox exploration from guided exercises | Isolated `Explore Further` sandbox (`Escape`-to-close, focus restoration, 0 Firestore writes) + `isAssessment: true` disables exploration, hints, prediction, and example switching (`1.9.0`) | **Resolved** (awaiting manual Vercel promotion & scoped capability activation) |
+| PCV1-GAP-07 | `interactive-schema.ts` | Single coarse `productionVersion` coupled Chemistry `1.8.0`/`1.9.0` to unverified `measurement-lab 1.4.0`..`number-manipulative 1.7.0` | Scoped `productionCapabilities` inside existing `SUPPORTED_INTERACTIVE_ENGINES` registry (no second registry; shared `productionVersion` remains `1.3.0`) | **Resolved** (ready for post-promotion scoped activation) |
+| PCV1-GAP-08 | Browser / Visual Verification | Local `chromium_headless_shell-1255` unavailable on workstation | Portable CI fixtures committed; visual/mobile browser verification remains explicitly open until post-promotion live/CI browser inspection | **Open (Tracked)** |
+| PCV1-GAP-09 | Remaining 6 PCV-1 Pilot Lessons & Step 5G+ | Deferred during Refinement 3 | Held cleanly at stop point per owner instruction | **Deferred (Planned)** |

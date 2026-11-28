@@ -43,6 +43,8 @@ export interface ConstructionLabShellProps {
    */
   exploreFurtherTitle?: string;
   disableExploreFurther?: boolean;
+  /** Marks formal assessment mode: disables Explore Further, hides hints, and hides prediction scaffolding. */
+  isAssessment?: boolean;
   renderExploreFurther?: (onClose: () => void) => React.ReactNode;
   children: React.ReactNode;
 }
@@ -72,6 +74,7 @@ export function ConstructionLabShell({
   feedback,
   exploreFurtherTitle = 'Explore Further',
   disableExploreFurther = false,
+  isAssessment = false,
   renderExploreFurther,
   children,
 }: ConstructionLabShellProps) {
@@ -82,7 +85,9 @@ export function ConstructionLabShell({
   const exploreTriggerRef = useRef<HTMLButtonElement | null>(null);
   const exploreCloseRef = useRef<HTMLButtonElement | null>(null);
 
-  const canExploreFurther = Boolean(renderExploreFurther) && !disableExploreFurther;
+  const canExploreFurther = Boolean(renderExploreFurther) && !disableExploreFurther && !isAssessment;
+  const effectivePrediction = isAssessment ? undefined : prediction;
+  const effectiveHints = isAssessment ? undefined : hints;
 
   useEffect(() => {
     if (!exploreOpen) return;
@@ -102,7 +107,7 @@ export function ConstructionLabShell({
     setTimeout(() => exploreTriggerRef.current?.focus(), 0);
   };
 
-  const predCorrect = Boolean(prediction && predChecked && predPick === prediction.correctIndex);
+  const predCorrect = Boolean(effectivePrediction && predChecked && predPick === effectivePrediction.correctIndex);
   const resolvedTone: 'verified' | 'unverified' | 'error' | null = feedback
     ? feedback.tone ?? (feedback.passed ? 'verified' : 'error')
     : null;
@@ -164,14 +169,14 @@ export function ConstructionLabShell({
       </div>
 
       {/* Optional Non-Blocking Prediction-Before-Construction Prompt */}
-      {prediction && (
+      {effectivePrediction && (
         <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs">
           <p className="font-extrabold uppercase tracking-wide text-amber-800">
             Predict before constructing (optional)
           </p>
-          <p className="mt-1 font-semibold text-slate-900">{prediction.prompt}</p>
+          <p className="mt-1 font-semibold text-slate-900">{effectivePrediction.prompt}</p>
           <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
-            {prediction.options.map((opt, idx) => (
+            {effectivePrediction.options.map((opt, idx) => (
               <button
                 key={idx}
                 type="button"
@@ -206,7 +211,7 @@ export function ConstructionLabShell({
                 className={`font-semibold ${predCorrect ? 'text-emerald-800' : 'text-rose-800'}`}
               >
                 {predCorrect ? 'Spot on! ' : 'Good hypothesis — '}
-                {prediction.explanation}
+                {effectivePrediction.explanation}
               </span>
             )}
           </div>
@@ -312,7 +317,7 @@ export function ConstructionLabShell({
           <strong>Model note:</strong> {modelNote}
         </p>
       )}
-      {hints && hints.length > 0 && (
+      {effectiveHints && effectiveHints.length > 0 && (
         <div className="mt-2">
           <button
             type="button"
@@ -325,7 +330,7 @@ export function ConstructionLabShell({
           </button>
           {showHints && (
             <ul className="mt-1.5 list-disc space-y-1 rounded-xl border border-indigo-200 bg-indigo-50/60 py-2 pl-6 pr-3 text-xs text-indigo-950">
-              {hints.map((h, i) => (
+              {effectiveHints.map((h, i) => (
                 <li key={i}>{h}</li>
               ))}
             </ul>

@@ -49,14 +49,13 @@ All approved Refinement 3 capabilities were implemented inside the existing `con
 
 ---
 
-## 2. Verification Results
+## 2. Verification Results (Final Corrections)
 
-- **Vitest Enrichment & Construction-Lab Regression:** **27 / 27 files passed (281 / 281 tests passed, 0 failed)**, including new `pcv1-refinement3-playgrounds.test.tsx` (11 tests).
+- **Portable Enriched Lesson & Refinement 3 Suite (`pcv1-refinement3-playgrounds.test.tsx`):** **12 / 12 passed** using portable repository-relative fixtures (`src/lib/narrated-lessons/__fixtures__/pcv1-refinement3/`) with zero conditional `existsSync` skips; validates both actual enriched lessons (dev pass, pre-activation prod fail, scoped activation pass), all 5 ionic compounds (`NaCl`, `MgO`, `MgCl₂`, `CaCl₂`, `Al₂O₃`) + donor/acceptor/imbalance/impossible-transfer rejection + UI clamping/Undo/Reset, genuine valid pilot fixtures for Measurement `1.4.0` / Data Stats `1.5.0` / Geometry `1.6.0` / Number Manipulative `1.7.0` remaining blocked after scoped Chemistry activation, version-omission bypass prevention, Explore Further state isolation across all 4 interfaces (`ionic`, `covalent`, `molecular-geometry`, `equation-balancer`), and `isAssessment: true` protection (disables Explore Further, hints, prediction, and example switching).
+- **Complete Repository Vitest Suite (`npx vitest run`):** **103 / 103 test files passed (3,889 / 3,889 tests passed, 0 test assertion failures)** (note: 2 Vitest worker RPC `onTaskUpdate` timeout messages occurred only while running concurrently with `npm run build` on the same workstation; all 103 test files and 3,889 assertions passed).
 - **TypeScript Ratchet (`node scripts/audit/tsc-report.mjs --ratchet`):** **351 <= 351 (PASS, 0 new errors)**.
 - **Lockfile Sync (`node scripts/audit/check-lockfile-sync.mjs`):** **OK (1,301 installed packages match `package-lock.json`)**.
 - **Production Build (`npm run build`):** **Exit 0 (`156/156` static pages)**.
   - Shared First Load JS: **`103 kB`** (unchanged from `103 kB` baseline)
-  - `/narrated-lessons/[lessonId]` First Load JS: **`258 kB`** (`2.07 kB` route; +1 kB over `257 kB` baseline)
-  - `/narrated-lessons/atom-bond-pilot-preview`: `629 B` / `254 kB`
-  - `/narrated-lessons/construction-lab-pilot-preview`: `625 B` / `254 kB`
-- **Local Browser / Playwright Note:** Local Chromium headless shell binary (`chromium_headless_shell-1255`) remains uninstalled on this workstation; browser visual inspection is therefore not claimed and remains pending manual verification after Vercel preview/production promotion.
+  - `/narrated-lessons/[lessonId]` First Load JS: **`259 kB`** (`2.07 kB` route)
+- **Local Browser / Playwright Note:** Local Chromium headless shell binary (`chromium_headless_shell-1255`) remains uninstalled on this workstation; browser visual inspection is therefore not claimed and remains pending CI / post-promotion verification.

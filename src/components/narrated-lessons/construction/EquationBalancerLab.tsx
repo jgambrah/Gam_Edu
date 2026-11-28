@@ -23,7 +23,7 @@ export function EquationBalancerLab({
   config: EquationBalancerConstructionConfig;
   isSandbox?: boolean;
 }) {
-  const examples = config.examples && config.examples.length > 0 ? config.examples : null;
+  const examples = !config.isAssessment && config.examples && config.examples.length > 0 ? config.examples : null;
   const [exampleIdx, setExampleIdx] = useState<number>(0);
   const [completedExamples, setCompletedExamples] = useState<Record<number, boolean>>({});
   const activeExample = examples ? examples[Math.min(exampleIdx, examples.length - 1)] : null;
@@ -191,6 +191,7 @@ export function EquationBalancerLab({
           : null
       }
       disableExploreFurther={isSandbox || Boolean(config.isAssessment) || !config.exploreFurther}
+      isAssessment={Boolean(config.isAssessment)}
       renderExploreFurther={
         !isSandbox && config.exploreFurther && !config.isAssessment
           ? () => <EquationBalancerLab config={config} isSandbox />

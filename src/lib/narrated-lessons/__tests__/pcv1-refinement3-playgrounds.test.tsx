@@ -6,6 +6,7 @@ import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import fs from 'node:fs';
+import path from 'node:path';
 import { AtomBondLab } from '@/components/narrated-lessons/construction/AtomBondLab';
 import { EquationBalancerLab } from '@/components/narrated-lessons/construction/EquationBalancerLab';
 import {
@@ -22,11 +23,56 @@ import {
   validateSlideInteractiveConfig,
   type AtomBondBuilderConstructionConfig,
   type EquationBalancerConstructionConfig,
+  type InteractiveEngineId,
+  type InteractiveEngineMeta,
 } from '@/lib/narrated-lessons/interactive-schema';
+import type { NarratedLesson } from '@/lib/narrated-lessons/types';
+
+function loadRepoJson<T>(relativePath: string): T {
+  const fullPath = path.resolve(process.cwd(), relativePath);
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Required portable test fixture missing: ${relativePath} (${fullPath})`);
+  }
+  return JSON.parse(fs.readFileSync(fullPath, 'utf8')) as T;
+}
+
+const B8_REF3_LESSON = loadRepoJson<NarratedLesson>(
+  'src/lib/narrated-lessons/__fixtures__/pcv1-refinement3/b8-sci-t1-atoms-and-the-periodic-table.refinement3-v1.9.0.json',
+);
+const HC_REF3_LESSON = loadRepoJson<NarratedLesson>(
+  'src/lib/narrated-lessons/__fixtures__/pcv1-refinement3/cambridge-as-a-level-chemistry-hydrocarbons.refinement3-v1.9.0.json',
+);
+
+function getSlideActivity<T>(lesson: NarratedLesson, slideId: string, activityId: string): T {
+  const slide = lesson.slides.find((s) => s.id === slideId);
+  if (!slide || !slide.interactive) {
+    throw new Error(`Missing slide ${slideId} or interactive in ${lesson.lessonId}`);
+  }
+  const list = Array.isArray(slide.interactive) ? slide.interactive : [slide.interactive];
+  const found = list.find((a) => a.id === activityId);
+  if (!found) {
+    throw new Error(`Missing activity ${activityId} on slide ${slideId} in ${lesson.lessonId}`);
+  }
+  return found as unknown as T;
+}
+
+function makeScopedChemistryActivatedRegistry(): Record<InteractiveEngineId, InteractiveEngineMeta> {
+  return {
+    ...SUPPORTED_INTERACTIVE_ENGINES,
+    'construction-lab': {
+      ...SUPPORTED_INTERACTIVE_ENGINES['construction-lab'],
+      productionVersion: '1.3.0',
+      productionCapabilities: {
+        ...SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionCapabilities,
+        'construction-lab:atom-bond-builder': '1.9.0',
+        'construction-lab:equation-balancer': '1.9.0',
+      },
+    },
+  };
+}
 
 describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
   it('never certifies unsupported ions as verified ground-state configs in shells mode', () => {
-    // Carbon 2+ (6p, 6n, 4e -> [2, 2, 0, 0]): simplified filling matches 4e, but C2+ is NOT a supported ion
     const res = evaluateFreeAtomicExploration({
       protons: 6,
       neutrons: 6,
@@ -44,7 +90,7 @@ describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
   it('distinguishes verified vs unverified-consistent (unlisted isotope) vs incorrect in both model and UI', () => {
     const unverifiedIso = evaluateFreeAtomicExploration({
       protons: 6,
-      neutrons: 14, // C-20 (unlisted isotope)
+      neutrons: 14,
       representation: 'shells',
       shells: [2, 4, 0, 0],
       maxZ: 20,
@@ -96,7 +142,6 @@ describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
   });
 
   it('enforces strict input validation in both evaluateFreeAtomicExploration and evaluateAtomicConstruction', () => {
-    // Bad representation
     expect(
       evaluateFreeAtomicExploration({
         protons: 6,
@@ -106,7 +151,6 @@ describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
       }).status,
     ).toBe('invalid-input');
 
-    // Out-of-bounds maxZ
     expect(
       evaluateFreeAtomicExploration({
         protons: 6,
@@ -117,7 +161,6 @@ describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
       }).status,
     ).toBe('invalid-input');
 
-    // Wrong shell array length
     expect(
       evaluateAtomicConstruction({
         targetElement: 'C',
@@ -130,7 +173,6 @@ describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
       }).passed,
     ).toBe(false);
 
-    // Unknown subshell key
     expect(
       evaluateAtomicConstruction({
         targetElement: 'C',
@@ -139,23 +181,32 @@ describe('PCV-1 Refinement 3: Atomic Scientific Validation (Section 3)', () => {
         representation: 'subshells',
         protons: 6,
         neutrons: 6,
-        subshells: { '1s': 2, '2s': 2, '2p': 2, '3s': 0, '3p': 0, '4s': 0, '3d': 0, '4p': 0 } as unknown as Record<'1s' | '2s' | '2p' | '3s' | '3p' | '4s' | '3d', number>,
+        subshells: {
+          '1s': 2,
+          '2s': 2,
+          '2p': 2,
+          '3s': 0,
+          '3p': 0,
+          '4s': 0,
+          '3d': 0,
+          '4p': 0,
+        } as unknown as Record<'1s' | '2s' | '2p' | '3s' | '3p' | '4s' | '3d', number>,
       }).passed,
     ).toBe(false);
   });
 });
 
-describe('PCV-1 Refinement 3: Dynamic Playgrounds, Explore Further & Capability Gate', () => {
-  it('supports selectable Ionic Bonding bank (NaCl, MgO, MgCl2, CaCl2, Al2O3) and rejects non-simplest/unconserved transfer', () => {
-    const ionicCases = [
+describe('PCV-1 Refinement 3: Strengthened Ionic Electron-Transfer Validation', () => {
+  it('validates all five ionic compounds (NaCl, MgO, MgCl2, CaCl2, Al2O3) and distinguishes donor/acceptor/imbalance metrics', () => {
+    const cases = [
       { c: 'Na', a: 'Cl', cc: 1, ac: 1, cq: 1, aq: -1, e: 1 },
       { c: 'Mg', a: 'O', cc: 1, ac: 1, cq: 2, aq: -2, e: 2 },
       { c: 'Mg', a: 'Cl', cc: 1, ac: 2, cq: 2, aq: -1, e: 2 },
       { c: 'Ca', a: 'Cl', cc: 1, ac: 2, cq: 2, aq: -1, e: 2 },
       { c: 'Al', a: 'O', cc: 2, ac: 3, cq: 3, aq: -2, e: 6 },
     ];
-    for (const tc of ionicCases) {
-      const ok = evaluateIonicBonding({
+    for (const tc of cases) {
+      const res = evaluateIonicBonding({
         cationElement: tc.c,
         anionElement: tc.a,
         targetCationCount: tc.cc,
@@ -167,27 +218,330 @@ describe('PCV-1 Refinement 3: Dynamic Playgrounds, Explore Further & Capability 
         electronsTransferred: tc.e,
         requireSimplestRatio: true,
       });
-      expect(ok.passed).toBe(true);
+      expect(res.passed).toBe(true);
+      expect(res.electronsAvailableFromMetals).toBe(tc.e);
+      expect(res.electronsRequiredByNonMetals).toBe(tc.e);
+      expect(res.maxTransferableElectrons).toBe(tc.e);
+      expect(res.remainingElectronImbalance).toBe(0);
+      expect(res.remainingDonorElectrons).toBe(0);
+      expect(res.remainingAcceptorDemand).toBe(0);
+      expect(res.isChargeBalanced).toBe(true);
+      expect(res.isSimplestRatio).toBe(true);
+      expect(res.isImpossibleTransfer).toBe(false);
+      expect(res.feedback).toMatch(/extended ionic lattice, not an isolated molecule/i);
     }
-    // Reject non-simplest ratio Na2Cl2
-    expect(
-      evaluateIonicBonding({
-        cationElement: 'Na',
-        anionElement: 'Cl',
-        targetCationCount: 1,
-        targetAnionCount: 1,
-        targetCationCharge: 1,
-        targetAnionCharge: -1,
-        cationCount: 2,
-        anionCount: 2,
-        electronsTransferred: 2,
-        requireSimplestRatio: true,
-      }).passed,
-    ).toBe(false);
   });
 
-  it('supports selectable Covalent bank (H2, O2, N2, H2O, CO2, CH4, NH3) and rejects invalid structures', () => {
-    // N2 triple bond + 1 LP each passes
+  it('rejects impossible excess transfer, insufficient transfer, incorrect ratios, and non-simplest ratios', () => {
+    // Incorrect ratio: 1 Mg (+2) + 1 Cl (-1) -> donor available = 2, acceptor required = 1, maxTransferable = 1, imbalance = +1
+    const badRatio = evaluateIonicBonding({
+      cationElement: 'Mg',
+      anionElement: 'Cl',
+      targetCationCount: 1,
+      targetAnionCount: 2,
+      targetCationCharge: 2,
+      targetAnionCharge: -1,
+      cationCount: 1,
+      anionCount: 1,
+      electronsTransferred: 1,
+      requireSimplestRatio: true,
+    });
+    expect(badRatio.passed).toBe(false);
+    expect(badRatio.electronsAvailableFromMetals).toBe(2);
+    expect(badRatio.electronsRequiredByNonMetals).toBe(1);
+    expect(badRatio.maxTransferableElectrons).toBe(1);
+    expect(badRatio.remainingElectronImbalance).toBe(1);
+    expect(badRatio.isChargeBalanced).toBe(false);
+    expect(badRatio.isImpossibleTransfer).toBe(false);
+
+    // Impossible excess transfer: trying to transfer 2 electrons into 1 Cl atom (can accept at most 1)
+    const impossibleExcess = evaluateIonicBonding({
+      cationElement: 'Mg',
+      anionElement: 'Cl',
+      targetCationCount: 1,
+      targetAnionCount: 2,
+      targetCationCharge: 2,
+      targetAnionCharge: -1,
+      cationCount: 1,
+      anionCount: 1,
+      electronsTransferred: 2,
+      requireSimplestRatio: true,
+    });
+    expect(impossibleExcess.passed).toBe(false);
+    expect(impossibleExcess.isImpossibleTransfer).toBe(true);
+    expect(impossibleExcess.feedback).toMatch(/Impossible electron transfer/i);
+
+    // Insufficient transfer on balanced Al2O3 (6 required, only 4 transferred)
+    const insufficient = evaluateIonicBonding({
+      cationElement: 'Al',
+      anionElement: 'O',
+      targetCationCount: 2,
+      targetAnionCount: 3,
+      targetCationCharge: 3,
+      targetAnionCharge: -2,
+      cationCount: 2,
+      anionCount: 3,
+      electronsTransferred: 4,
+      requireSimplestRatio: true,
+    });
+    expect(insufficient.passed).toBe(false);
+    expect(insufficient.isChargeBalanced).toBe(true);
+    expect(insufficient.isSimplestRatio).toBe(true);
+    expect(insufficient.remainingDonorElectrons).toBe(2);
+
+    // Non-simplest ratio Na2Cl2
+    const nonSimplest = evaluateIonicBonding({
+      cationElement: 'Na',
+      anionElement: 'Cl',
+      targetCationCount: 1,
+      targetAnionCount: 1,
+      targetCationCharge: 1,
+      targetAnionCharge: -1,
+      cationCount: 2,
+      anionCount: 2,
+      electronsTransferred: 2,
+      requireSimplestRatio: true,
+    });
+    expect(nonSimplest.passed).toBe(false);
+    expect(nonSimplest.isChargeBalanced).toBe(true);
+    expect(nonSimplest.isSimplestRatio).toBe(false);
+  });
+
+  it('constrains transfer control to max(donor, acceptor), clamps on atom-count reduction, and supports Undo/Reset in actual Basic 8 s23 UI', () => {
+    const ionicCfg = getSlideActivity<AtomBondBuilderConstructionConfig>(
+      B8_REF3_LESSON,
+      's23',
+      'b8-s23-ionic-playground',
+    );
+    const { container } = render(<AtomBondLab config={ionicCfg} />);
+
+    // Select MgCl2 (1:2)
+    fireEvent.click(screen.getByRole('tab', { name: /MgCl₂/i }));
+    // Initially 1 Mg + 1 Cl -> max transferable is 1 (NOT 12!)
+    const incTransfer = screen.getByRole('button', { name: /Increase transferred electrons/i });
+    fireEvent.click(incTransfer);
+    expect(container.querySelector('[data-ionic-transferred]')?.textContent).toBe('1');
+    expect((incTransfer as HTMLButtonElement).disabled).toBe(true);
+
+    // Add 2nd Cl -> max transferable becomes 2; transfer 2nd electron -> verified!
+    fireEvent.click(screen.getByRole('button', { name: /Increase Cl count/i }));
+    expect((incTransfer as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(incTransfer);
+    expect(container.querySelector('[data-ionic-transferred]')?.textContent).toBe('2');
+
+    // Now reduce Cl back to 1 -> transferred electrons MUST automatically clamp from 2 down to 1!
+    fireEvent.click(screen.getByRole('button', { name: /Decrease Cl count/i }));
+    expect(container.querySelector('[data-ionic-anion-count]')?.textContent).toBe('1');
+    expect(container.querySelector('[data-ionic-transferred]')?.textContent).toBe('1');
+
+    // Undo restores 2 Cl AND 2 transferred electrons!
+    fireEvent.click(screen.getByRole('button', { name: /Undo last change/i }));
+    expect(container.querySelector('[data-ionic-anion-count]')?.textContent).toBe('2');
+    expect(container.querySelector('[data-ionic-transferred]')?.textContent).toBe('2');
+
+    // Check passes with ionic lattice wording
+    fireEvent.click(screen.getByRole('button', { name: /Check ionic bonding/i }));
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('passed');
+
+    // Reset returns to 1 Mg, 1 Cl, 0 transferred
+    fireEvent.click(screen.getByRole('button', { name: /Reset construction/i }));
+    expect(container.querySelector('[data-ionic-cation-count]')?.textContent).toBe('1');
+    expect(container.querySelector('[data-ionic-anion-count]')?.textContent).toBe('1');
+    expect(container.querySelector('[data-ionic-transferred]')?.textContent).toBe('0');
+  });
+});
+
+describe('PCV-1 Refinement 3: Portable Actual Enriched Lesson Validation & Capability-Level Gate', () => {
+  it('validates both actual enriched Refinement 3 lesson JSONs (dev passes, pre-activation prod fails, scoped activation passes)', () => {
+    expect(B8_REF3_LESSON.slides.length).toBe(26);
+    expect(HC_REF3_LESSON.slides.length).toBe(71);
+
+    // Dev gate passes
+    expect(() => assertValidLessonInteractives(B8_REF3_LESSON, { allowDevOnlyEngines: true })).not.toThrow();
+    expect(() => assertValidLessonInteractives(HC_REF3_LESSON, { allowDevOnlyEngines: true })).not.toThrow();
+
+    // Strict pre-activation production gate MUST reject both (capabilities held at 1.2.0 / 1.1.0 until Vercel promotion)
+    expect(() => assertValidLessonInteractives(B8_REF3_LESSON, { allowDevOnlyEngines: false })).toThrow();
+    expect(() => assertValidLessonInteractives(HC_REF3_LESSON, { allowDevOnlyEngines: false })).toThrow();
+
+    // Scoped post-promotion capability activation (atom-bond-builder: 1.9.0, equation-balancer: 1.9.0; shared productionVersion stays 1.3.0)
+    const activatedRegistry = makeScopedChemistryActivatedRegistry();
+    expect(activatedRegistry['construction-lab'].productionVersion).toBe('1.3.0');
+    expect(() =>
+      assertValidLessonInteractives(B8_REF3_LESSON, {
+        allowDevOnlyEngines: false,
+        engineRegistry: activatedRegistry,
+      }),
+    ).not.toThrow();
+    expect(() =>
+      assertValidLessonInteractives(HC_REF3_LESSON, {
+        allowDevOnlyEngines: false,
+        engineRegistry: activatedRegistry,
+      }),
+    ).not.toThrow();
+  });
+
+  it('keeps genuine valid Measurement (1.4.0), Data Stats (1.5.0), Geometry (1.6.0), and Number Manipulative (1.7.0) pilots blocked even after Chemistry capability activation, while preserving 1.1.0-1.3.0 production compatibility and blocking version-omission bypasses', () => {
+    const activatedRegistry = makeScopedChemistryActivatedRegistry();
+
+    const step5cMeasurement = loadRepoJson<NarratedLesson>('public/preview-fixtures/step5c-measurement-lab-pilot.json');
+    const step5dDataStats = loadRepoJson<NarratedLesson>('public/preview-fixtures/step5d-data-stats-pilot.json');
+    const step5eGeometry = loadRepoJson<NarratedLesson>('public/preview-fixtures/step5e-geometry-extensions-pilot.json');
+    const step5fNumbers = loadRepoJson<NarratedLesson>('public/preview-fixtures/step5f-number-manipulatives-pilot.json');
+    const step4dProd = loadRepoJson<NarratedLesson>('public/preview-fixtures/step4d-construction-lab-pilot.json');
+    const step4eProd = loadRepoJson<NarratedLesson>('public/preview-fixtures/step4e-atom-bond-pilot.json');
+
+    // First prove all 4 unactivated fixtures are genuinely valid under dev gate (not malformed!)
+    expect(() => assertValidLessonInteractives(step5cMeasurement, { allowDevOnlyEngines: true })).not.toThrow();
+    expect(() => assertValidLessonInteractives(step5dDataStats, { allowDevOnlyEngines: true })).not.toThrow();
+    expect(() => assertValidLessonInteractives(step5eGeometry, { allowDevOnlyEngines: true })).not.toThrow();
+    expect(() => assertValidLessonInteractives(step5fNumbers, { allowDevOnlyEngines: true })).not.toThrow();
+
+    // All 4 MUST remain blocked under strict production gate even when Chemistry 1.9.0 capabilities are activated!
+    expect(() =>
+      assertValidLessonInteractives(step5cMeasurement, { allowDevOnlyEngines: false, engineRegistry: activatedRegistry }),
+    ).toThrow(/exceeds productionVersion/i);
+    expect(() =>
+      assertValidLessonInteractives(step5dDataStats, { allowDevOnlyEngines: false, engineRegistry: activatedRegistry }),
+    ).toThrow(/exceeds productionVersion/i);
+    expect(() =>
+      assertValidLessonInteractives(step5eGeometry, { allowDevOnlyEngines: false, engineRegistry: activatedRegistry }),
+    ).toThrow(/exceeds productionVersion/i);
+    expect(() =>
+      assertValidLessonInteractives(step5fNumbers, { allowDevOnlyEngines: false, engineRegistry: activatedRegistry }),
+    ).toThrow(/exceeds productionVersion/i);
+
+    // Existing production-compatible lessons remain valid under both default and scoped-activated registries
+    expect(() => assertValidLessonInteractives(step4dProd, { allowDevOnlyEngines: false })).not.toThrow();
+    expect(() => assertValidLessonInteractives(step4eProd, { allowDevOnlyEngines: false })).not.toThrow();
+    expect(() =>
+      assertValidLessonInteractives(step4dProd, { allowDevOnlyEngines: false, engineRegistry: activatedRegistry }),
+    ).not.toThrow();
+    expect(() =>
+      assertValidLessonInteractives(step4eProd, { allowDevOnlyEngines: false, engineRegistry: activatedRegistry }),
+    ).not.toThrow();
+
+    // Omitting or understating minEngineVersion CANNOT bypass the 1.9.0 capability gate
+    const actualIonic = getSlideActivity<AtomBondBuilderConstructionConfig>(
+      B8_REF3_LESSON,
+      's23',
+      'b8-s23-ionic-playground',
+    );
+    const { minEngineVersion: _omitted, ...withoutMin } = actualIonic;
+    expect(validateSlideInteractiveConfig(withoutMin, { requireProduction: true }).ok).toBe(false);
+    expect(validateSlideInteractiveConfig({ ...actualIonic, minEngineVersion: '1.2.0' }, { requireProduction: true }).ok).toBe(false);
+
+    const actualEq = getSlideActivity<EquationBalancerConstructionConfig>(
+      HC_REF3_LESSON,
+      'c01',
+      'hc-c01-complete-combustion-playground',
+    );
+    expect(validateSlideInteractiveConfig({ ...actualEq, minEngineVersion: '1.1.0' }, { requireProduction: true }).ok).toBe(false);
+  });
+});
+
+describe('PCV-1 Refinement 3: Explore Further Isolation Across All 4 Interfaces & Formal Assessment Protection', () => {
+  it('isolates state, feedback, selected example, and Undo history across Ionic, Covalent, Molecular Geometry, and Equation Balancer interfaces', () => {
+    // 1. IONIC (from actual Basic 8 s23)
+    const ionicCfg = getSlideActivity<AtomBondBuilderConstructionConfig>(B8_REF3_LESSON, 's23', 'b8-s23-ionic-playground');
+    const ionicView = render(<AtomBondLab config={ionicCfg} />);
+    fireEvent.click(screen.getByRole('tab', { name: /MgO/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Increase transferred electrons/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Check ionic bonding/i }));
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    const ionicTrigger = screen.getByRole('button', { name: /Explore Further/i });
+    fireEvent.click(ionicTrigger);
+    const ionicPanel = screen.getByRole('region', { name: /Explore Further sandbox/i });
+    fireEvent.click(within(ionicPanel).getByRole('tab', { name: /Al₂O₃/i }));
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('region', { name: /Explore Further sandbox/i })).toBeNull();
+    // Parent preserved: still MgO, 1 e- transferred, feedback intact, Undo works!
+    expect(screen.getByRole('tab', { name: /MgO/i }).getAttribute('aria-selected')).toBe('true');
+    expect(ionicView.container.querySelector('[data-ionic-transferred]')?.textContent).toBe('1');
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    fireEvent.click(screen.getByRole('button', { name: /Undo last change/i }));
+    expect(ionicView.container.querySelector('[data-ionic-transferred]')?.textContent).toBe('0');
+    ionicView.unmount();
+
+    // 2. COVALENT (from actual Basic 8 s25)
+    const covCfg = getSlideActivity<AtomBondBuilderConstructionConfig>(B8_REF3_LESSON, 's25', 'b8-s25-covalent-playground');
+    const covView = render(<AtomBondLab config={covCfg} />);
+    fireEvent.click(screen.getByRole('tab', { name: /^N₂/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Cycle Bond/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Check covalent structure/i }));
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    fireEvent.click(screen.getByRole('button', { name: /Explore Further/i }));
+    const covPanel = screen.getByRole('region', { name: /Explore Further sandbox/i });
+    fireEvent.click(within(covPanel).getByRole('tab', { name: /H₂O/i }));
+    fireEvent.click(within(covPanel).getByRole('button', { name: /Return to exercise/i }));
+    expect(screen.queryByRole('region', { name: /Explore Further sandbox/i })).toBeNull();
+    expect(screen.getByRole('tab', { name: /^N₂/i }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    covView.unmount();
+
+    // 3. MOLECULAR GEOMETRY (from actual Hydrocarbons a06)
+    const vseprCfg = getSlideActivity<AtomBondBuilderConstructionConfig>(HC_REF3_LESSON, 'a06', 'hc-a06-vsepr-playground');
+    const vseprView = render(<AtomBondLab config={vseprCfg} />);
+    fireEvent.click(screen.getByRole('tab', { name: /NH₃/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Increase bonding domains/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Check geometry & polarity/i }));
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    fireEvent.click(screen.getByRole('button', { name: /Explore Further/i }));
+    const vseprPanel = screen.getByRole('region', { name: /Explore Further sandbox/i });
+    fireEvent.click(within(vseprPanel).getByRole('tab', { name: /SF₆/i }));
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.getByRole('tab', { name: /NH₃/i }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    vseprView.unmount();
+
+    // 4. EQUATION BALANCER (from actual Hydrocarbons c01, including Butane)
+    const eqCfg = getSlideActivity<EquationBalancerConstructionConfig>(HC_REF3_LESSON, 'c01', 'hc-c01-complete-combustion-playground');
+    const eqView = render(<EquationBalancerLab config={eqCfg} />);
+    fireEvent.click(screen.getByRole('tab', { name: /Propane/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Increase coefficient for O₂/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Check equation balance/i }));
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    fireEvent.click(screen.getByRole('button', { name: /Explore Further/i }));
+    const eqPanel = screen.getByRole('region', { name: /Explore Further sandbox/i });
+    fireEvent.click(within(eqPanel).getByRole('tab', { name: /Butane/i }));
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.getByRole('tab', { name: /Propane/i }).getAttribute('aria-selected')).toBe('true');
+    expect(eqView.container.querySelector('[data-coeff-value="reactants-1"]')?.textContent).toBe('2');
+    expect(screen.getByRole('status').getAttribute('data-construction-feedback')).toBe('needs-work');
+    // Undo steps back O2 coefficient to 1!
+    fireEvent.click(screen.getByRole('button', { name: /Undo last change/i }));
+    expect(eqView.container.querySelector('[data-coeff-value="reactants-1"]')?.textContent).toBe('1');
+    eqView.unmount();
+  });
+
+  it('blocks Explore Further, hints, prediction scaffolding, and example switching when isAssessment is true', () => {
+    const eqCfg = getSlideActivity<EquationBalancerConstructionConfig>(HC_REF3_LESSON, 'c01', 'hc-c01-complete-combustion-playground');
+    render(
+      <EquationBalancerLab
+        config={{
+          ...eqCfg,
+          id: 'formal-assessment-eq',
+          isAssessment: true,
+          exploreFurther: true,
+          hints: ['Should be hidden in formal assessment'],
+        }}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: /Explore Further/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Need a hint/i })).toBeNull();
+    expect(screen.queryByRole('tablist')).toBeNull();
+  });
+
+  it('verifies butane stoichiometry (2C4H10 + 13O2 -> 8CO2 + 10H2O), covalent N2 triple bond, and VSEPR SF6', () => {
+    const butane = evaluateEquationBalance(
+      [{ formula: 'C4H10' }, { formula: 'O2' }],
+      [{ formula: 'CO2' }, { formula: 'H2O' }],
+      [2, 13],
+      [8, 10],
+      { requireSimplestRatio: true, maxCoefficient: 15 },
+    );
+    expect(butane.ok && butane.isBalanced && butane.isSimplestRatio).toBe(true);
+
     const n2Ok = evaluateCovalentBonding({
       atoms: [
         { id: 'N1', element: 'N', xPct: 30, yPct: 50 },
@@ -201,22 +555,6 @@ describe('PCV-1 Refinement 3: Dynamic Playgrounds, Explore Further & Capability 
     });
     expect(n2Ok.passed).toBe(true);
 
-    // N2 with single bond fails
-    const n2Bad = evaluateCovalentBonding({
-      atoms: [
-        { id: 'N1', element: 'N', xPct: 30, yPct: 50 },
-        { id: 'N2', element: 'N', xPct: 70, yPct: 50 },
-      ],
-      bonds: [{ from: 'N1', to: 'N2', order: 1 }],
-      lonePairsByAtom: { N1: 1, N2: 1 },
-      netCharge: 0,
-      octetPolicy: 'strict-duet-octet',
-      referenceBonds: [{ from: 'N1', to: 'N2', order: 3 }],
-    });
-    expect(n2Bad.passed).toBe(false);
-  });
-
-  it('supports selectable VSEPR bank (CO2, CH4, NH3, H2O, PCl5, SF6)', () => {
     const sf6 = evaluateVseprConstruction({
       moleculeFormula: 'SF₆',
       centralElement: 'S',
@@ -234,181 +572,5 @@ describe('PCV-1 Refinement 3: Dynamic Playgrounds, Explore Further & Capability 
       selectedPolarity: 'non-polar',
     });
     expect(sf6.passed).toBe(true);
-  });
-
-  it('supports selectable Equation Balancer bank including butane (2C4H10 + 13O2 -> 8CO2 + 10H2O) and Explore Further state isolation', () => {
-    // Verify butane stoichiometry with maxCoefficient 15
-    const butane = evaluateEquationBalance(
-      [{ formula: 'C4H10' }, { formula: 'O2' }],
-      [{ formula: 'CO2' }, { formula: 'H2O' }],
-      [2, 13],
-      [8, 10],
-      { requireSimplestRatio: true, maxCoefficient: 15 },
-    );
-    expect(butane.ok).toBe(true);
-    expect(butane.isBalanced).toBe(true);
-    expect(butane.isSimplestRatio).toBe(true);
-
-    const cfg: EquationBalancerConstructionConfig = {
-      id: 'ref3-eq-explore-test',
-      engine: 'construction-lab',
-      labKind: 'equation-balancer',
-      schemaVersion: 1,
-      minEngineVersion: '1.9.0',
-      title: 'Dynamic Combustion Test',
-      instructions: 'Balance equations.',
-      accessibilityLabel: 'Dynamic combustion test',
-      fallbackText: 'CH4 + 2O2 -> CO2 + 2H2O',
-      exploreFurther: true,
-      maxCoefficient: 15,
-      reactants: [{ formula: 'CH4', display: 'CH₄' }, { formula: 'O2', display: 'O₂' }],
-      products: [{ formula: 'CO2', display: 'CO₂' }, { formula: 'H2O', display: 'H₂O' }],
-      examples: [
-        {
-          id: 'ex-ch4',
-          label: 'Methane (CH₄)',
-          reactants: [{ formula: 'CH4', display: 'CH₄' }, { formula: 'O2', display: 'O₂' }],
-          products: [{ formula: 'CO2', display: 'CO₂' }, { formula: 'H2O', display: 'H₂O' }],
-        },
-        {
-          id: 'ex-c3h8',
-          label: 'Propane (C₃H₈)',
-          reactants: [{ formula: 'C3H8', display: 'C₃H₈' }, { formula: 'O2', display: 'O₂' }],
-          products: [{ formula: 'CO2', display: 'CO₂' }, { formula: 'H2O', display: 'H₂O' }],
-        },
-      ],
-    };
-
-    render(<EquationBalancerLab config={cfg} />);
-    // Open Explore Further sandbox
-    fireEvent.click(screen.getByRole('button', { name: /Explore Further/i }));
-    const panel = screen.getByRole('region', { name: /Explore Further sandbox/i });
-    // Mutate sandbox by switching to Propane inside sandbox
-    fireEvent.click(within(panel).getByRole('tab', { name: /Propane/i }));
-    // Close via Escape
-    fireEvent.keyDown(window, { key: 'Escape' });
-    expect(screen.queryByRole('region', { name: /Explore Further sandbox/i })).toBeNull();
-    // Parent exercise remains on Methane untouched
-    expect(screen.getByRole('tab', { name: /Methane/i }).getAttribute('aria-selected')).toBe('true');
-  });
-
-  it('disables Explore Further when isAssessment is true', () => {
-    const cfg: EquationBalancerConstructionConfig = {
-      id: 'ref3-eq-assessment',
-      engine: 'construction-lab',
-      labKind: 'equation-balancer',
-      schemaVersion: 1,
-      minEngineVersion: '1.9.0',
-      title: 'Formal Exam Check',
-      instructions: 'Balance equation.',
-      accessibilityLabel: 'Formal exam check',
-      fallbackText: 'CH4 + 2O2 -> CO2 + 2H2O',
-      exploreFurther: true,
-      isAssessment: true,
-      reactants: [{ formula: 'CH4' }, { formula: 'O2' }],
-      products: [{ formula: 'CO2' }, { formula: 'H2O' }],
-    };
-    render(<EquationBalancerLab config={cfg} />);
-    expect(screen.queryByRole('button', { name: /Explore Further/i })).toBeNull();
-  });
-
-  it('enforces capability-level production activation without activating unverified sibling domains', () => {
-    const dynamicIonicCfg = {
-      id: 'gate-ionic-190',
-      engine: 'construction-lab',
-      labKind: 'atom-bond-builder',
-      mode: 'ionic-bonding',
-      curriculumLevel: 'introductory',
-      schemaVersion: 1,
-      minEngineVersion: '1.9.0',
-      title: 'Dynamic Ionic',
-      instructions: 'Explore ionic compounds.',
-      accessibilityLabel: 'Dynamic ionic',
-      fallbackText: 'NaCl',
-      cationElement: 'Na',
-      anionElement: 'Cl',
-      targetCationCount: 1,
-      targetAnionCount: 1,
-      targetCationCharge: 1,
-      targetAnionCharge: -1,
-      examples: [
-        {
-          id: 'nacl',
-          label: 'NaCl',
-          cationElement: 'Na',
-          anionElement: 'Cl',
-          targetCationCount: 1,
-          targetAnionCount: 1,
-          targetCationCharge: 1,
-          targetAnionCharge: -1,
-        },
-      ],
-    };
-
-    // 1. Before manual Vercel promotion & activation: MUST BE REJECTED under requireProduction: true
-    expect(validateSlideInteractiveConfig(dynamicIonicCfg, { requireProduction: true }).ok).toBe(false);
-
-    // 2. Simulated post-promotion capability activation for atom-bond-builder ONLY:
-    const simulatedRegistry = {
-      ...SUPPORTED_INTERACTIVE_ENGINES,
-      'construction-lab': {
-        ...SUPPORTED_INTERACTIVE_ENGINES['construction-lab'],
-        productionCapabilities: {
-          ...SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionCapabilities,
-          'construction-lab:atom-bond-builder': '1.9.0',
-        },
-      },
-    };
-    expect(
-      validateSlideInteractiveConfig(dynamicIonicCfg, {
-        requireProduction: true,
-        engineRegistry: simulatedRegistry,
-      }).ok,
-    ).toBe(true);
-
-    // Unverified sibling domain (measurement-lab 1.4.0) MUST STILL BE BLOCKED!
-    const measurementCfg = {
-      id: 'gate-meas-140',
-      engine: 'construction-lab',
-      labKind: 'measurement-lab',
-      instrument: 'ruler',
-      curriculumLevel: 'primary',
-      schemaVersion: 1,
-      minEngineVersion: '1.4.0',
-      title: 'Ruler',
-      instructions: 'Measure length.',
-      accessibilityLabel: 'Ruler',
-      fallbackText: 'Measure',
-      unit: 'cm',
-      minVal: 0,
-      maxVal: 10,
-      majorStep: 1,
-      minorStep: 0.1,
-      targetValue: 4.5,
-      tolerance: 0.1,
-    };
-    expect(
-      validateSlideInteractiveConfig(measurementCfg, {
-        requireProduction: true,
-        engineRegistry: simulatedRegistry,
-      }).ok,
-    ).toBe(false);
-  });
-
-  it('validates both actual PCV-1 Refinement 3 enriched pilot lesson JSONs', () => {
-    const base =
-      'C:/Users/DELL/.gemini/antigravity/brain/c229576f-28ea-43b0-b4c2-466e9ffcd1e3/scratch/pcv1-impl';
-    const b8Path = `${base}/b8-sci-t1-atoms-and-the-periodic-table.refinement3-v1.9.0.json`;
-    const hcPath = `${base}/cambridge-as-a-level-chemistry-hydrocarbons.refinement3-v1.9.0.json`;
-
-    if (fs.existsSync(b8Path) && fs.existsSync(hcPath)) {
-      const b8 = JSON.parse(fs.readFileSync(b8Path, 'utf8'));
-      const hc = JSON.parse(fs.readFileSync(hcPath, 'utf8'));
-      expect(() => assertValidLessonInteractives(b8, { allowDevOnlyEngines: true })).not.toThrow();
-      expect(() => assertValidLessonInteractives(hc, { allowDevOnlyEngines: true })).not.toThrow();
-      // Live production gate must still reject them BEFORE owner manual Vercel promotion!
-      expect(() => assertValidLessonInteractives(b8, { allowDevOnlyEngines: false })).toThrow();
-      expect(() => assertValidLessonInteractives(hc, { allowDevOnlyEngines: false })).toThrow();
-    }
   });
 });

@@ -63,6 +63,24 @@ export interface IonicEvaluationResult {
   passed: boolean;
   feedback: string;
   formulaBuilt: string;
+  /** Electrons available to donate from the participating metal atoms (cationCount * targetCationCharge). */
+  electronsAvailableFromMetals: number;
+  /** Electrons required by the participating non-metal atoms (anionCount * |targetAnionCharge|). */
+  electronsRequiredByNonMetals: number;
+  /** Maximum physically valid electrons transferable for the current atom counts: min(available, required). */
+  maxTransferableElectrons: number;
+  /** Actual electrons transferred by the learner. */
+  electronsTransferred: number;
+  /** Remaining electron imbalance between donor supply and acceptor demand (available - required; 0 when balanced). */
+  remainingElectronImbalance: number;
+  /** Undonated metal electrons remaining after current transfer. */
+  remainingDonorElectrons: number;
+  /** Unfilled non-metal electron slots remaining after current transfer. */
+  remainingAcceptorDemand: number;
+  isChargeBalanced: boolean;
+  isSimplestRatio: boolean;
+  isImpossibleTransfer: boolean;
+  /** Legacy aliases preserved for backwards compatibility */
   electronsNeededToLose: number;
   electronsNeededToGain: number;
   netCharge: number;
@@ -80,20 +98,48 @@ export function evaluateIonicBonding(input: IonicEvaluationInput): IonicEvaluati
     input.anionCount,
   );
 
-  const electronsNeededToLose = input.cationCount * input.targetCationCharge;
-  const electronsNeededToGain = input.anionCount * Math.abs(input.targetAnionCharge);
+  const electronsAvailableFromMetals = Math.max(0, input.cationCount * input.targetCationCharge);
+  const electronsRequiredByNonMetals = Math.max(0, input.anionCount * Math.abs(input.targetAnionCharge));
+  const maxTransferableElectrons = Math.min(electronsAvailableFromMetals, electronsRequiredByNonMetals);
+  const remainingElectronImbalance = electronsAvailableFromMetals - electronsRequiredByNonMetals;
   const netCharge = input.cationCount * input.targetCationCharge + input.anionCount * input.targetAnionCharge;
+  const isChargeBalanced = netCharge === 0;
+  const g = gcd(input.cationCount, input.anionCount);
+  const isSimplestRatio = g === 1;
+
+  const validTransferInt =
+    typeof input.electronsTransferred === 'number' &&
+    Number.isSafeInteger(input.electronsTransferred) &&
+    input.electronsTransferred >= 0;
+  const isImpossibleTransfer =
+    !validTransferInt ||
+    input.electronsTransferred > electronsAvailableFromMetals ||
+    input.electronsTransferred > electronsRequiredByNonMetals;
+
+  const clampedTransfer = validTransferInt ? Math.min(input.electronsTransferred, maxTransferableElectrons) : 0;
+  const remainingDonorElectrons = Math.max(0, electronsAvailableFromMetals - clampedTransfer);
+  const remainingAcceptorDemand = Math.max(0, electronsRequiredByNonMetals - clampedTransfer);
 
   // Dot-and-cross outer-shell electron count per ion after transfer
-  const lostPerCation = input.cationCount > 0 ? input.electronsTransferred / input.cationCount : 0;
-  const gainedPerAnion = input.anionCount > 0 ? input.electronsTransferred / input.anionCount : 0;
+  const lostPerCation = input.cationCount > 0 ? clampedTransfer / input.cationCount : 0;
+  const gainedPerAnion = input.anionCount > 0 ? clampedTransfer / input.anionCount : 0;
   const cationOuterAfter = cat ? Math.max(0, cat.valenceElectrons - lostPerCation) : 0;
   const anionOuterAfter = an ? an.valenceElectrons + gainedPerAnion : 0;
 
   const base = {
     formulaBuilt,
-    electronsNeededToLose,
-    electronsNeededToGain,
+    electronsAvailableFromMetals,
+    electronsRequiredByNonMetals,
+    maxTransferableElectrons,
+    electronsTransferred: input.electronsTransferred,
+    remainingElectronImbalance,
+    remainingDonorElectrons,
+    remainingAcceptorDemand,
+    isChargeBalanced,
+    isSimplestRatio,
+    isImpossibleTransfer,
+    electronsNeededToLose: electronsAvailableFromMetals,
+    electronsNeededToGain: electronsRequiredByNonMetals,
     netCharge,
     cationOuterAfter,
     anionOuterAfter,
@@ -103,7 +149,13 @@ export function evaluateIonicBonding(input: IonicEvaluationInput): IonicEvaluati
     return { ...base, passed: false, feedback: 'Unsupported cation or anion element.' };
   }
 
-  if (input.cationCount < 1 || input.anionCount < 1 || input.cationCount + input.anionCount > IONIC_LIMITS.maxTotalIons) {
+  if (
+    !Number.isSafeInteger(input.cationCount) ||
+    !Number.isSafeInteger(input.anionCount) ||
+    input.cationCount < 1 ||
+    input.anionCount < 1 ||
+    input.cationCount + input.anionCount > IONIC_LIMITS.maxTotalIons
+  ) {
     return {
       ...base,
       passed: false,
@@ -111,19 +163,31 @@ export function evaluateIonicBonding(input: IonicEvaluationInput): IonicEvaluati
     };
   }
 
-  // 1. Check charge neutrality
-  if (netCharge !== 0) {
+  // 0. Reject scientifically impossible transfers (exceeding donor supply or acceptor demand, or negative/non-integer)
+  if (isImpossibleTransfer) {
     return {
       ...base,
       passed: false,
-      feedback: `Total charge is not balanced yet: ${input.cationCount} × (${cat.symbol}${input.targetCationCharge}+) + ${input.anionCount} × (${an.symbol}${Math.abs(input.targetAnionCharge)}−) gives net charge ${netCharge > 0 ? `+${netCharge}` : netCharge}. Adjust the ion ratio so total positive charge equals total negative charge.`,
+      feedback: `Impossible electron transfer (${String(input.electronsTransferred)} e⁻): ${input.cationCount} ${cat.symbol} atom(s) can supply at most ${electronsAvailableFromMetals} outer electron(s) and ${input.anionCount} ${an.symbol} atom(s) can accept at most ${electronsRequiredByNonMetals} electron(s) (maximum transferable for this ratio: ${maxTransferableElectrons} e⁻).`,
+    };
+  }
+
+  // 1. Check charge neutrality & remaining electron imbalance
+  if (!isChargeBalanced) {
+    const imbalanceText =
+      remainingElectronImbalance > 0
+        ? `${remainingElectronImbalance} excess donor electron(s) still need non-metal atom(s) to accept them`
+        : `${Math.abs(remainingElectronImbalance)} more donor electron(s) are needed from metal atom(s)`;
+    return {
+      ...base,
+      passed: false,
+      feedback: `Total charge is not balanced yet: ${input.cationCount} × (${cat.symbol}${input.targetCationCharge}+) + ${input.anionCount} × (${an.symbol}${Math.abs(input.targetAnionCharge)}−) gives net charge ${netCharge > 0 ? `+${netCharge}` : netCharge} (${imbalanceText}). Adjust the ion ratio so donor electrons equal acceptor demand.`,
     };
   }
 
   // 2. Reject electrically neutral but non-simplest ratio when simplest ratio is required
   const requireSimplest = input.requireSimplestRatio !== false;
-  const g = gcd(input.cationCount, input.anionCount);
-  if (requireSimplest && g > 1) {
+  if (requireSimplest && !isSimplestRatio) {
     const simpleFormula = formatEmpiricalFormula(
       cat.symbol,
       input.cationCount / g,
@@ -138,11 +202,11 @@ export function evaluateIonicBonding(input: IonicEvaluationInput): IonicEvaluati
   }
 
   // 3. Check exact electron transfer conservation
-  if (input.electronsTransferred !== electronsNeededToLose) {
+  if (input.electronsTransferred !== electronsAvailableFromMetals) {
     return {
       ...base,
       passed: false,
-      feedback: `Your ion ratio (${formulaBuilt}) is balanced, but ${input.electronsTransferred} electron(s) have been transferred instead of ${electronsNeededToLose}. Each ${cat.symbol} atom must transfer ${input.targetCationCharge} outer electron(s) so every ${an.symbol} atom completes its outer shell.`,
+      feedback: `Your ion ratio (${formulaBuilt}) is balanced, but only ${input.electronsTransferred} of ${electronsAvailableFromMetals} required outer electron(s) have been transferred (${remainingDonorElectrons} donor e⁻ remaining). Each ${cat.symbol} atom must transfer ${input.targetCationCharge} outer electron(s) so every ${an.symbol} atom completes its outer shell.`,
     };
   }
 
