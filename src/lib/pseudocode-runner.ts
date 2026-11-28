@@ -36,6 +36,8 @@ interface Env {
 }
 
 const MAX_STEPS = 10_000;
+/** Largest ARRAY (cells) a practice program may declare; protects the main thread from huge allocations. */
+const MAX_ARRAY_CELLS = 100_000;
 
 function createEnv(parent?: Env): Env {
   return {
@@ -556,6 +558,17 @@ class Runtime {
           const high2 = arrMatch[4] !== undefined ? Number(arrMatch[4]) : undefined;
           const elemType = arrMatch[5].toUpperCase();
           const defVal = defaultValueForType(elemType);
+          // Audit fix: the interpreter runs on the page's main thread and fills every cell, so an unbounded declaration
+          // such as ARRAY[1:2000000000] froze the tab for ~10-15 s before failing with "Map maximum size exceeded".
+          const span1 = high1 - low1 + 1;
+          const span2 = low2 !== undefined && high2 !== undefined ? high2 - low2 + 1 : 1;
+          if (span1 < 1 || span2 < 1) {
+            throw new Error(`Invalid ARRAY bounds in "${line}": the lower bound must not exceed the upper bound.`);
+          }
+          const namesCount = namesPart.split(',').length;
+          if (span1 * span2 > MAX_ARRAY_CELLS || span1 * span2 * namesCount > MAX_ARRAY_CELLS * 4) {
+            throw new Error(`ARRAY is too large for this practice lab (at most ${MAX_ARRAY_CELLS.toLocaleString('en-US')} cells per array).`);
+          }
           for (const rawName of namesPart.split(',')) {
             const key = rawName.trim().toLowerCase();
             const data = new Map<string, PValue>();
