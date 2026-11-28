@@ -32,8 +32,8 @@ import { GeometryConstructorLab } from '@/components/narrated-lessons/constructi
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 4F — Geometry Construction Laboratory (geometry-constructor 1.3.0)', () => {
-  it('confirms construction-lab engineVersion 1.6.0 (Step 5E geometry integrated) and productionVersion 1.3.0 (LIVE)', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.6.0');
+  it('confirms construction-lab engineVersion 1.7.0 and productionVersion 1.3.0 (LIVE)', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.7.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 

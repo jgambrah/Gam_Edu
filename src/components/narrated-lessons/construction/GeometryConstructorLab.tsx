@@ -854,7 +854,7 @@ function TransformationsWorkbench({ config }: { config: GeometryTransformationCo
             const preP = perim(config.preImageVertices);
             const imgP = perim(imageVertices);
             const ratio = preP > 1e-6 ? imgP / preP : 1;
-            const isIsometry = config.transformation.kind !== 'enlargement';
+            const tr = config.transformation;
             return (
               <div className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-2.5 text-[11px] text-indigo-950">
                 <p className="font-bold">Congruence &amp; Similarity Readout</p>
@@ -862,9 +862,9 @@ function TransformationsWorkbench({ config }: { config: GeometryTransformationCo
                   Pre-image perimeter: {preP.toFixed(2)} · Image perimeter: {imgP.toFixed(2)} · Ratio: {ratio.toFixed(2)}×
                 </p>
                 <p>
-                  {isIsometry
+                  {tr.kind !== 'enlargement'
                     ? 'Rigid isometry (congruent image: side lengths and angles preserved, ratio = 1.00×).'
-                    : `Similarity enlargement (scale factor k = ${config.transformation.scaleFactor}; side lengths scale by |k| = ${Math.abs(config.transformation.scaleFactor)}×).`}
+                    : `Similarity enlargement (scale factor k = ${tr.scaleFactor}; side lengths scale by |k| = ${Math.abs(tr.scaleFactor)}×).`}
                 </p>
               </div>
             );

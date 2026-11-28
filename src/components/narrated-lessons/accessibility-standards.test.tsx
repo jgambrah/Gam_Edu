@@ -36,14 +36,13 @@ describe('Step 5E-A — Shared Accessibility Standards (D-038, D-039, D-040, D-0
           schemaVersion: 1,
           minEngineVersion: '1.0.0',
           mode: 'linear',
-          visualMode: 'state-only',
           title: 'Mitosis',
           instructions: 'Step through stages.',
           accessibilityLabel: 'Mitosis stepper',
           fallbackText: 'Prophase to Telophase.',
           stages: [
-            { id: 's1', title: 'Stage 1', summary: 'First stage.', equation: 'A -> B', state: { phase: '1', cells: 1 } },
-            { id: 's2', title: 'Stage 2', summary: 'Second stage.', state: { phase: '2', cells: 2 } },
+            { id: 's1', title: 'Stage 1', summary: 'First stage.', equation: 'A -> B' },
+            { id: 's2', title: 'Stage 2', summary: 'Second stage.' },
           ],
         }}
       />,

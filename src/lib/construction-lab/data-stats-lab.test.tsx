@@ -26,8 +26,8 @@ import { DataStatsLab } from '@/components/narrated-lessons/construction/DataSta
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 5D — Probability & Statistics Lab (construction-lab: data-stats-lab 1.5.0)', () => {
-  it('extends construction-lab to engineVersion 1.6.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.6.0');
+  it('extends construction-lab to engineVersion 1.7.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.7.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 
