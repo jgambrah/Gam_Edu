@@ -1,0 +1,23 @@
+{
+  "checkpoint": 1,
+  "date": "2026-11-28",
+  "startCommit": "a3706446fd9ee1aa449b32cfa1bb6ade2de48311",
+  "tests": {
+    "before": { "wholeRepo": { "total": 3699, "passed": 3698, "failed": 1 }, "enrichmentScope": { "total": 242, "passed": 240, "failed": 2, "emptySuites": 1 } },
+    "after": { "wholeRepo": { "total": 3726, "passed": 3725, "failed": 1, "note": "failure is story-library/pronunciation.test.ts, coincident with owner's uncommitted pronunciation.ts edit" }, "enrichmentScope": { "total": 336, "passed": 336, "failed": 0 } },
+    "skipped": 0
+  },
+  "typescript": { "before": 423, "after": 418, "enrichmentAreaAfter": 0, "filesTouchedByAuditWithErrors": 0 },
+  "mathOracle": { "cases": 10000, "structurallyDistinct": 9248, "falseAccept": 0, "falseReject": 0, "unexpectedIndeterminate": 0, "markingMismatch": 0, "duplicateMarks": 0, "exceededMaxMarks": 0 },
+  "independentVerification": {
+    "mathAdversarialCases": 37,
+    "cubeNets": { "freeHexominoes": 35, "foldable": 11, "notFoldable": 24, "engineAgreementChecks": 1120 },
+    "svgSanitiser": { "preExistingVectors": 13, "newVectors": 20, "fuzzPayloads": 1500, "liveDangerousConstructs": 0 },
+    "statsFixtures": 16,
+    "rendererTests": 6,
+    "askTeacherRouteTests": 5
+  },
+  "defects": { "fixed": 9, "open": 5, "ownerDecision": 1, "notTouched": 1, "verify": 1, "blocked": 1, "accepted": 1, "critical": 0, "highFixed": 3 },
+  "score": { "total": 67, "outOf": 100, "note": "qualitative, evidence-based; low scores reflect unverified areas" },
+  "notExecuted": ["next build", "browser/mobile/accessibility testing", "performance measurement", "firestore rules emulator", "npm audit", "curriculum review against syllabus documents", "live deployment verification"]
+}
