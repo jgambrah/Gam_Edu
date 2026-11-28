@@ -42,8 +42,8 @@ const ALL_11_VALID_CUBE_NETS: Array<{ name: string; cells: GridCell[] }> = [
 ];
 
 describe('Step 5E — Remaining Geometry Capabilities (construction-lab: geometry-constructor 1.6.0)', () => {
-  it('extends construction-lab to engineVersion 1.6.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.6.0');
+  it('keeps construction-lab engineVersion >= 1.6.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion >= '1.6.0').toBe(true);
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 

@@ -37,6 +37,7 @@ import { validateAtomBondBuilderConfig } from './atom-bond-schema-validator';
 import { validateGeometryConstructorConfig } from './geometry-schema-validator';
 import { validateMeasurementLabConfig } from './measurement-schema-validator';
 import { validateDataStatsLabConfig } from './data-stats-schema-validator';
+import { validateNumberManipulativeConfig } from './number-manipulative-schema-validator';
 
 export type ConstructionLabKind =
   | 'boolean-circuit'
@@ -46,7 +47,8 @@ export type ConstructionLabKind =
   | 'atom-bond-builder'
   | 'geometry-constructor'
   | 'measurement-lab'
-  | 'data-stats-lab';
+  | 'data-stats-lab'
+  | 'number-manipulative';
 
 export interface ConstructionPredictionDef {
   prompt: string;
@@ -238,9 +240,12 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (obj.labKind === 'number-manipulative') {
+    return '1.7.0';
   }
   if (obj.labKind === 'data-stats-lab') {
     return '1.5.0';
@@ -286,7 +291,8 @@ export function validateConstructionLabConfig(
     labKind !== 'atom-bond-builder' &&
     labKind !== 'geometry-constructor' &&
     labKind !== 'measurement-lab' &&
-    labKind !== 'data-stats-lab'
+    labKind !== 'data-stats-lab' &&
+    labKind !== 'number-manipulative'
   ) {
     errors.push(`Unsupported construction-lab labKind "${String(labKind)}".`);
     return;
@@ -338,6 +344,12 @@ export function validateConstructionLabConfig(
   // Domain 8 (Step 5D): Probability & Statistics Laboratory
   if (labKind === 'data-stats-lab') {
     validateDataStatsLabConfig(obj, errors);
+    return;
+  }
+
+  // Domain 9 (Step 5F): Primary Number Manipulatives Laboratory
+  if (labKind === 'number-manipulative') {
+    validateNumberManipulativeConfig(obj, errors);
     return;
   }
 

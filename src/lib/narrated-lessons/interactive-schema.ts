@@ -65,6 +65,7 @@ import type { SortClassifySpec } from '@/lib/sort-classify/sort-classify-engine'
 import { validateSortClassifyConfig } from '@/lib/sort-classify/sort-classify-schema-validator';
 import type { MeasurementLabSpec } from '@/lib/construction-lab/measurement-engine';
 import type { DataStatsSpec } from '@/lib/construction-lab/data-stats-engine';
+import type { NumberManipulativeSpec } from '@/lib/construction-lab/number-manipulative-engine';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -139,11 +140,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.6.0',
+    engineVersion: '1.7.0',
     productionVersion: '1.3.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 extensions; measurement-lab 1.4.0; data-stats-lab 1.5.0).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 extensions; measurement-lab 1.4.0; data-stats-lab 1.5.0; number-manipulative 1.7.0).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -417,7 +418,13 @@ export type ConstructionLabInteractiveConfig =
   | AtomBondBuilderConstructionConfig
   | GeometryConstructorConstructionConfig
   | MeasurementLabConstructionConfig
-  | DataStatsLabConstructionConfig;
+  | DataStatsLabConstructionConfig
+  | NumberManipulativeConstructionConfig;
+
+export type NumberManipulativeConstructionConfig = ConstructionLabSharedFields & {
+  labKind: 'number-manipulative';
+  curriculumLevel?: 'primary' | 'lower-secondary';
+} & NumberManipulativeSpec;
 
 export type RuleOperator = 'AND' | 'OR' | 'NOT' | 'XOR';
 

@@ -56,6 +56,11 @@ const LazyDataStatsLab = dynamic(
   { ssr: false, loading: DomainLoading },
 );
 
+const LazyNumberManipulativeLab = dynamic(
+  () => import('./NumberManipulativeLab').then((m) => m.NumberManipulativeLab),
+  { ssr: false, loading: DomainLoading },
+);
+
 export interface ConstructionLabRouterProps {
   config: ConstructionLabInteractiveConfig;
   lessonId: string;
@@ -83,5 +88,7 @@ export function ConstructionLabRouter({ config, lessonId, slideId }: Constructio
       return <LazyMeasurementLab config={config} />;
     case 'data-stats-lab':
       return <LazyDataStatsLab config={config} />;
+    case 'number-manipulative':
+      return <LazyNumberManipulativeLab config={config} />;
   }
 }
