@@ -13,6 +13,7 @@ import {
 import {
   SUPPORTED_INTERACTIVE_ENGINES,
   assertValidLessonInteractives,
+  compareSemver,
   validateSlideInteractiveConfig,
   type MeasurementLabConstructionConfig,
 } from '@/lib/narrated-lessons/interactive-schema';
@@ -21,7 +22,7 @@ import { InteractiveEngineRegistry } from '@/components/narrated-lessons/Interac
 
 describe('Step 5C — Virtual Measuring Instruments (construction-lab: measurement-lab 1.4.0)', () => {
   it('keeps construction-lab engineVersion >= 1.7.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion >= '1.7.0').toBe(true);
+    expect(compareSemver(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion, '1.7.0')! >= 0).toBe(true);
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].supportedSchemaVersions).toEqual([1]);
   });

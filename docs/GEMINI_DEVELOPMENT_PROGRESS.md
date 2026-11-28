@@ -19,15 +19,15 @@
 - `1e2ed1b9` — **Step 5E-B (Geometry Educational Close-Out: D-031)**: Geometry educational close-out implemented.
 - `d9c64274` — **Step 5E-C (Simultaneous Linear Equations D-032 & Positional Quartiles D-011)**: Simultaneous equations and selectable quartile convention implemented.
 - `d08f01f1` — **Step 5F (Primary Number Manipulatives — `construction-lab`, `labKind: 'number-manipulative'`, `engineVersion: '1.7.0'`, `productionVersion: '1.3.0'`)**: Primary Number Manipulatives implemented.
-- **Step 5G**: Physics Workbench is the next foundation development assignment (not commenced).
-- **Step 5H**: Visual Programming, Art Studio and Game Zone remains planned.
+- **Step 5G (Dynamic Physics Workbench — `construction-lab`, `labKind: 'physics-workbench'`, `engineVersion: '1.10.0'`, shared `productionVersion: '1.3.0'`)**: Implemented on isolated branch `student-enrichment-step5g-physics-workbench` and integrated into `fixed-version` (**production-inactive** until review & manual Vercel promotion). Covers all 6 bounded domains (Reflection, Refraction/Snell/TIR, Thin Lenses, Spherical Mirrors, Moments & Equilibrium, Simple Machines), 10-slide pilot (`public/preview-fixtures/step5g-physics-workbench-pilot.json`), gated preview route (`/narrated-lessons/physics-workbench-pilot-preview`), `Explore Further`, `isAssessment: true` protection, and cumulative **Authoring Kit v2.7** (POSIX ZIP).
+- **Step 5H**: Visual Programming, Art Studio and Game Zone remains the next planned foundation assignment (not commenced).
 - **Step 6**: Final Foundation Integration remains planned.
 
 ## Engine state (verified from `src/lib/narrated-lessons/interactive-schema.ts`)
 | Engine | engineVersion | productionVersion |
 |---|---|---|
 | code-playground | 1.0.0 | 1.0.0 |
-| construction-lab | 1.9.0 | **1.3.0** (`productionCapabilities`: **`atom-bond-builder: 1.9.0`**, **`equation-balancer: 1.9.0`** scoped-activated after `bdb57e90`/`c689e9d8` Vercel promotion; `measurement-lab 1.4.0`, `data-stats-lab 1.5.0`, `geometry 5E 1.6.0`, and `number-manipulative 1.7.0` remain **NOT** production-activated) |
+| construction-lab | 1.10.0 | **1.3.0** (`productionCapabilities`: **`atom-bond-builder: 1.9.0`**, **`equation-balancer: 1.9.0`** LIVE; `measurement-lab 1.4.0`, `data-stats-lab 1.5.0`, `geometry 5E 1.6.0`, `number-manipulative 1.7.0`, and **`physics-workbench 1.10.0`** remain **NOT** production-activated) |
 | rule-explorer, graph-slider, process-stepper, diagram-hotspots | 1.0.0 | 1.0.0 |
 | math-evaluator | 1.1.0 | 1.1.0 (extended with exact `simultaneous-linear` 2×2/3×3 RREF) |
 | sort-classify | 1.0.0 | **null** |

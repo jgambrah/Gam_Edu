@@ -11,14 +11,14 @@ Single status page for the Student Enrichment foundation. Detail lives in the li
 | Engine | engineVersion | productionVersion | Notes |
 |---|---|---|---|
 | code-playground | 1.0.0 | 1.0.0 | Python now sandboxed (audit D-010) |
-| construction-lab | 1.9.0 | 1.3.0 | `productionCapabilities`: **`atom-bond-builder: 1.9.0`**, **`equation-balancer: 1.9.0`** (scoped-activated after manual Vercel promotion of `bdb57e90`/`c689e9d8`); measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0 remain **NOT** production-activated (D-013) |
+| construction-lab | 1.10.0 | 1.3.0 | `productionCapabilities`: **`atom-bond-builder: 1.9.0`**, **`equation-balancer: 1.9.0`** LIVE; measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0, and **physics-workbench 1.10.0** remain **NOT** production-activated (D-013) |
 | rule-explorer / graph-slider / process-stepper / diagram-hotspots | 1.0.0 | 1.0.0 | |
 | math-evaluator | 1.1.0 | 1.1.0 | Oracle gate enforced in CI (10,200 executed / 9,448 distinct, 0 discrepancies; simultaneous-linear added in 5E-C) |
 | sort-classify | 1.0.0 | null | Not activated |
 
 ## Roadmap position
-- **Last reported foundation development commit**: `512fca19` (Steps 1–5F implemented; Step 5E-A independent browser accessibility verification outstanding; Step 5E-B, 5E-C, and 5F implemented).
-- **Next foundation development assignment**: Step 5G (Physics Workbench); Step 5H (Visual Programming, Art Studio and Game Zone) and Step 6 (Final Foundation Integration) remain planned.
+- **Latest foundation development milestone**: **Step 5G (Dynamic Physics Workbench — `construction-lab: physics-workbench 1.10.0`, gated/production-inactive)** implemented and integrated into `fixed-version` (authoring kit v2.7; Steps 1–5G complete; Step 5E-A independent browser accessibility verification remains open).
+- **Next foundation development assignment**: Step 5H (Visual Programming, Art Studio and Game Zone) and Step 6 (Final Foundation Integration) remain planned (not commenced).
 - **Temporary assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**): Discovery (`1bd9eaab`), Initial Implementation (`a35a207b`), Refinement 1 (`5103e762`), Refinement 2 (`e6470751`), and **Refinement 3 Scoped Production Activation & Publication** (`bdb57e90` → `cd041363` promoted & verified live in production JS chunks; live CDN **`v103`**, 49 lessons: Basic 8 Atoms `15080192a16a` → `379856075c2c` → **`64fb68126435`**; Hydrocarbons `739c1252e89e` → `d81bff77545d` → **`5c82c89a794b`** via `--skip-media`, 0 paid media regenerated, all prior/original rollback packages preserved; clean full repo Vitest `103/103` files / `3,889/3,889` tests Exit 0; reconciled Authoring Kit v2.6). Ready for owner practical testing; browser/mobile/accessibility/performance verification remains explicitly open.
 - **Claude (audit)**: Checkpoint 3 remains temporarily paused at its previously recorded position (`baba1cdd`); no audit findings are marked independently verified by Gemini. See the two roadmaps and progress files.
 

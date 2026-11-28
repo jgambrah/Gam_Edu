@@ -1,0 +1,367 @@
+{
+  "lessonId": "step5g-physics-workbench-pilot-preview",
+  "title": "Step 5G Pilot — Dynamic Physics Workbench (Optics, Moments & Simple Machines)",
+  "subject": "Physics",
+  "level": "NaCCA JHS / SHS & Cambridge IGCSE / AS-Level",
+  "description": "Coherent 10-slide Physics Workbench pilot demonstrating Reflection, Refraction & Total Internal Reflection, Thin Lenses, Spherical Mirrors, Moments & Equilibrium, and Simple Machines across free exploration, guided practice, and independent challenges.",
+  "estimatedMinutes": 25,
+  "slides": [
+    {
+      "id": "p01",
+      "title": "1. Plane Mirror Reflection — Free Exploration",
+      "narrationText": "Light reflects off a plane mirror so that the angle of incidence equals the angle of reflection, always measured from the normal line perpendicular to the mirror.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p01-reflection-free",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "reflection",
+          "curriculumLevel": "introductory",
+          "interactionMode": "free-exploration",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "JHS Science / IGCSE · Optics",
+          "title": "Plane Mirror Reflection Playground",
+          "instructions": "Vary the angle of incidence from 0° (normal incidence) to 85° and observe how the reflected angle and total angle between rays respond.",
+          "accessibilityLabel": "Interactive plane mirror reflection playground",
+          "fallbackText": "Angle of incidence equals angle of reflection (measured from the normal).",
+          "initialIncidentAngleDeg": 35,
+          "exploreFurther": true,
+          "prediction": {
+            "prompt": "If a ray strikes a plane mirror at 30° to the normal, what is the angle between the incident ray and the reflected ray?",
+            "options": ["30°", "60°", "120°"],
+            "correctIndex": 1,
+            "explanation": "Since θᵢ = θᵣ = 30°, the total angle between the two rays is 30° + 30° = 60°."
+          },
+          "hints": ["Angles are measured from the dashed normal line, not the mirror surface."]
+        }
+      ]
+    },
+    {
+      "id": "p02",
+      "title": "2. Plane Mirror Challenge — Independent Practice",
+      "narrationText": "Now adjust the incident ray so the total angle between the incident and reflected rays is exactly 90 degrees (like a periscope mirror).",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p02-reflection-challenge",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "reflection",
+          "curriculumLevel": "igcse",
+          "interactionMode": "independent-challenge",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "IGCSE Physics · Independent Challenge",
+          "title": "Periscope Geometry: 90° Turn Challenge",
+          "instructions": "Set the angle of incidence so the total angle between the incident and reflected rays is 90°.",
+          "accessibilityLabel": "Plane mirror 90-degree turn challenge",
+          "fallbackText": "An angle of incidence of 45° produces a 90° angle between incident and reflected rays.",
+          "initialIncidentAngleDeg": 20,
+          "goal": {
+            "description": "Achieve 90° between the incident and reflected rays.",
+            "metric": "angleBetweenRaysDeg",
+            "targetValue": 90,
+            "tolerance": 0.5
+          },
+          "hints": ["The angle between the two rays is 2θᵢ."],
+          "successExplanation": "At θᵢ = 45°, the reflected ray turns through 90° — the principle of a periscope."
+        }
+      ]
+    },
+    {
+      "id": "p03",
+      "title": "3. Refraction & Snell's Law — Dynamic Media Explorer",
+      "narrationText": "When light crosses between two optical media of different refractive indices, its speed changes and it bends according to Snell's law, except at normal incidence or equal refractive indices.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p03-refraction-explorer",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "refraction",
+          "curriculumLevel": "igcse",
+          "interactionMode": "free-exploration",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "IGCSE / SHS Physics · Refraction & TIR",
+          "title": "Dynamic Refraction & Total Internal Reflection Workbench",
+          "instructions": "Select different optical media pairs and vary θᵢ to explore Snell's law, normal incidence, equal-index boundaries, the critical angle, and Total Internal Reflection (TIR).",
+          "accessibilityLabel": "Dynamic refraction and total internal reflection workbench",
+          "fallbackText": "Snell's law: n1 sin(theta_i) = n2 sin(theta_r). TIR occurs when n1 > n2 and theta_i > arcsin(n2/n1).",
+          "initialIncidentAngleDeg": 30,
+          "initialN1": 1.0,
+          "initialN2": 1.52,
+          "exploreFurther": true,
+          "examples": [
+            { "id": "air-glass", "label": "Air → Crown Glass", "prompt": "Light enters optically denser crown glass (n₂ = 1.52) and bends towards the normal.", "initialIncidentAngleDeg": 30, "initialN1": 1.0, "initialN2": 1.52 },
+            { "id": "glass-air", "label": "Glass → Air (TIR)", "prompt": "Increase θᵢ past the critical angle (41.14°) to trigger Total Internal Reflection in an optical fibre.", "initialIncidentAngleDeg": 35, "initialN1": 1.52, "initialN2": 1.0 },
+            { "id": "water-air", "label": "Water → Air", "prompt": "Compare water's larger critical angle (48.75°) with glass.", "initialIncidentAngleDeg": 40, "initialN1": 1.33, "initialN2": 1.0 },
+            { "id": "diamond-air", "label": "Diamond → Air", "prompt": "Diamond's high n = 2.42 gives a tiny critical angle (24.41°), explaining its brilliance.", "initialIncidentAngleDeg": 20, "initialN1": 2.42, "initialN2": 1.0 }
+          ],
+          "hints": ["TIR can ONLY occur when travelling from a higher refractive index (n₁) towards a lower one (n₂)."]
+        }
+      ]
+    },
+    {
+      "id": "p04",
+      "title": "4. Fibre-Optic TIR Challenge",
+      "narrationText": "Ghana's undersea and terrestrial fibre-optic cables carry internet data using Total Internal Reflection. Trigger TIR inside a crown glass core bounded by air.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p04-tir-challenge",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "refraction",
+          "curriculumLevel": "igcse",
+          "interactionMode": "independent-challenge",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "IGCSE / SHS Physics · Fibre Optics",
+          "title": "Trigger Total Internal Reflection in Glass",
+          "instructions": "Adjust θᵢ inside Crown Glass (n₁ = 1.52) meeting Air (n₂ = 1.00) so Total Internal Reflection occurs.",
+          "accessibilityLabel": "Trigger total internal reflection in crown glass",
+          "fallbackText": "Increase angle of incidence above the 41.14° critical angle.",
+          "initialIncidentAngleDeg": 25,
+          "initialN1": 1.52,
+          "initialN2": 1.0,
+          "goal": {
+            "description": "Achieve Total Internal Reflection (no refracted ray exiting into air).",
+            "metric": "requireTIR"
+          },
+          "hints": ["Calculate sin θc = 1.00 / 1.52, then set θᵢ strictly above θc."]
+        }
+      ]
+    },
+    {
+      "id": "p05",
+      "title": "5. Thin Lenses — Real, Virtual & Infinity Explorer",
+      "narrationText": "Move an object relative to a converging or diverging thin lens to see how real inverted images, virtual magnified images, and parallel rays at the focal point arise.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p05-thin-lens-explorer",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "thin-lens",
+          "curriculumLevel": "igcse",
+          "interactionMode": "free-exploration",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "IGCSE / AS-Level · Thin Lenses",
+          "title": "Dynamic Thin-Lens Image Formation Workbench",
+          "instructions": "Select converging or diverging lens presets and slide object distance u across 2f, f, and inside f to compare real vs virtual images and the u = f infinity boundary.",
+          "accessibilityLabel": "Interactive thin lens image formation workbench",
+          "fallbackText": "Thin lens equation: 1/u + 1/v = 1/f; magnification m = -v/u.",
+          "elementKind": "converging-lens",
+          "initialFocalLengthCm": 12,
+          "initialObjectDistanceCm": 24,
+          "initialObjectHeightCm": 6,
+          "exploreFurther": true,
+          "examples": [
+            { "id": "conv-2f", "label": "Converging (u = 2f)", "prompt": "At u = 2f = 24 cm, observe the real, inverted, same-size image at v = +24 cm.", "elementKind": "converging-lens", "initialFocalLengthCm": 12, "initialObjectDistanceCm": 24, "initialObjectHeightCm": 6 },
+            { "id": "conv-magnifier", "label": "Magnifying Glass (u < f)", "prompt": "Inside the focal length (u = 8 cm < 12 cm), observe the upright, virtual, magnified image.", "elementKind": "converging-lens", "initialFocalLengthCm": 12, "initialObjectDistanceCm": 8, "initialObjectHeightCm": 5 },
+            { "id": "conv-infinity", "label": "Spotlight (u = f)", "prompt": "At u = f = 12 cm, rays emerge parallel and no finite image forms (image at infinity).", "elementKind": "converging-lens", "initialFocalLengthCm": 12, "initialObjectDistanceCm": 12, "initialObjectHeightCm": 6 },
+            { "id": "diverging", "label": "Diverging Lens", "prompt": "A diverging lens (f = −12 cm) always forms an upright, virtual, diminished image for any real object.", "elementKind": "diverging-lens", "initialFocalLengthCm": 12, "initialObjectDistanceCm": 24, "initialObjectHeightCm": 6 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p06",
+      "title": "6. Magnifying Glass Challenge — Converging Lens",
+      "narrationText": "Position the object relative to a converging lens of focal length 15 cm so it acts as a magnifying glass producing an upright virtual image.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p06-lens-challenge",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "thin-lens",
+          "curriculumLevel": "igcse",
+          "interactionMode": "independent-challenge",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "IGCSE Physics · Independent Challenge",
+          "title": "Construct a Virtual Magnified Image",
+          "instructions": "With f = +15 cm, adjust object distance u so the converging lens produces a virtual upright image.",
+          "accessibilityLabel": "Converging lens virtual image challenge",
+          "fallbackText": "Place the object closer than the focal length (u < 15 cm).",
+          "elementKind": "converging-lens",
+          "initialFocalLengthCm": 15,
+          "initialObjectDistanceCm": 30,
+          "initialObjectHeightCm": 5,
+          "goal": {
+            "description": "Form a virtual upright image with the converging lens (f = 15 cm).",
+            "metric": "requireVirtualImage"
+          },
+          "hints": ["Move the object inside the principal focus (u < f)."]
+        }
+      ]
+    },
+    {
+      "id": "p07",
+      "title": "7. Spherical Mirrors — Concave & Convex Explorer",
+      "narrationText": "Concave mirrors (used in solar cookers and headlamps) and convex mirrors (used as wide-angle security and vehicle wing mirrors) follow the same paraxial optical equation as thin lenses.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p07-spherical-mirror",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "spherical-mirror",
+          "curriculumLevel": "igcse",
+          "interactionMode": "free-exploration",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "SHS / IGCSE Physics · Spherical Mirrors",
+          "title": "Concave & Convex Mirror Workbench",
+          "instructions": "Compare a concave mirror (real inverted or virtual magnified images) with a convex vehicle wing mirror (always virtual, upright, diminished).",
+          "accessibilityLabel": "Concave and convex spherical mirror workbench",
+          "fallbackText": "Mirror equation: 1/u + 1/v = 1/f with real-is-positive sign convention.",
+          "elementKind": "concave-mirror",
+          "initialFocalLengthCm": 10,
+          "initialObjectDistanceCm": 25,
+          "initialObjectHeightCm": 6,
+          "exploreFurther": true,
+          "examples": [
+            { "id": "concave-real", "label": "Concave (Real Image)", "prompt": "Object beyond C (u = 25 cm, f = 10 cm): real, inverted, diminished image.", "elementKind": "concave-mirror", "initialFocalLengthCm": 10, "initialObjectDistanceCm": 25, "initialObjectHeightCm": 6 },
+            { "id": "concave-makeup", "label": "Concave (Virtual Magnified)", "prompt": "Object inside F (u = 6 cm, f = 10 cm): upright, virtual, magnified shaving/dentist mirror.", "elementKind": "concave-mirror", "initialFocalLengthCm": 10, "initialObjectDistanceCm": 6, "initialObjectHeightCm": 5 },
+            { "id": "convex-wing", "label": "Convex Wing Mirror", "prompt": "Convex mirror (f = −10 cm): wide field of view with upright, virtual, diminished image.", "elementKind": "convex-mirror", "initialFocalLengthCm": 10, "initialObjectDistanceCm": 20, "initialObjectHeightCm": 6 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p08",
+      "title": "8. Moments & Equilibrium — Principle of Moments",
+      "narrationText": "For a beam to be in rotational equilibrium, the sum of clockwise moments about the pivot must equal the sum of anticlockwise moments. For complete static equilibrium, the pivot must also supply an upward reaction balancing all vertical forces.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p08-moments-balance",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "moments",
+          "curriculumLevel": "igcse",
+          "interactionMode": "guided",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "JHS / IGCSE / AS-Level · Mechanics",
+          "title": "Balance the Beam & Inspect Pivot Reaction",
+          "instructions": "Adjust force magnitudes, positions, or the pivot so clockwise and anticlockwise moments balance. Observe the upward pivot reaction required for complete static equilibrium.",
+          "accessibilityLabel": "Interactive beam moments and equilibrium workbench",
+          "fallbackText": "Principle of moments: sum of clockwise moments equals sum of anticlockwise moments.",
+          "initialPivotPositionM": 0,
+          "initialForces": [
+            { "id": "left-load", "label": "Cocoa sack (Left)", "forceN": 60, "positionM": -2, "direction": "down" },
+            { "id": "right-load", "label": "Counterweight (Right)", "forceN": 40, "positionM": 2, "direction": "down" }
+          ],
+          "goal": {
+            "description": "Balance the beam in rotational equilibrium (CW moment = ACW moment).",
+            "metric": "requireRotationalEquilibrium"
+          },
+          "exploreFurther": true,
+          "examples": [
+            {
+              "id": "two-loads",
+              "label": "Two Downward Loads",
+              "prompt": "60 N at −2 m gives 120 N·m ACW. Move the 40 N counterweight to +3 m (or adjust force to 60 N) to balance!",
+              "initialPivotPositionM": 0,
+              "initialForces": [
+                { "id": "left-load", "label": "Cocoa sack (Left)", "forceN": 60, "positionM": -2, "direction": "down" },
+                { "id": "right-load", "label": "Counterweight (Right)", "forceN": 40, "positionM": 2, "direction": "down" }
+              ]
+            },
+            {
+              "id": "three-forces",
+              "label": "Three Forces + Upward Support",
+              "prompt": "Explore combining downward loads with an upward spring force.",
+              "initialPivotPositionM": 0,
+              "initialForces": [
+                { "id": "f1", "label": "Load A", "forceN": 50, "positionM": -3, "direction": "down" },
+                { "id": "f2", "label": "Load B", "forceN": 30, "positionM": 2, "direction": "down" },
+                { "id": "f3", "label": "Upward spring", "forceN": 20, "positionM": -2, "direction": "up" }
+              ]
+            }
+          ],
+          "hints": ["Moment = Force × perpendicular distance from pivot.", "60 N × 2 m = 120 N·m; what distance gives 40 N × d = 120 N·m?"]
+        }
+      ]
+    },
+    {
+      "id": "p09",
+      "title": "9. Simple Machines — Ideal vs Non-Ideal Efficiency",
+      "narrationText": "Simple machines multiply force (Mechanical Advantage) at the cost of moving the effort through a greater distance (Velocity Ratio). Real machines always have efficiency below 100% due to friction.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p09-simple-machines",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "simple-machines",
+          "curriculumLevel": "igcse",
+          "interactionMode": "free-exploration",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "JHS / SHS / IGCSE · Simple Machines",
+          "title": "Levers, Pulleys & Inclined Planes Workbench",
+          "instructions": "Switch between a lever, a block-and-tackle pulley, and an inclined loading ramp. Lower efficiency below 100% to compare ideal vs actual effort and friction energy loss.",
+          "accessibilityLabel": "Interactive simple machines workbench for levers, pulleys, and inclined planes",
+          "fallbackText": "Efficiency = (MA / VR) × 100% = (Work Output / Work Input) × 100% <= 100%.",
+          "machineKind": "lever",
+          "initialLoadN": 240,
+          "initialLoadDistanceM": 1,
+          "initialEfficiencyPct": 80,
+          "initialEffortArmM": 3,
+          "initialLoadArmM": 1,
+          "exploreFurther": true,
+          "examples": [
+            { "id": "lever-crowbar", "label": "Lever (Crowbar)", "prompt": "VR = dₑ/dₗ = 3. At 80% efficiency, MA = 2.4 and actual effort = 100 N (vs 80 N ideal).", "machineKind": "lever", "initialLoadN": 240, "initialLoadDistanceM": 1, "initialEfficiencyPct": 80, "initialEffortArmM": 3, "initialLoadArmM": 1 },
+            { "id": "pulley-4", "label": "4-Strand Pulley", "prompt": "4 supporting rope strands give VR = 4. Compare 100% ideal vs 75% real pulley efficiency.", "machineKind": "pulley", "initialLoadN": 400, "initialLoadDistanceM": 1, "initialEfficiencyPct": 75, "initialSupportingStrands": 4 },
+            { "id": "ramp-truck", "label": "Inclined Loading Ramp", "prompt": "A 5 m ramp rising 1 m has VR = 5. Observe work lost to sliding friction when η < 100%.", "machineKind": "inclined-plane", "initialLoadN": 500, "initialLoadDistanceM": 1, "initialEfficiencyPct": 70, "initialPlaneLengthM": 5, "initialPlaneHeightM": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10",
+      "title": "10. Simple Machines Assessment — Formal Mastery Check",
+      "narrationText": "Formal mastery check: configure the pulley strands so a 400 N load at 80% efficiency requires an actual effort of 125 N.",
+      "visual": { "kind": "none" },
+      "interactive": [
+        {
+          "id": "phy-p10-pulley-assessment",
+          "engine": "construction-lab",
+          "labKind": "physics-workbench",
+          "mode": "simple-machines",
+          "curriculumLevel": "igcse",
+          "interactionMode": "independent-challenge",
+          "isAssessment": true,
+          "exploreFurther": false,
+          "schemaVersion": 1,
+          "minEngineVersion": "1.10.0",
+          "subjectTag": "IGCSE Physics · Formal Assessment",
+          "title": "Mastery Check: Non-Ideal Pulley Effort",
+          "instructions": "With Load = 400 N and Efficiency = 80%, select the number of supporting rope strands that achieves an actual effort of 125 N.",
+          "accessibilityLabel": "Formal mastery check for non-ideal pulley effort",
+          "fallbackText": "For 4 strands (VR=4) at 80% efficiency, MA = 3.2 and Actual Effort = 400 / 3.2 = 125 N.",
+          "machineKind": "pulley",
+          "initialLoadN": 400,
+          "initialLoadDistanceM": 1,
+          "initialEfficiencyPct": 80,
+          "initialSupportingStrands": 2,
+          "goal": {
+            "description": "Achieve an actual effort of 125 N for a 400 N load at 80% efficiency.",
+            "metric": "actualEffortN",
+            "targetValue": 125,
+            "tolerance": 0.5
+          },
+          "hints": ["Hidden during formal assessment."]
+        }
+      ]
+    }
+  ]
+}

@@ -68,6 +68,14 @@ import { validateSortClassifyConfig } from '@/lib/sort-classify/sort-classify-sc
 import type { MeasurementLabSpec } from '@/lib/construction-lab/measurement-engine';
 import type { DataStatsSpec } from '@/lib/construction-lab/data-stats-engine';
 import type { NumberManipulativeSpec } from '@/lib/construction-lab/number-manipulative-engine';
+import type {
+  BeamForceDef,
+  OpticalElementKind,
+  PhysicsChallengeGoal,
+  PhysicsInteractionMode,
+  PhysicsWorkbenchMode,
+  SimpleMachineKind,
+} from '@/lib/construction-lab/physics-workbench-engine';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -160,7 +168,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.9.0',
+    engineVersion: '1.10.0',
     productionVersion: '1.3.0',
     productionCapabilities: {
       'construction-lab:atom-bond-builder': '1.9.0',
@@ -168,7 +176,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
     },
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer 1.9.0 LIVE; electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.9.0 LIVE incl. open-ended atomic playground 1.8.0 + dynamic selectable chemistry playgrounds & Explore Further 1.9.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 gated; measurement-lab 1.4.0 gated; data-stats-lab 1.5.0 gated; number-manipulative 1.7.0 gated).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer 1.9.0 LIVE; electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.9.0 LIVE; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 gated; measurement-lab 1.4.0 gated; data-stats-lab 1.5.0 gated; number-manipulative 1.7.0 gated; physics-workbench 1.10.0 gated).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -527,7 +535,72 @@ export type ConstructionLabInteractiveConfig =
   | GeometryConstructorConstructionConfig
   | MeasurementLabConstructionConfig
   | DataStatsLabConstructionConfig
-  | NumberManipulativeConstructionConfig;
+  | NumberManipulativeConstructionConfig
+  | PhysicsWorkbenchConstructionConfig;
+
+export interface PhysicsWorkbenchExampleDef {
+  id: string;
+  label: string;
+  prompt?: string;
+  modelNote?: string;
+  successExplanation?: string;
+  goal?: PhysicsChallengeGoal;
+  initialIncidentAngleDeg?: number;
+  initialN1?: number;
+  initialN2?: number;
+  medium1Name?: string;
+  medium2Name?: string;
+  elementKind?: OpticalElementKind;
+  initialFocalLengthCm?: number;
+  initialObjectDistanceCm?: number;
+  initialObjectHeightCm?: number;
+  initialPivotPositionM?: number;
+  initialForces?: BeamForceDef[];
+  equilibriumToleranceNm?: number;
+  machineKind?: SimpleMachineKind;
+  initialLoadN?: number;
+  initialLoadDistanceM?: number;
+  initialEfficiencyPct?: number;
+  initialEffortArmM?: number;
+  initialLoadArmM?: number;
+  initialSupportingStrands?: number;
+  initialPlaneLengthM?: number;
+  initialPlaneHeightM?: number;
+}
+
+export interface PhysicsWorkbenchConstructionConfig extends ConstructionLabSharedFields {
+  labKind: 'physics-workbench';
+  mode: PhysicsWorkbenchMode;
+  curriculumLevel: 'introductory' | 'igcse' | 'as-a-level';
+  interactionMode?: PhysicsInteractionMode;
+  goal?: PhysicsChallengeGoal;
+  examples?: PhysicsWorkbenchExampleDef[];
+  // reflection & refraction
+  initialIncidentAngleDeg?: number;
+  initialN1?: number;
+  initialN2?: number;
+  medium1Name?: string;
+  medium2Name?: string;
+  // thin-lens & spherical-mirror
+  elementKind?: OpticalElementKind;
+  initialFocalLengthCm?: number;
+  initialObjectDistanceCm?: number;
+  initialObjectHeightCm?: number;
+  // moments
+  initialPivotPositionM?: number;
+  initialForces?: BeamForceDef[];
+  equilibriumToleranceNm?: number;
+  // simple-machines
+  machineKind?: SimpleMachineKind;
+  initialLoadN?: number;
+  initialLoadDistanceM?: number;
+  initialEfficiencyPct?: number;
+  initialEffortArmM?: number;
+  initialLoadArmM?: number;
+  initialSupportingStrands?: number;
+  initialPlaneLengthM?: number;
+  initialPlaneHeightM?: number;
+}
 
 export type NumberManipulativeConstructionConfig = ConstructionLabSharedFields & {
   labKind: 'number-manipulative';
