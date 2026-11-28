@@ -1404,4 +1404,638 @@ enrichAndVerify('b8-sci-t1-atoms-and-the-periodic-table', ATOMS_ENRICHMENTS);
   const outV180 = path.join(WORK_DIR, 'b8-sci-t1-atoms-and-the-periodic-table.playground-v1.8.0.json');
   fs.writeFileSync(outV180, JSON.stringify(baseEnriched, null, 2) + '\n', 'utf8');
   console.log(JSON.stringify({ lessonId: 'b8-sci-t1-atoms-and-the-periodic-table (v1.8.0 playground)', devGate: 'PASSED (allowDevOnlyEngines: true)', preservationDiff: 'IDENTICAL', outV180 }));
+
+  // PCV-1 Refinement 3 (v1.9.0) — Basic 8 Atoms: add Dynamic Ionic Bonding (s23) and Dynamic Covalent Bonding (s25)
+  const b8Ref3 = JSON.parse(JSON.stringify(baseEnriched)) as NarratedLesson;
+  const s23 = b8Ref3.slides.find((s) => s.id === 's23');
+  if (s23) {
+    s23.interactive = [
+      {
+        id: 'b8-s23-ionic-playground',
+        engine: 'construction-lab',
+        labKind: 'atom-bond-builder',
+        mode: 'ionic-bonding',
+        schemaVersion: 1,
+        minEngineVersion: '1.9.0',
+        curriculumLevel: 'introductory',
+        subjectTag: 'Basic 8 Science · Dynamic Ionic Playground',
+        title: 'Dynamic Ionic Bonding & Electron-Transfer Playground',
+        instructions:
+          'Select any ionic compound below (NaCl, MgO, MgCl₂, CaCl₂, Al₂O₃). Adjust metal and non-metal atom counts and transfer outer electrons so every ion reaches a full outer shell and net charge equals zero in the simplest whole-number ratio.',
+        accessibilityLabel: 'Dynamic ionic bonding and electron transfer playground for NaCl, MgO, MgCl2, CaCl2, and Al2O3',
+        fallbackText:
+          'Ionic compounds form by complete electron transfer from metal to non-metal, producing oppositely charged ions held by electrostatic attraction in an extended ionic lattice (NaCl, MgO, MgCl2, CaCl2, Al2O3).',
+        modelNote:
+          'Ionic formulae represent the simplest whole-number ratio of ions in an extended 3D ionic lattice held by electrostatic attraction — never isolated covalent molecules.',
+        exploreFurther: true,
+        cationElement: 'Na',
+        anionElement: 'Cl',
+        targetCationCount: 1,
+        targetAnionCount: 1,
+        targetCationCharge: 1,
+        targetAnionCharge: -1,
+        requireSimplestRatio: true,
+        examples: [
+          {
+            id: 'ionic-nacl',
+            label: 'NaCl (1:1)',
+            prompt: 'Transfer 1 outer electron from Na to Cl to form Na⁺ and Cl⁻ in a 1:1 lattice ratio.',
+            cationElement: 'Na',
+            anionElement: 'Cl',
+            targetCationCount: 1,
+            targetAnionCount: 1,
+            targetCationCharge: 1,
+            targetAnionCharge: -1,
+            requireSimplestRatio: true,
+            successExplanation: 'Na⁺ and Cl⁻ attract electrostatically in a 1:1 ionic lattice (NaCl).',
+          },
+          {
+            id: 'ionic-mgo',
+            label: 'MgO (1:1)',
+            prompt: 'Transfer 2 outer electrons from Mg to O to form Mg²⁺ and O²⁻.',
+            cationElement: 'Mg',
+            anionElement: 'O',
+            targetCationCount: 1,
+            targetAnionCount: 1,
+            targetCationCharge: 2,
+            targetAnionCharge: -2,
+            requireSimplestRatio: true,
+            successExplanation: 'Mg²⁺ (+2) and O²⁻ (−2) balance in a 1:1 simplest ratio (MgO).',
+          },
+          {
+            id: 'ionic-mgcl2',
+            label: 'MgCl₂ (1:2)',
+            prompt: 'Each Mg atom loses 2 electrons, while each Cl atom can accept only 1. Balance the ion ratio and electron transfer!',
+            cationElement: 'Mg',
+            anionElement: 'Cl',
+            targetCationCount: 1,
+            targetAnionCount: 2,
+            targetCationCharge: 2,
+            targetAnionCharge: -1,
+            requireSimplestRatio: true,
+            successExplanation: '1 Mg²⁺ balances 2 Cl⁻ ions after transferring 2 electrons in total (MgCl₂).',
+          },
+          {
+            id: 'ionic-cacl2',
+            label: 'CaCl₂ (1:2)',
+            prompt: 'Calcium (Group 2) forms Ca²⁺ and Chlorine (Group 17) forms Cl⁻. Build the simplest neutral ratio and transfer all outer electrons.',
+            cationElement: 'Ca',
+            anionElement: 'Cl',
+            targetCationCount: 1,
+            targetAnionCount: 2,
+            targetCationCharge: 2,
+            targetAnionCharge: -1,
+            requireSimplestRatio: true,
+            successExplanation: '1 Ca²⁺ and 2 Cl⁻ balance after 2 electrons are transferred (CaCl₂).',
+          },
+          {
+            id: 'ionic-al2o3',
+            label: 'Al₂O₃ (2:3)',
+            prompt: 'Challenge: Aluminium forms Al³⁺ and Oxygen forms O²⁻. Find the simplest neutral ion ratio and total electrons transferred.',
+            cationElement: 'Al',
+            anionElement: 'O',
+            targetCationCount: 2,
+            targetAnionCount: 3,
+            targetCationCharge: 3,
+            targetAnionCharge: -2,
+            requireSimplestRatio: true,
+            successExplanation: '2 Al³⁺ (+6) and 3 O²⁻ (−6) balance after transferring 6 electrons in total (Al₂O₃).',
+          },
+        ],
+        hints: [
+          'Electrons lost by metal atoms must equal electrons gained by non-metal atoms.',
+          'Always reduce the ion counts to the simplest whole-number ratio (e.g. NaCl, not Na₂Cl₂).',
+        ],
+      },
+    ];
+  }
+
+  const s25 = b8Ref3.slides.find((s) => s.id === 's25');
+  if (s25) {
+    s25.interactive = [
+      {
+        id: 'b8-s25-covalent-playground',
+        engine: 'construction-lab',
+        labKind: 'atom-bond-builder',
+        mode: 'covalent-bonding',
+        schemaVersion: 1,
+        minEngineVersion: '1.9.0',
+        curriculumLevel: 'introductory',
+        subjectTag: 'Basic 8 Science · Dynamic Covalent Playground',
+        title: 'Dynamic Covalent Molecule Builder (H₂, O₂, N₂, H₂O, CO₂, CH₄, NH₃)',
+        instructions:
+          'Select any covalent molecule below and construct its single, double, or triple bonds and lone pairs so every atom satisfies its duet (H) or octet rule without violating valence electron conservation.',
+        accessibilityLabel: 'Dynamic covalent bonding playground for H2, O2, N2, H2O, CO2, CH4, and NH3',
+        fallbackText:
+          'Covalent molecules share electron pairs between non-metal atoms: H2 (H-H), O2 (O=O), N2 (N≡N), H2O (two O-H), CO2 (O=C=O), CH4 (four C-H), NH3 (three N-H + 1 lone pair).',
+        exploreFurther: true,
+        formulaDisplay: 'H₂',
+        netCharge: 0,
+        octetPolicy: 'strict-duet-octet',
+        atoms: [
+          { id: 'H1', element: 'H', xPct: 32, yPct: 50 },
+          { id: 'H2', element: 'H', xPct: 68, yPct: 50 },
+        ],
+        allowedBondOrders: [1, 2, 3],
+        allowDativeBonds: false,
+        initialBonds: [],
+        referenceBonds: [{ id: 'b1', from: 'H1', to: 'H2', order: 1 }],
+        initialLonePairs: {},
+        examples: [
+          {
+            id: 'cov-h2',
+            label: 'H₂',
+            prompt: 'Hydrogen molecule: share 1 pair of electrons between the two H atoms (duet rule).',
+            formulaDisplay: 'H₂',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'H1', element: 'H', xPct: 32, yPct: 50 },
+              { id: 'H2', element: 'H', xPct: 68, yPct: 50 },
+            ],
+            allowedBondOrders: [1, 2, 3],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [{ id: 'b1', from: 'H1', to: 'H2', order: 1 }],
+            initialLonePairs: {},
+            successExplanation: 'H–H shares 1 electron pair so both H atoms complete their duet.',
+          },
+          {
+            id: 'cov-o2',
+            label: 'O₂',
+            prompt: 'Oxygen molecule: form the correct bond order and place lone pairs so both O atoms achieve an octet.',
+            formulaDisplay: 'O₂',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'O1', element: 'O', xPct: 32, yPct: 50 },
+              { id: 'O2', element: 'O', xPct: 68, yPct: 50 },
+            ],
+            allowedBondOrders: [1, 2, 3],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [{ id: 'b1', from: 'O1', to: 'O2', order: 2 }],
+            initialLonePairs: {},
+            successExplanation: 'O=O has a double bond and 2 lone pairs on each oxygen (12 valence electrons total).',
+          },
+          {
+            id: 'cov-n2',
+            label: 'N₂',
+            prompt: 'Nitrogen molecule: construct the bond order and lone pairs for N₂ (10 valence electrons).',
+            formulaDisplay: 'N₂',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'N1', element: 'N', xPct: 32, yPct: 50 },
+              { id: 'N2', element: 'N', xPct: 68, yPct: 50 },
+            ],
+            allowedBondOrders: [1, 2, 3],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [{ id: 'b1', from: 'N1', to: 'N2', order: 3 }],
+            initialLonePairs: {},
+            successExplanation: 'N≡N has a strong triple covalent bond and 1 lone pair on each nitrogen atom.',
+          },
+          {
+            id: 'cov-h2o',
+            label: 'H₂O',
+            prompt: 'Water: connect O to both H atoms and assign non-bonding lone pairs on Oxygen.',
+            formulaDisplay: 'H₂O',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'O1', element: 'O', xPct: 50, yPct: 42, isCentral: true },
+              { id: 'H1', element: 'H', xPct: 24, yPct: 68 },
+              { id: 'H2', element: 'H', xPct: 76, yPct: 68 },
+            ],
+            allowedBondOrders: [1, 2],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [
+              { id: 'b1', from: 'O1', to: 'H1', order: 1 },
+              { id: 'b2', from: 'O1', to: 'H2', order: 1 },
+            ],
+            initialLonePairs: {},
+            successExplanation: 'Water has two O–H single bonds and 2 lone pairs on Oxygen (8 valence electrons).',
+          },
+          {
+            id: 'cov-co2',
+            label: 'CO₂',
+            prompt: 'Carbon dioxide: connect C to both O atoms and place all 16 valence electrons.',
+            formulaDisplay: 'CO₂',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'O1', element: 'O', xPct: 20, yPct: 50 },
+              { id: 'C1', element: 'C', xPct: 50, yPct: 50, isCentral: true },
+              { id: 'O2', element: 'O', xPct: 80, yPct: 50 },
+            ],
+            allowedBondOrders: [1, 2, 3],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [
+              { id: 'b1', from: 'C1', to: 'O1', order: 2 },
+              { id: 'b2', from: 'C1', to: 'O2', order: 2 },
+            ],
+            initialLonePairs: {},
+            successExplanation: 'O=C=O satisfies the octet rule for carbon and both oxygen atoms.',
+          },
+          {
+            id: 'cov-ch4',
+            label: 'CH₄',
+            prompt: 'Methane: bond central Carbon to all four Hydrogen atoms (8 valence electrons).',
+            formulaDisplay: 'CH₄',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'C1', element: 'C', xPct: 50, yPct: 50, isCentral: true },
+              { id: 'H1', element: 'H', xPct: 50, yPct: 18 },
+              { id: 'H2', element: 'H', xPct: 50, yPct: 82 },
+              { id: 'H3', element: 'H', xPct: 22, yPct: 50 },
+              { id: 'H4', element: 'H', xPct: 78, yPct: 50 },
+            ],
+            allowedBondOrders: [1, 2],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [
+              { id: 'b1', from: 'C1', to: 'H1', order: 1 },
+              { id: 'b2', from: 'C1', to: 'H2', order: 1 },
+              { id: 'b3', from: 'C1', to: 'H3', order: 1 },
+              { id: 'b4', from: 'C1', to: 'H4', order: 1 },
+            ],
+            initialLonePairs: {},
+            successExplanation: 'Methane has 4 single C–H covalent bonds and 0 lone pairs.',
+          },
+          {
+            id: 'cov-nh3',
+            label: 'NH₃',
+            prompt: 'Ammonia: bond central Nitrogen to three Hydrogen atoms and add Nitrogen’s lone pair.',
+            formulaDisplay: 'NH₃',
+            netCharge: 0,
+            octetPolicy: 'strict-duet-octet',
+            atoms: [
+              { id: 'N1', element: 'N', xPct: 50, yPct: 40, isCentral: true },
+              { id: 'H1', element: 'H', xPct: 22, yPct: 70 },
+              { id: 'H2', element: 'H', xPct: 50, yPct: 76 },
+              { id: 'H3', element: 'H', xPct: 78, yPct: 70 },
+            ],
+            allowedBondOrders: [1, 2],
+            allowDativeBonds: false,
+            initialBonds: [],
+            referenceBonds: [
+              { id: 'b1', from: 'N1', to: 'H1', order: 1 },
+              { id: 'b2', from: 'N1', to: 'H2', order: 1 },
+              { id: 'b3', from: 'N1', to: 'H3', order: 1 },
+            ],
+            initialLonePairs: {},
+            successExplanation: 'Ammonia (NH₃) has 3 N–H single bonds and 1 lone pair on Nitrogen.',
+          },
+        ],
+        hints: [
+          'Count total valence electrons first, then share pairs so H reaches 2 and C/N/O reach 8.',
+          'Do not forget non-bonding lone pairs on O and N!',
+        ],
+      },
+    ];
+  }
+
+  assertValidLessonInteractives(b8Ref3, { allowDevOnlyEngines: true });
+  const strippedB8Ref3 = JSON.parse(JSON.stringify(b8Ref3)) as NarratedLesson;
+  for (const slide of strippedB8Ref3.slides) delete slide.interactive;
+  if (JSON.stringify(strippedB8Ref3) !== JSON.stringify(orig)) {
+    throw new Error('PRESERVATION CHECK FAILED for Refinement 3 Basic 8 JSON!');
+  }
+  const outB8Ref3 = path.join(WORK_DIR, 'b8-sci-t1-atoms-and-the-periodic-table.refinement3-v1.9.0.json');
+  fs.writeFileSync(outB8Ref3, JSON.stringify(b8Ref3, null, 2) + '\n', 'utf8');
+  console.log(JSON.stringify({ lessonId: 'b8-sci-t1-atoms-and-the-periodic-table (Refinement 3 v1.9.0)', devGate: 'PASSED (allowDevOnlyEngines: true)', preservationDiff: 'IDENTICAL', outB8Ref3 }));
+
+  // PCV-1 Refinement 3 (v1.9.0) — Hydrocarbons: comparative VSEPR (a06) + selectable combustion/cracking (c01, c02, e03)
+  const hcOrig = JSON.parse(
+    fs.readFileSync(path.join(WORK_DIR, 'cambridge-as-a-level-chemistry-hydrocarbons.original.json'), 'utf8'),
+  ) as NarratedLesson;
+  const hcRef3 = JSON.parse(
+    fs.readFileSync(path.join(WORK_DIR, 'cambridge-as-a-level-chemistry-hydrocarbons.enriched.json'), 'utf8'),
+  ) as NarratedLesson;
+
+  const a06 = hcRef3.slides.find((s) => s.id === 'a06');
+  if (a06) {
+    a06.interactive = [
+      {
+        id: 'hc-a06-vsepr-playground',
+        engine: 'construction-lab',
+        labKind: 'atom-bond-builder',
+        mode: 'molecular-geometry',
+        schemaVersion: 1,
+        minEngineVersion: '1.9.0',
+        curriculumLevel: 'as-a-level',
+        subjectTag: 'A-Level Chemistry · Dynamic VSEPR Playground',
+        title: 'Comparative Molecular Geometry & Polarity Playground (CH₄, CO₂, NH₃, H₂O, PCl₅, SF₆)',
+        instructions:
+          'Select molecules across steric numbers 2 to 6 to compare electron-domain geometry vs molecular shape, idealised vs measured bond angles, and 3D dipole polarity.',
+        accessibilityLabel: 'Comparative VSEPR molecular geometry playground for CH4, CO2, NH3, H2O, PCl5, and SF6',
+        fallbackText:
+          'Compare CH4 (tetrahedral 109.5°, non-polar), CO2 (linear 180°, non-polar), NH3 (trigonal pyramidal ~107°, polar), H2O (bent 104.5°, polar), PCl5 (trigonal bipyramidal 90°/120°, non-polar), SF6 (octahedral 90°, non-polar).',
+        modelNote:
+          'VSEPR predicts idealised electron-domain geometries; lone-pair–bonding-pair repulsion compresses measured angles (e.g. 109.5° → ~107° in NH₃ and 104.5° in H₂O).',
+        exploreFurther: true,
+        moleculeFormula: 'CH₄',
+        centralElement: 'C',
+        surroundingElements: ['H', 'H', 'H', 'H'],
+        targetBondingDomains: 4,
+        targetLonePairs: 0,
+        targetElectronGeometry: 'tetrahedral',
+        targetMolecularShape: 'tetrahedral',
+        targetBondAngleLabel: '109.5°',
+        checkPolarity: true,
+        expectedPolar: false,
+        examples: [
+          {
+            id: 'vsepr-ch4',
+            label: 'CH₄ (Tetrahedral)',
+            prompt: 'Methane (AX₄): 4 bonding domains, 0 lone pairs. Check geometry and overall polarity.',
+            moleculeFormula: 'CH₄',
+            centralElement: 'C',
+            surroundingElements: ['H', 'H', 'H', 'H'],
+            targetBondingDomains: 4,
+            targetLonePairs: 0,
+            targetElectronGeometry: 'tetrahedral',
+            targetMolecularShape: 'tetrahedral',
+            targetBondAngleLabel: '109.5°',
+            checkPolarity: true,
+            expectedPolar: false,
+            successExplanation: 'CH₄ is symmetrically tetrahedral (109.5°) and overall non-polar.',
+          },
+          {
+            id: 'vsepr-co2',
+            label: 'CO₂ (Linear)',
+            prompt: 'Carbon dioxide (AX₂): remember each C=O double bond counts as ONE electron domain!',
+            moleculeFormula: 'CO₂',
+            centralElement: 'C',
+            surroundingElements: ['O', 'O'],
+            targetBondingDomains: 2,
+            targetLonePairs: 0,
+            targetElectronGeometry: 'linear',
+            targetMolecularShape: 'linear',
+            targetBondAngleLabel: '180°',
+            checkPolarity: true,
+            expectedPolar: false,
+            successExplanation: 'CO₂ is linear (180°); its two equal opposite C=O dipoles cancel, making CO₂ non-polar.',
+          },
+          {
+            id: 'vsepr-nh3',
+            label: 'NH₃ (Pyramidal)',
+            prompt: 'Ammonia (AX₃E): compare tetrahedral electron geometry with trigonal pyramidal molecular shape.',
+            moleculeFormula: 'NH₃',
+            centralElement: 'N',
+            surroundingElements: ['H', 'H', 'H'],
+            targetBondingDomains: 3,
+            targetLonePairs: 1,
+            targetElectronGeometry: 'tetrahedral',
+            targetMolecularShape: 'trigonal-pyramidal',
+            targetBondAngleLabel: '~107° (<109.5°)',
+            checkPolarity: true,
+            expectedPolar: true,
+            successExplanation: 'NH₃ has tetrahedral electron geometry, trigonal pyramidal shape (~107°), and is polar.',
+          },
+          {
+            id: 'vsepr-h2o',
+            label: 'H₂O (Bent)',
+            prompt: 'Water (AX₂E₂): 2 bonding domains + 2 lone pairs compress the angle to ~104.5°.',
+            moleculeFormula: 'H₂O',
+            centralElement: 'O',
+            surroundingElements: ['H', 'H'],
+            targetBondingDomains: 2,
+            targetLonePairs: 2,
+            targetElectronGeometry: 'tetrahedral',
+            targetMolecularShape: 'bent',
+            targetBondAngleLabel: '104.5° (<109.5°)',
+            checkPolarity: true,
+            expectedPolar: true,
+            successExplanation: 'H₂O has tetrahedral electron geometry, bent shape (104.5°), and a strong net dipole (polar).',
+          },
+          {
+            id: 'vsepr-pcl5',
+            label: 'PCl₅ (Expanded AX₅)',
+            prompt: 'A-Level expanded valence: Phosphorus pentachloride has 5 bonding domains around P.',
+            moleculeFormula: 'PCl₅',
+            centralElement: 'P',
+            surroundingElements: ['Cl', 'Cl', 'Cl', 'Cl', 'Cl'],
+            targetBondingDomains: 5,
+            targetLonePairs: 0,
+            targetElectronGeometry: 'trigonal-bipyramidal',
+            targetMolecularShape: 'trigonal-bipyramidal',
+            targetBondAngleLabel: '90° / 120°',
+            checkPolarity: true,
+            expectedPolar: false,
+            successExplanation: 'PCl₅ is trigonal bipyramidal (90° axial-equatorial / 120° equatorial) and symmetrical (non-polar).',
+          },
+          {
+            id: 'vsepr-sf6',
+            label: 'SF₆ (Expanded AX₆)',
+            prompt: 'A-Level expanded valence: Sulfur hexafluoride has 6 bonding domains around S.',
+            moleculeFormula: 'SF₆',
+            centralElement: 'S',
+            surroundingElements: ['F', 'F', 'F', 'F', 'F', 'F'],
+            targetBondingDomains: 6,
+            targetLonePairs: 0,
+            targetElectronGeometry: 'octahedral',
+            targetMolecularShape: 'octahedral',
+            targetBondAngleLabel: '90°',
+            checkPolarity: true,
+            expectedPolar: false,
+            successExplanation: 'SF₆ is octahedral (90°) and completely symmetrical (non-polar).',
+          },
+        ],
+        hints: [
+          'Count bonding domains (a double bond = 1 domain) + lone pairs to get electron-domain geometry.',
+          'Molecular shape ignores lone-pair positions but reflects their extra repulsion on bond angles.',
+        ],
+      },
+    ];
+  }
+
+  const c01 = hcRef3.slides.find((s) => s.id === 'c01');
+  if (c01) {
+    c01.interactive = [
+      {
+        id: 'hc-c01-complete-combustion-playground',
+        engine: 'construction-lab',
+        labKind: 'equation-balancer',
+        schemaVersion: 1,
+        minEngineVersion: '1.9.0',
+        subjectTag: 'A-Level Chemistry · Dynamic Stoichiometry',
+        title: 'Dynamic Complete Combustion Playground (CH₄, C₂H₆, C₃H₈, C₄H₁₀)',
+        instructions:
+          'Select any alkane from methane to butane and balance its complete combustion in excess oxygen using simplest whole-number coefficients (notice when even-carbon alkanes require doubling!).',
+        accessibilityLabel: 'Dynamic complete combustion equation balancer for methane, ethane, propane, and butane',
+        fallbackText:
+          'Complete combustion: CH4 + 2O2 -> CO2 + 2H2O; 2C2H6 + 7O2 -> 4CO2 + 6H2O; C3H8 + 5O2 -> 3CO2 + 4H2O; 2C4H10 + 13O2 -> 8CO2 + 10H2O.',
+        exploreFurther: true,
+        maxCoefficient: 15,
+        requireSimplestRatio: true,
+        reactants: [{ formula: 'CH4', display: 'CH₄', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+        products: [{ formula: 'CO2', display: 'CO₂', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+        examples: [
+          {
+            id: 'comb-ch4',
+            label: 'Methane (CH₄)',
+            prompt: 'Balance complete combustion of methane (C₁).',
+            reactants: [{ formula: 'CH4', display: 'CH₄', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'CO2', display: 'CO₂', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: 'CH₄ + 2O₂ → CO₂ + 2H₂O.',
+          },
+          {
+            id: 'comb-c2h6',
+            label: 'Ethane (C₂H₆)',
+            prompt: 'Balance complete combustion of ethane (C₂ — requires doubling to clear the half-O₂!).',
+            reactants: [{ formula: 'C2H6', display: 'C₂H₆', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'CO2', display: 'CO₂', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: '2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O.',
+          },
+          {
+            id: 'comb-c3h8',
+            label: 'Propane (C₃H₈)',
+            prompt: 'Balance complete combustion of propane (C₃).',
+            reactants: [{ formula: 'C3H8', display: 'C₃H₈', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'CO2', display: 'CO₂', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: 'C₃H₈ + 5O₂ → 3CO₂ + 4H₂O.',
+          },
+          {
+            id: 'comb-c4h10',
+            label: 'Butane (C₄H₁₀)',
+            prompt: 'Balance complete combustion of butane (C₄ — double every coefficient to obtain simplest whole numbers!).',
+            maxCoefficient: 15,
+            reactants: [{ formula: 'C4H10', display: 'C₄H₁₀', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'CO2', display: 'CO₂', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: '2C₄H₁₀ + 13O₂ → 8CO₂ + 10H₂O.',
+          },
+        ],
+        hints: ['Balance C first, then H, then O₂ last. If O₂ is a half-integer (e.g. 3.5 O₂ for ethane), double every coefficient!'],
+      },
+    ];
+  }
+
+  const c02 = hcRef3.slides.find((s) => s.id === 'c02');
+  if (c02) {
+    c02.interactive = [
+      {
+        id: 'hc-c02-incomplete-combustion-playground',
+        engine: 'construction-lab',
+        labKind: 'equation-balancer',
+        schemaVersion: 1,
+        minEngineVersion: '1.9.0',
+        subjectTag: 'A-Level Chemistry · Dynamic Incomplete Combustion',
+        title: 'Dynamic Incomplete Combustion Playground (CO & Carbon Soot)',
+        instructions:
+          'Compare oxygen-limited combustion pathways producing toxic carbon monoxide (CO) or solid carbon soot (C) alongside water.',
+        accessibilityLabel: 'Dynamic incomplete combustion equation balancer for CO and carbon soot pathways',
+        fallbackText:
+          'Incomplete combustion examples: 2CH4 + 3O2 -> 2CO + 4H2O; CH4 + O2 -> C + 2H2O; 2C3H8 + 7O2 -> 6CO + 8H2O; C3H8 + 2O2 -> 3C + 4H2O.',
+        modelNote:
+          'In real oxygen-limited flames, a mixture of CO, C (soot), and CO₂ forms simultaneously rather than a single isolated pathway.',
+        exploreFurther: true,
+        requireSimplestRatio: true,
+        reactants: [{ formula: 'C3H8', display: 'C₃H₈', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+        products: [{ formula: 'C', display: 'C', state: 's' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+        examples: [
+          {
+            id: 'incomp-c3h8-soot',
+            label: 'Propane → C (soot)',
+            prompt: 'Severe oxygen limitation: propane forms solid carbon soot and water.',
+            reactants: [{ formula: 'C3H8', display: 'C₃H₈', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'C', display: 'C', state: 's' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: 'C₃H₈ + 2O₂ → 3C + 4H₂O.',
+          },
+          {
+            id: 'incomp-c3h8-co',
+            label: 'Propane → CO',
+            prompt: 'Limited oxygen: propane forms toxic carbon monoxide (CO) and water.',
+            reactants: [{ formula: 'C3H8', display: 'C₃H₈', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'CO', display: 'CO', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: '2C₃H₈ + 7O₂ → 6CO + 8H₂O.',
+          },
+          {
+            id: 'incomp-ch4-co',
+            label: 'Methane → CO',
+            prompt: 'Limited oxygen: methane forms carbon monoxide (CO) and water.',
+            reactants: [{ formula: 'CH4', display: 'CH₄', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'CO', display: 'CO', state: 'g' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: '2CH₄ + 3O₂ → 2CO + 4H₂O.',
+          },
+          {
+            id: 'incomp-ch4-soot',
+            label: 'Methane → C (soot)',
+            prompt: 'Severe oxygen limitation: methane forms carbon soot and water.',
+            reactants: [{ formula: 'CH4', display: 'CH₄', state: 'g' }, { formula: 'O2', display: 'O₂', state: 'g' }],
+            products: [{ formula: 'C', display: 'C', state: 's' }, { formula: 'H2O', display: 'H₂O', state: 'l' }],
+            successExplanation: 'CH₄ + O₂ → C + 2H₂O.',
+          },
+        ],
+        hints: ['Notice how much less O₂ is required when forming CO or C compared with complete combustion to CO₂.'],
+      },
+    ];
+  }
+
+  const e03 = hcRef3.slides.find((s) => s.id === 'e03');
+  if (e03) {
+    e03.interactive = [
+      {
+        id: 'hc-e03-cracking-playground',
+        engine: 'construction-lab',
+        labKind: 'equation-balancer',
+        schemaVersion: 1,
+        minEngineVersion: '1.9.0',
+        subjectTag: 'A-Level Chemistry · Dynamic Cracking',
+        title: 'Dynamic Thermal Cracking Playground (Alkane → Shorter Alkane + Alkene)',
+        instructions:
+          'Select different long-chain cracking reactions and balance the coefficients so carbon and hydrogen atoms are conserved.',
+        accessibilityLabel: 'Dynamic thermal cracking equation balancer for dodecane, decane, and octane',
+        fallbackText:
+          'Cracking examples: C12H26 -> C6H14 + 3C2H4; C10H22 -> C8H18 + C2H4; C8H18 -> C4H10 + 2C2H4.',
+        modelNote:
+          'Industrial cracking produces a mixture of alkanes and alkenes; each selectable example specifies a fixed product pair so stoichiometry is uniquely balanced.',
+        exploreFurther: true,
+        requireSimplestRatio: true,
+        reactants: [{ formula: 'C12H26', display: 'C₁₂H₂₆' }],
+        products: [{ formula: 'C6H14', display: 'C₆H₁₄' }, { formula: 'C2H4', display: 'C₂H₄' }],
+        examples: [
+          {
+            id: 'crack-c12',
+            label: 'Dodecane (C₁₂H₂₆)',
+            prompt: 'Crack dodecane into hexane (C₆H₁₄) and ethene (C₂H₄).',
+            reactants: [{ formula: 'C12H26', display: 'C₁₂H₂₆' }],
+            products: [{ formula: 'C6H14', display: 'C₆H₁₄' }, { formula: 'C2H4', display: 'C₂H₄' }],
+            successExplanation: 'C₁₂H₂₆ → C₆H₁₄ + 3C₂H₄ conserves 12 C and 26 H.',
+          },
+          {
+            id: 'crack-c10',
+            label: 'Decane (C₁₀H₂₂)',
+            prompt: 'Crack decane into octane (C₈H₁₈) and ethene (C₂H₄).',
+            reactants: [{ formula: 'C10H22', display: 'C₁₀H₂₂' }],
+            products: [{ formula: 'C8H18', display: 'C₈H₁₈' }, { formula: 'C2H4', display: 'C₂H₄' }],
+            successExplanation: 'C₁₀H₂₂ → C₈H₁₈ + C₂H₄ conserves 10 C and 22 H.',
+          },
+          {
+            id: 'crack-c8',
+            label: 'Octane (C₈H₁₈)',
+            prompt: 'Crack octane into butane (C₄H₁₀) and ethene (C₂H₄).',
+            reactants: [{ formula: 'C8H18', display: 'C₈H₁₈' }],
+            products: [{ formula: 'C4H10', display: 'C₄H₁₀' }, { formula: 'C2H4', display: 'C₂H₄' }],
+            successExplanation: 'C₈H₁₈ → C₄H₁₀ + 2C₂H₄ conserves 8 C and 18 H.',
+          },
+        ],
+        hints: ['Check both total C atoms and total H atoms on each side of the arrow.'],
+      },
+    ];
+  }
+
+  assertValidLessonInteractives(hcRef3, { allowDevOnlyEngines: true });
+  const strippedHcRef3 = JSON.parse(JSON.stringify(hcRef3)) as NarratedLesson;
+  for (const slide of strippedHcRef3.slides) delete slide.interactive;
+  if (JSON.stringify(strippedHcRef3) !== JSON.stringify(hcOrig)) {
+    throw new Error('PRESERVATION CHECK FAILED for Refinement 3 Hydrocarbons JSON!');
+  }
+  const outHcRef3 = path.join(WORK_DIR, 'cambridge-as-a-level-chemistry-hydrocarbons.refinement3-v1.9.0.json');
+  fs.writeFileSync(outHcRef3, JSON.stringify(hcRef3, null, 2) + '\n', 'utf8');
+  console.log(JSON.stringify({ lessonId: 'cambridge-as-a-level-chemistry-hydrocarbons (Refinement 3 v1.9.0)', devGate: 'PASSED (allowDevOnlyEngines: true)', preservationDiff: 'IDENTICAL', outHcRef3 }));
 })();

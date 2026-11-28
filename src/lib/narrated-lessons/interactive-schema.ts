@@ -87,9 +87,27 @@ export interface InteractiveEngineMeta {
    * Prevents publishing live CDN lessons that require an engine only present on a development branch.
    */
   productionVersion: string | null;
+  /**
+   * Optional per-capability production version overrides inside this single registry (Refinement 3).
+   * Enables activating verified capabilities (e.g. `construction-lab:atom-bond-builder` or
+   * `construction-lab:equation-balancer`) independently of unverified sibling domains without creating a second registry.
+   */
+  productionCapabilities?: Record<string, string>;
   supportedSchemaVersions: readonly number[];
   implemented: boolean;
   description: string;
+}
+
+/**
+ * Resolves the optional capability-level key for production activation checks.
+ * Currently scoped to `construction-lab:<labKind>` so verified chemistry capabilities can be
+ * promoted independently of unverified sibling construction-lab domains.
+ */
+export function getInteractiveCapabilityKey(obj: Record<string, unknown>): string | null {
+  if (obj.engine === 'construction-lab' && typeof obj.labKind === 'string' && obj.labKind.length > 0) {
+    return `construction-lab:${obj.labKind}`;
+  }
+  return null;
 }
 
 export const INTERACTIVE_RESOURCE_LIMITS = {
@@ -142,11 +160,15 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.8.0',
+    engineVersion: '1.9.0',
     productionVersion: '1.3.0',
+    productionCapabilities: {
+      'construction-lab:atom-bond-builder': '1.2.0',
+      'construction-lab:equation-balancer': '1.1.0',
+    },
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0 LIVE + open-ended atomic playground 1.8.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0; measurement-lab 1.4.0; data-stats-lab 1.5.0; number-manipulative 1.7.0).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0 LIVE + open-ended atomic playground 1.8.0 + dynamic selectable chemistry playgrounds & Explore Further 1.9.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0; measurement-lab 1.4.0; data-stats-lab 1.5.0; number-manipulative 1.7.0).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -236,12 +258,29 @@ export interface ConstructionLabSharedFields extends SlideInteractiveBase {
   modelNote?: string;
   prediction?: ConstructionPredictionDef;
   successExplanation?: string;
+  /** Optional Explore Further sandbox trigger (1.9.0; automatically disabled when isAssessment is true). */
+  exploreFurther?: boolean;
+  /** Marks formal mastery/exam exercises where open-ended Explore Further sandboxes must stay disabled. */
+  isAssessment?: boolean;
 }
 
 export interface BooleanCircuitConstructionConfig extends ConstructionLabSharedFields {
   labKind: 'boolean-circuit';
   activityId?: string;
   circuitConfig?: DeclarativeBooleanCircuitConfig;
+}
+
+export interface EquationBalancerExampleDef {
+  id: string;
+  label: string;
+  prompt?: string;
+  arrow?: '→' | '⇌' | '->';
+  maxCoefficient?: number;
+  requireSimplestRatio?: boolean;
+  reactants: ChemicalSpeciesDef[];
+  products: ChemicalSpeciesDef[];
+  modelNote?: string;
+  successExplanation?: string;
 }
 
 export interface EquationBalancerConstructionConfig extends ConstructionLabSharedFields {
@@ -253,6 +292,8 @@ export interface EquationBalancerConstructionConfig extends ConstructionLabShare
   difficulty?: 'foundation' | 'standard' | 'challenge';
   reactants: ChemicalSpeciesDef[];
   products: ChemicalSpeciesDef[];
+  /** Optional selectable validated equation bank (1.9.0). */
+  examples?: EquationBalancerExampleDef[];
 }
 
 export interface ElectricalCircuitConstructionConfig extends ConstructionLabSharedFields {
@@ -281,10 +322,69 @@ export interface BioSequenceConstructionConfig extends ConstructionLabSharedFiel
   inheritanceAssumption?: string;
 }
 
+export interface IonicBondingExampleDef {
+  id: string;
+  label: string;
+  prompt?: string;
+  cationElement: string;
+  anionElement: string;
+  targetCationCount: number;
+  targetAnionCount: number;
+  targetCationCharge: number;
+  targetAnionCharge: number;
+  requireSimplestRatio?: boolean;
+  modelNote?: string;
+  successExplanation?: string;
+}
+
+export interface CovalentBondingExampleDef {
+  id: string;
+  label: string;
+  prompt?: string;
+  formulaDisplay: string;
+  netCharge?: number;
+  octetPolicy: OctetPolicy;
+  atoms: CovalentAtomNode[];
+  allowedBondOrders: Array<1 | 2 | 3>;
+  allowDativeBonds?: boolean;
+  initialBonds?: CovalentBondDef[];
+  referenceBonds?: CovalentBondDef[];
+  expectedDativeCount?: number;
+  initialLonePairs?: Record<string, number>;
+  modelNote?: string;
+  successExplanation?: string;
+}
+
+export interface MolecularGeometryExampleDef {
+  id: string;
+  label: string;
+  prompt?: string;
+  moleculeFormula: string;
+  centralElement: string;
+  surroundingElements: string[];
+  targetBondingDomains: number;
+  targetLonePairs: number;
+  targetElectronGeometry: VseprShapeId;
+  targetMolecularShape: VseprShapeId;
+  targetBondAngleLabel: string;
+  checkPolarity?: boolean;
+  expectedPolar?: boolean;
+  bondOrdersDisplay?: Array<1 | 2 | 3>;
+  modelNote?: string;
+  successExplanation?: string;
+}
+
+export type AtomBondExampleDef =
+  | IonicBondingExampleDef
+  | CovalentBondingExampleDef
+  | MolecularGeometryExampleDef;
+
 export interface AtomBondBuilderConstructionConfig extends ConstructionLabSharedFields {
   labKind: 'atom-bond-builder';
   mode: AtomBondMode;
   curriculumLevel: 'introductory' | 'igcse' | 'as-a-level';
+  /** Shared selectable validated example bank for ionic-bonding, covalent-bonding, or molecular-geometry (1.9.0). */
+  examples?: AtomBondExampleDef[];
   // atomic-structure
   representation?: AtomicRepresentation;
   targetElement?: string;
@@ -1141,12 +1241,21 @@ export function validateSlideInteractiveConfig(
             );
           }
         }
-        if (options.requireProduction && engineMeta.productionVersion) {
-          const prodCmp = compareSemver(engineMeta.productionVersion, obj.minEngineVersion);
-          if (prodCmp === null || prodCmp < 0) {
+        if (options.requireProduction) {
+          const capKey = getInteractiveCapabilityKey(obj);
+          const capProdVersion = capKey ? engineMeta.productionCapabilities?.[capKey] : undefined;
+          const effectiveProdVersion = capProdVersion ?? engineMeta.productionVersion;
+          if (!effectiveProdVersion) {
             errors.push(
-              `Engine "${engineMeta.id}" requires minEngineVersion "${obj.minEngineVersion}" which exceeds productionVersion "${engineMeta.productionVersion}". Deploy the newer engine to production before publishing.`
+              `Engine "${engineMeta.id}"${capKey ? ` capability "${capKey}"` : ''} is not yet deployed in production.`
             );
+          } else {
+            const prodCmp = compareSemver(effectiveProdVersion, obj.minEngineVersion);
+            if (prodCmp === null || prodCmp < 0) {
+              errors.push(
+                `Engine "${engineMeta.id}"${capKey && capProdVersion ? ` capability "${capKey}"` : ''} requires minEngineVersion "${obj.minEngineVersion}" which exceeds productionVersion "${effectiveProdVersion}". Deploy and activate this capability before publishing.`
+              );
+            }
           }
         }
       }

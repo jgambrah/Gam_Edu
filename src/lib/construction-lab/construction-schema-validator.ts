@@ -78,9 +78,17 @@ export const CONSTRUCTION_LAB_LIMITS = {
   maxDcResistanceOhm: 1000,
   maxBooleanInputs: 4,
   maxBooleanGates: 10,
+  maxExamples: 8,
 } as const;
 
-const SHARED_OPTIONAL_KEYS = ['subjectTag', 'modelNote', 'prediction', 'successExplanation'] as const;
+const SHARED_OPTIONAL_KEYS = [
+  'subjectTag',
+  'modelNote',
+  'prediction',
+  'successExplanation',
+  'exploreFurther',
+  'isAssessment',
+] as const;
 
 const BOOLEAN_CIRCUIT_KEYS = new Set([
   'labKind',
@@ -98,7 +106,21 @@ const EQUATION_BALANCER_KEYS = new Set([
   'products',
   'showAtomVisuals',
   'difficulty',
+  'examples',
   ...SHARED_OPTIONAL_KEYS,
+]);
+
+const EQUATION_EXAMPLE_KEYS = new Set([
+  'id',
+  'label',
+  'prompt',
+  'arrow',
+  'maxCoefficient',
+  'requireSimplestRatio',
+  'reactants',
+  'products',
+  'modelNote',
+  'successExplanation',
 ]);
 
 const ELECTRICAL_CIRCUIT_KEYS = new Set([
@@ -240,9 +262,16 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' | '1.8.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' | '1.8.0' | '1.9.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (
+    obj.exploreFurther === true ||
+    ((obj.labKind === 'atom-bond-builder' || obj.labKind === 'equation-balancer') &&
+      Array.isArray(obj.examples))
+  ) {
+    return '1.9.0';
   }
   if (
     obj.labKind === 'atom-bond-builder' &&
@@ -329,6 +358,11 @@ export function validateConstructionLabConfig(
   for (const optStr of ['subjectTag', 'modelNote', 'successExplanation'] as const) {
     if (obj[optStr] !== undefined && typeof obj[optStr] !== 'string') {
       errors.push(`construction-lab "${optStr}" must be a string.`);
+    }
+  }
+  for (const optBool of ['exploreFurther', 'isAssessment'] as const) {
+    if (obj[optBool] !== undefined && typeof obj[optBool] !== 'boolean') {
+      errors.push(`construction-lab "${optBool}" must be a boolean.`);
     }
   }
   validatePrediction(obj.prediction, errors);
@@ -472,6 +506,74 @@ export function validateConstructionLabConfig(
         errors.push(
           `equation-balancer challenge has no valid positive whole-number balanced solution within 1..${maxCoeff}.`,
         );
+      }
+    }
+
+    if (obj.examples !== undefined) {
+      if (
+        !Array.isArray(obj.examples) ||
+        obj.examples.length < 1 ||
+        obj.examples.length > CONSTRUCTION_LAB_LIMITS.maxExamples
+      ) {
+        errors.push(
+          `equation-balancer "examples" must contain 1 to ${CONSTRUCTION_LAB_LIMITS.maxExamples} validated equations.`,
+        );
+      } else {
+        const seenExampleIds = new Set<string>();
+        obj.examples.forEach((rawEx, idx) => {
+          const ctx = `equation-balancer.examples[${idx}]`;
+          if (!rawEx || typeof rawEx !== 'object' || Array.isArray(rawEx)) {
+            errors.push(`${ctx} must be an object.`);
+            return;
+          }
+          const ex = rawEx as Record<string, unknown>;
+          checkAllowed(ex, EQUATION_EXAMPLE_KEYS, ctx, errors);
+          if (typeof ex.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(ex.id)) {
+            errors.push(`${ctx}.id must be a 1-40 char identifier.`);
+          } else if (seenExampleIds.has(ex.id)) {
+            errors.push(`Duplicate example id "${ex.id}" in equation-balancer.examples.`);
+          } else {
+            seenExampleIds.add(ex.id);
+          }
+          if (typeof ex.label !== 'string' || ex.label.trim().length < 2) {
+            errors.push(`${ctx}.label must be a non-empty string.`);
+          }
+          for (const optStr of ['prompt', 'modelNote', 'successExplanation'] as const) {
+            if (ex[optStr] !== undefined && typeof ex[optStr] !== 'string') {
+              errors.push(`${ctx}.${optStr} must be a string.`);
+            }
+          }
+          if (ex.arrow !== undefined && (typeof ex.arrow !== 'string' || !VALID_ARROWS.has(ex.arrow))) {
+            errors.push(`${ctx}.arrow must be "→", "⇌", or "->".`);
+          }
+          if (ex.requireSimplestRatio !== undefined && typeof ex.requireSimplestRatio !== 'boolean') {
+            errors.push(`${ctx}.requireSimplestRatio must be a boolean.`);
+          }
+          const exMaxCoeff = ex.maxCoefficient === undefined ? (typeof maxCoeff === 'number' ? maxCoeff : 10) : ex.maxCoefficient;
+          if (
+            typeof exMaxCoeff !== 'number' ||
+            !Number.isInteger(exMaxCoeff) ||
+            exMaxCoeff < 2 ||
+            exMaxCoeff > STOICHIOMETRY_LIMITS.maxCoefficientHardCap
+          ) {
+            errors.push(`${ctx}.maxCoefficient must be an integer between 2 and ${STOICHIOMETRY_LIMITS.maxCoefficientHardCap}.`);
+          }
+          const exReactants = validateSide(ex.reactants, `examples[${idx}].reactants`);
+          const exProducts = validateSide(ex.products, `examples[${idx}].products`);
+          if (
+            exReactants.length > 0 &&
+            exProducts.length > 0 &&
+            typeof exMaxCoeff === 'number' &&
+            Number.isInteger(exMaxCoeff)
+          ) {
+            const check = hasValidEquationSolution(exReactants, exProducts, exMaxCoeff);
+            if (!check.solvable) {
+              errors.push(
+                `${ctx} has no valid positive whole-number balanced solution within 1..${exMaxCoeff}.`,
+              );
+            }
+          }
+        });
       }
     }
     return;

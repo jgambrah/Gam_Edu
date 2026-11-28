@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { ConstructionLabShell } from './ConstructionLabShell';
+import { ConstructionLabShell, type ConstructionFeedbackState } from './ConstructionLabShell';
 import type { AtomBondBuilderConstructionConfig } from '@/lib/narrated-lessons/interactive-schema';
 import {
   INTRO_SHELL_FILL_CAPS,
@@ -160,27 +160,57 @@ function makeInitialSnapshot(
   };
 }
 
-export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionConfig }) {
-  const interactionMode = config.interactionMode ?? 'guided';
+function resolveActiveConfig(
+  config: AtomBondBuilderConstructionConfig,
+  exampleIdx: number,
+): AtomBondBuilderConstructionConfig {
+  if (!config.examples || config.examples.length === 0) return config;
+  const ex = config.examples[Math.min(exampleIdx, config.examples.length - 1)];
+  if (!ex) return config;
+  return {
+    ...config,
+    ...(ex as Partial<AtomBondBuilderConstructionConfig>),
+    modelNote: ex.modelNote ?? config.modelNote,
+    successExplanation: ex.successExplanation ?? config.successExplanation,
+  };
+}
+
+export function AtomBondLab({
+  config,
+  isSandbox = false,
+}: {
+  config: AtomBondBuilderConstructionConfig;
+  isSandbox?: boolean;
+}) {
+  const examples = config.examples && config.examples.length > 0 ? config.examples : null;
+  const [exampleIdx, setExampleIdx] = useState<number>(0);
+  const [completedExamples, setCompletedExamples] = useState<Record<number, boolean>>({});
+  const effectiveConfig = useMemo(
+    () => resolveActiveConfig(config, exampleIdx),
+    [config, exampleIdx],
+  );
+  const activeExample = examples ? examples[Math.min(exampleIdx, examples.length - 1)] : null;
+
+  const interactionMode = effectiveConfig.interactionMode ?? 'guided';
   const [challengeIdx, setChallengeIdx] = useState<number>(0);
   const [completedChallenges, setCompletedChallenges] = useState<Record<number, boolean>>({});
-  const [state, setState] = useState<LabSnapshot>(() => makeInitialSnapshot(config, 0));
+  const [state, setState] = useState<LabSnapshot>(() => makeInitialSnapshot(effectiveConfig, 0));
   const [history, setHistory] = useState<LabSnapshot[]>([]);
-  const [feedback, setFeedback] = useState<{ passed: boolean; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<ConstructionFeedbackState | null>(null);
 
   const activeChallenge =
-    interactionMode === 'independent-challenge' && config.challengeTargets?.length
-      ? config.challengeTargets[Math.min(challengeIdx, config.challengeTargets.length - 1)]
+    interactionMode === 'independent-challenge' && effectiveConfig.challengeTargets?.length
+      ? effectiveConfig.challengeTargets[Math.min(challengeIdx, effectiveConfig.challengeTargets.length - 1)]
       : null;
 
-  const maxZ = config.maxElementZ ?? (config.representation === 'subshells' ? 30 : 20);
+  const maxZ = effectiveConfig.maxElementZ ?? (effectiveConfig.representation === 'subshells' ? 30 : 20);
   const selectableElements = useMemo(
-    () => (config.mode === 'atomic-structure' ? getApprovedElementsUpToZ(maxZ) : []),
-    [config.mode, maxZ],
+    () => (effectiveConfig.mode === 'atomic-structure' ? getApprovedElementsUpToZ(maxZ) : []),
+    [effectiveConfig.mode, maxZ],
   );
   const showElementSelector =
-    config.mode === 'atomic-structure' &&
-    (config.allowElementSelector === true || interactionMode === 'free-exploration');
+    effectiveConfig.mode === 'atomic-structure' &&
+    (effectiveConfig.allowElementSelector === true || interactionMode === 'free-exploration');
 
   const selectElementPreset = (el: ElementRecord) => {
     const primaryIso = el.isotopes[0];
@@ -210,14 +240,25 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
   const switchChallenge = (idx: number) => {
     setChallengeIdx(idx);
     setHistory([]);
-    setState(makeInitialSnapshot(config, idx));
+    setState(makeInitialSnapshot(effectiveConfig, idx));
     setFeedback(null);
   };
 
   // Covalent bond-editor pair selectors (keyboard & touch friendly on 360px mobile)
-  const atoms = config.atoms ?? [];
+  const atoms = effectiveConfig.atoms ?? [];
   const [bondFrom, setBondFrom] = useState<string>(atoms[0]?.id ?? '');
   const [bondTo, setBondTo] = useState<string>(atoms[1]?.id ?? '');
+
+  const switchExample = (idx: number) => {
+    const nextCfg = resolveActiveConfig(config, idx);
+    setExampleIdx(idx);
+    setHistory([]);
+    setState(makeInitialSnapshot(nextCfg, 0));
+    setFeedback(null);
+    const nextAtoms = nextCfg.atoms ?? [];
+    setBondFrom(nextAtoms[0]?.id ?? '');
+    setBondTo(nextAtoms[1]?.id ?? '');
+  };
 
   const commit = (updater: (prev: LabSnapshot) => LabSnapshot) => {
     setHistory((h) => [...h.slice(-(MAX_UNDO - 1)), state]);
@@ -235,113 +276,144 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
 
   const handleReset = () => {
     setHistory([]);
-    setState(makeInitialSnapshot(config, challengeIdx));
+    setState(makeInitialSnapshot(effectiveConfig, challengeIdx));
     setFeedback(null);
   };
 
   const handleCheck = () => {
-    if (config.mode === 'atomic-structure') {
+    if (effectiveConfig.mode === 'atomic-structure') {
       if (interactionMode === 'free-exploration') {
         const res = evaluateFreeAtomicExploration({
           protons: state.protons,
           neutrons: state.neutrons,
-          representation: config.representation ?? 'shells',
+          representation: effectiveConfig.representation ?? 'shells',
           shells: state.shells,
           subshells: state.subshells,
           maxZ,
         });
-        setFeedback({ passed: res.passed, message: res.feedback });
+        const tone: 'verified' | 'unverified' | 'error' =
+          res.evaluationTier === 'verified'
+            ? 'verified'
+            : res.evaluationTier === 'unverified-consistent'
+              ? 'unverified'
+              : 'error';
+        setFeedback({ passed: res.passed, tone, message: res.feedback });
         return;
       }
 
-      const tEl = activeChallenge?.targetElement ?? config.targetElement ?? 'H';
-      const tMass = activeChallenge?.targetMassNumber ?? config.targetMassNumber ?? 1;
-      const tCharge = activeChallenge?.targetCharge ?? config.targetCharge ?? 0;
+      const tEl = activeChallenge?.targetElement ?? effectiveConfig.targetElement ?? 'H';
+      const tMass = activeChallenge?.targetMassNumber ?? effectiveConfig.targetMassNumber ?? 1;
+      const tCharge = activeChallenge?.targetCharge ?? effectiveConfig.targetCharge ?? 0;
 
       const res = evaluateAtomicConstruction({
         targetElement: tEl,
         targetMassNumber: tMass,
         targetCharge: tCharge,
-        representation: config.representation ?? 'shells',
+        representation: effectiveConfig.representation ?? 'shells',
         protons: state.protons,
         neutrons: state.neutrons,
         shells: state.shells,
         subshells: state.subshells,
-        allowHypotheticalIsotope: config.allowHypotheticalIsotope,
+        allowHypotheticalIsotope: effectiveConfig.allowHypotheticalIsotope,
       });
       if (res.passed && interactionMode === 'independent-challenge') {
         setCompletedChallenges((prev) => ({ ...prev, [challengeIdx]: true }));
       }
       setFeedback({
         passed: res.passed,
-        message: res.passed && config.successExplanation ? `${res.feedback} ${config.successExplanation}` : res.feedback,
+        tone: res.passed ? 'verified' : 'error',
+        message:
+          res.passed && effectiveConfig.successExplanation
+            ? `${res.feedback} ${effectiveConfig.successExplanation}`
+            : res.feedback,
       });
       return;
     }
 
-    if (config.mode === 'ionic-bonding') {
+    if (effectiveConfig.mode === 'ionic-bonding') {
       const res = evaluateIonicBonding({
-        cationElement: config.cationElement ?? 'Na',
-        anionElement: config.anionElement ?? 'Cl',
-        targetCationCount: config.targetCationCount ?? 1,
-        targetAnionCount: config.targetAnionCount ?? 1,
-        targetCationCharge: config.targetCationCharge ?? 1,
-        targetAnionCharge: config.targetAnionCharge ?? -1,
+        cationElement: effectiveConfig.cationElement ?? 'Na',
+        anionElement: effectiveConfig.anionElement ?? 'Cl',
+        targetCationCount: effectiveConfig.targetCationCount ?? 1,
+        targetAnionCount: effectiveConfig.targetAnionCount ?? 1,
+        targetCationCharge: effectiveConfig.targetCationCharge ?? 1,
+        targetAnionCharge: effectiveConfig.targetAnionCharge ?? -1,
         cationCount: state.cationCount,
         anionCount: state.anionCount,
         electronsTransferred: state.electronsTransferred,
-        requireSimplestRatio: config.requireSimplestRatio,
+        requireSimplestRatio: effectiveConfig.requireSimplestRatio,
       });
+      if (res.passed && examples) {
+        setCompletedExamples((prev) => ({ ...prev, [exampleIdx]: true }));
+      }
       setFeedback({
         passed: res.passed,
-        message: res.passed && config.successExplanation ? `${res.feedback} ${config.successExplanation}` : res.feedback,
+        tone: res.passed ? 'verified' : 'error',
+        message:
+          res.passed && effectiveConfig.successExplanation
+            ? `${res.feedback} ${effectiveConfig.successExplanation}`
+            : res.feedback,
       });
       return;
     }
 
-    if (config.mode === 'covalent-bonding') {
+    if (effectiveConfig.mode === 'covalent-bonding') {
       const res = evaluateCovalentBonding({
         atoms,
         bonds: state.bonds,
         lonePairsByAtom: state.lonePairs,
-        netCharge: config.netCharge ?? 0,
-        octetPolicy: config.octetPolicy ?? 'strict-duet-octet',
-        expectedDativeCount: config.expectedDativeCount,
-        referenceBonds: config.referenceBonds,
+        netCharge: effectiveConfig.netCharge ?? 0,
+        octetPolicy: effectiveConfig.octetPolicy ?? 'strict-duet-octet',
+        expectedDativeCount: effectiveConfig.expectedDativeCount,
+        referenceBonds: effectiveConfig.referenceBonds,
       });
+      if (res.passed && examples) {
+        setCompletedExamples((prev) => ({ ...prev, [exampleIdx]: true }));
+      }
       setFeedback({
         passed: res.passed,
-        message: res.passed && config.successExplanation ? `${res.feedback} ${config.successExplanation}` : res.feedback,
+        tone: res.passed ? 'verified' : 'error',
+        message:
+          res.passed && effectiveConfig.successExplanation
+            ? `${res.feedback} ${effectiveConfig.successExplanation}`
+            : res.feedback,
       });
       return;
     }
 
     const res = evaluateVseprConstruction({
-      moleculeFormula: config.moleculeFormula ?? 'H₂O',
-      centralElement: config.centralElement ?? 'O',
-      surroundingElements: config.surroundingElements ?? ['H', 'H'],
-      targetBondingDomains: config.targetBondingDomains ?? 2,
-      targetLonePairs: config.targetLonePairs ?? 2,
-      targetElectronGeometry: config.targetElectronGeometry ?? 'tetrahedral',
-      targetMolecularShape: config.targetMolecularShape ?? 'bent',
-      checkPolarity: Boolean(config.checkPolarity),
-      expectedPolar: config.expectedPolar,
+      moleculeFormula: effectiveConfig.moleculeFormula ?? 'H₂O',
+      centralElement: effectiveConfig.centralElement ?? 'O',
+      surroundingElements: effectiveConfig.surroundingElements ?? ['H', 'H'],
+      targetBondingDomains: effectiveConfig.targetBondingDomains ?? 2,
+      targetLonePairs: effectiveConfig.targetLonePairs ?? 2,
+      targetElectronGeometry: effectiveConfig.targetElectronGeometry ?? 'tetrahedral',
+      targetMolecularShape: effectiveConfig.targetMolecularShape ?? 'bent',
+      checkPolarity: Boolean(effectiveConfig.checkPolarity),
+      expectedPolar: effectiveConfig.expectedPolar,
       selectedBondingDomains: state.bondingDomains,
       selectedLonePairs: state.lonePairsCount,
       selectedElectronGeometry: state.electronGeometry,
       selectedMolecularShape: state.molecularShape,
       selectedPolarity: state.polarity,
     });
+    if (res.passed && examples) {
+      setCompletedExamples((prev) => ({ ...prev, [exampleIdx]: true }));
+    }
     setFeedback({
       passed: res.passed,
-      message: res.passed && config.successExplanation ? `${res.feedback} ${config.successExplanation}` : res.feedback,
+      tone: res.passed ? 'verified' : 'error',
+      message:
+        res.passed && effectiveConfig.successExplanation
+          ? `${res.feedback} ${effectiveConfig.successExplanation}`
+          : res.feedback,
     });
   };
 
   // Helper for covalent bond cycling between two atoms
   const cycleBondBetween = (aId: string, bId: string, asDative = false) => {
     if (!aId || !bId || aId === bId) return;
-    const allowed = config.allowedBondOrders ?? [1, 2, 3];
+    const allowed = effectiveConfig.allowedBondOrders ?? [1, 2, 3];
     commit((prev) => {
       const idx = prev.bonds.findIndex(
         (b) => (b.from === aId && b.to === bId) || (b.from === bId && b.to === aId),
@@ -376,8 +448,11 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
   };
 
   const expectedValenceTotal = useMemo(
-    () => (config.mode === 'covalent-bonding' ? computeExpectedValenceElectrons(atoms, config.netCharge ?? 0) ?? 0 : 0),
-    [config.mode, atoms, config.netCharge],
+    () =>
+      effectiveConfig.mode === 'covalent-bonding'
+        ? computeExpectedValenceElectrons(atoms, effectiveConfig.netCharge ?? 0) ?? 0
+        : 0,
+    [effectiveConfig.mode, atoms, effectiveConfig.netCharge],
   );
 
   const placedValenceTotal = useMemo(() => {
@@ -387,39 +462,96 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
   }, [state.bonds, state.lonePairs]);
 
   const checkLabel =
-    config.mode === 'atomic-structure'
+    effectiveConfig.mode === 'atomic-structure'
       ? 'Check atomic structure'
-      : config.mode === 'ionic-bonding'
+      : effectiveConfig.mode === 'ionic-bonding'
         ? 'Check ionic bonding'
-        : config.mode === 'covalent-bonding'
+        : effectiveConfig.mode === 'covalent-bonding'
           ? 'Check covalent structure'
           : 'Check geometry & polarity';
 
   const currentAtomicEl = getElementByZ(state.protons);
   const currentTotalE =
-    config.representation === 'subshells'
+    effectiveConfig.representation === 'subshells'
       ? SUBSHELL_ORDER.reduce((a, s) => a + state.subshells[s], 0)
       : state.shells.reduce((a, b) => a + b, 0);
   const currentCharge = state.protons - currentTotalE;
 
+  const sandboxConfig: AtomBondBuilderConstructionConfig | null = useMemo(() => {
+    if (isSandbox || !config.exploreFurther || config.isAssessment) return null;
+    if (config.mode === 'atomic-structure') {
+      return {
+        ...config,
+        interactionMode: 'free-exploration',
+        allowElementSelector: true,
+        startEmpty: false,
+        lockNucleus: false,
+        exploreFurther: false,
+      };
+    }
+    return { ...config, exploreFurther: false };
+  }, [config, isSandbox]);
+
+  const renderExampleSelector = () => {
+    if (!examples) return null;
+    const selectorLabel =
+      effectiveConfig.mode === 'ionic-bonding'
+        ? 'Select ionic compound example'
+        : effectiveConfig.mode === 'covalent-bonding'
+          ? 'Select covalent molecule example'
+          : 'Select molecular geometry example';
+    return (
+      <div className="mb-3 rounded-xl border border-indigo-200 bg-indigo-50/70 p-3 space-y-2">
+        <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label={selectorLabel}>
+          {examples.map((ex, idx) => (
+            <button
+              key={ex.id}
+              type="button"
+              role="tab"
+              aria-selected={exampleIdx === idx}
+              onClick={() => switchExample(idx)}
+              className={`min-h-[44px] rounded-lg px-3 text-xs font-bold transition ${
+                exampleIdx === idx
+                  ? 'bg-indigo-700 text-white'
+                  : completedExamples[idx]
+                    ? 'border border-emerald-400 bg-emerald-50 text-emerald-900'
+                    : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-100'
+              }`}
+            >
+              {ex.label} {completedExamples[idx] ? '✓' : ''}
+            </button>
+          ))}
+        </div>
+        {activeExample?.prompt && (
+          <p className="text-xs font-bold text-indigo-950">{activeExample.prompt}</p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <ConstructionLabShell
-      id={config.id}
+      id={isSandbox ? `${config.id}-sandbox` : config.id}
       labKind={config.labKind}
-      title={config.title}
+      title={isSandbox ? `${config.title} (Explore Further)` : config.title}
       instructions={config.instructions}
       accessibilityLabel={config.accessibilityLabel}
       subjectTag={config.subjectTag ?? 'Chemistry'}
-      modelNote={config.modelNote}
+      modelNote={effectiveConfig.modelNote}
       hints={config.hints}
-      prediction={config.prediction}
+      prediction={isSandbox ? undefined : config.prediction}
       canUndo={history.length > 0}
       onUndo={handleUndo}
       onReset={handleReset}
       onCheck={handleCheck}
       checkLabel={checkLabel}
       feedback={feedback}
+      disableExploreFurther={isSandbox || Boolean(config.isAssessment) || !config.exploreFurther}
+      renderExploreFurther={
+        sandboxConfig ? () => <AtomBondLab config={sandboxConfig} isSandbox /> : undefined
+      }
     >
+      {renderExampleSelector()}
       {/* MODE 1: ATOMIC STRUCTURE */}
       {config.mode === 'atomic-structure' && (() => {
         const liveEval = evaluateFreeAtomicExploration({
@@ -736,7 +868,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
                   })}
                 </svg>
                 <p className="mt-1 text-center text-[10px] text-slate-500">
-                  Rings represent quantised energy levels (not circular paths).
+                  Rings represent quantised energy levels (not circular paths). Simplified first-20 filling model — not absolute physical shell capacities.
                 </p>
               </div>
 
@@ -793,15 +925,46 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
       })()}
 
       {/* MODE 2: IONIC BONDING */}
-      {config.mode === 'ionic-bonding' && (
+      {effectiveConfig.mode === 'ionic-bonding' && (() => {
+        const catSym = effectiveConfig.cationElement ?? 'Na';
+        const anSym = effectiveConfig.anionElement ?? 'Cl';
+        const catRec = getElementBySymbol(catSym);
+        const anRec = getElementBySymbol(anSym);
+        const catCharge = effectiveConfig.targetCationCharge ?? 1;
+        const anCharge = effectiveConfig.targetAnionCharge ?? -1;
+        const eLostNeeded = state.cationCount * catCharge;
+        const eGainedNeeded = state.anionCount * Math.abs(anCharge);
+        const netCharge = state.cationCount * catCharge + state.anionCount * anCharge;
+        const transferComplete =
+          state.electronsTransferred > 0 &&
+          state.electronsTransferred === eLostNeeded &&
+          eLostNeeded === eGainedNeeded;
+
+        return (
         <div className="space-y-4">
+          {/* Step 1: Neutral Atoms & Outer Valence Electrons */}
+          <div className="rounded-xl border border-sky-200 bg-sky-50/50 px-3 py-2 text-xs text-sky-950">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span>
+                <strong>Neutral metal:</strong> {catRec?.name ?? catSym} ({catSym}) ·{' '}
+                <span className="font-mono font-bold">{catRec?.valenceElectrons ?? catCharge}</span> outer e⁻
+                (loses {catCharge} e⁻ → {catSym}{catCharge > 1 ? catCharge : ''}⁺)
+              </span>
+              <span>
+                <strong>Neutral non-metal:</strong> {anRec?.name ?? anSym} ({anSym}) ·{' '}
+                <span className="font-mono font-bold">{anRec?.valenceElectrons ?? 8 - Math.abs(anCharge)}</span> outer e⁻
+                (gains {Math.abs(anCharge)} e⁻ → {anSym}{Math.abs(anCharge) > 1 ? Math.abs(anCharge) : ''}⁻)
+              </span>
+            </div>
+          </div>
+
           <div className="grid gap-2 sm:grid-cols-3">
             <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
-              <span className="text-xs font-bold text-slate-700">{config.cationElement} atoms</span>
+              <span className="text-xs font-bold text-slate-700">{catSym} atoms</span>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  aria-label={`Decrease ${config.cationElement} count`}
+                  aria-label={`Decrease ${catSym} count`}
                   onClick={() => commit((p) => ({ ...p, cationCount: Math.max(1, p.cationCount - 1) }))}
                   className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 font-extrabold"
                 >
@@ -810,7 +973,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
                 <span className="w-6 text-center font-mono text-sm font-extrabold">{state.cationCount}</span>
                 <button
                   type="button"
-                  aria-label={`Increase ${config.cationElement} count`}
+                  aria-label={`Increase ${catSym} count`}
                   onClick={() =>
                     commit((p) => ({
                       ...p,
@@ -825,11 +988,11 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             </div>
 
             <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
-              <span className="text-xs font-bold text-slate-700">{config.anionElement} atoms</span>
+              <span className="text-xs font-bold text-slate-700">{anSym} atoms</span>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  aria-label={`Decrease ${config.anionElement} count`}
+                  aria-label={`Decrease ${anSym} count`}
                   onClick={() => commit((p) => ({ ...p, anionCount: Math.max(1, p.anionCount - 1) }))}
                   className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 font-extrabold"
                 >
@@ -838,7 +1001,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
                 <span className="w-6 text-center font-mono text-sm font-extrabold">{state.anionCount}</span>
                 <button
                   type="button"
-                  aria-label={`Increase ${config.anionElement} count`}
+                  aria-label={`Increase ${anSym} count`}
                   onClick={() =>
                     commit((p) => ({
                       ...p,
@@ -880,7 +1043,25 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             </div>
           </div>
 
-          {/* Bracketed Dot-and-Cross Ion Ratio Display (never an isolated covalent molecule) */}
+          {/* Step 2: Live Electron-Transfer Conservation & Charge Balance Readout */}
+          <div className="grid gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:grid-cols-3">
+            <div>
+              <span className="text-slate-500">e⁻ to lose ({state.cationCount} × {catSym}):</span>{' '}
+              <span className="font-mono font-extrabold text-indigo-800">{eLostNeeded}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">e⁻ to gain ({state.anionCount} × {anSym}):</span>{' '}
+              <span className="font-mono font-extrabold text-teal-800">{eGainedNeeded}</span>
+            </div>
+            <div>
+              <span className="text-slate-500">Transferred / Net charge:</span>{' '}
+              <span className="font-mono font-extrabold text-slate-900">
+                {state.electronsTransferred} e⁻ · {netCharge > 0 ? `+${netCharge}` : netCharge}
+              </span>
+            </div>
+          </div>
+
+          {/* Step 3: Bracketed Dot-and-Cross Ion Ratio Display (never an isolated covalent molecule) */}
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {Array.from({ length: state.cationCount }).map((_, i) => (
@@ -888,21 +1069,23 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
                   key={`cat-${i}`}
                   className="inline-flex items-center gap-1 rounded-xl border-2 border-indigo-400 bg-white px-3 py-2 font-mono text-sm font-extrabold text-indigo-900"
                 >
-                  <span>[{config.cationElement}]</span>
+                  <span>[{catSym}]</span>
                   <sup className="text-xs text-indigo-700">
-                    {state.electronsTransferred > 0 ? `${config.targetCationCharge ?? 1}+` : '0'}
+                    {transferComplete ? `${catCharge > 1 ? catCharge : ''}+` : state.electronsTransferred > 0 ? 'transferring' : '0'}
                   </sup>
                 </div>
               ))}
-              <span className="text-xs font-bold text-slate-400">electrostatic attraction</span>
+              <span className="text-xs font-bold text-slate-500">
+                {transferComplete ? '⇄ electrostatic attraction ⇄' : 'transfer e⁻ to form ions'}
+              </span>
               {Array.from({ length: state.anionCount }).map((_, i) => (
                 <div
                   key={`an-${i}`}
                   className="inline-flex items-center gap-1 rounded-xl border-2 border-teal-500 bg-white px-3 py-2 font-mono text-sm font-extrabold text-teal-900"
                 >
-                  <span>[{config.anionElement} ●×]</span>
+                  <span>[{anSym} ●×]</span>
                   <sup className="text-xs text-teal-700">
-                    {state.electronsTransferred > 0 ? `${Math.abs(config.targetAnionCharge ?? -1)}−` : '0'}
+                    {transferComplete ? `${Math.abs(anCharge) > 1 ? Math.abs(anCharge) : ''}−` : state.electronsTransferred > 0 ? 'transferring' : '0'}
                   </sup>
                 </div>
               ))}
@@ -910,25 +1093,21 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             <p className="mt-2 text-center text-xs font-semibold text-slate-600">
               Empirical formula ratio:{' '}
               <span className="font-mono font-extrabold text-slate-900">
-                {formatEmpiricalFormula(
-                  config.cationElement ?? 'Na',
-                  state.cationCount,
-                  config.anionElement ?? 'Cl',
-                  state.anionCount,
-                )}
+                {formatEmpiricalFormula(catSym, state.cationCount, anSym, state.anionCount)}
               </span>{' '}
-              (extended ionic lattice unit, not an isolated molecule)
+              (extended 3D ionic lattice held by electrostatic attraction — never an isolated covalent molecule)
             </p>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* MODE 3: COVALENT & COORDINATE BONDING */}
-      {config.mode === 'covalent-bonding' && (
+      {effectiveConfig.mode === 'covalent-bonding' && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs">
             <span className="font-bold text-slate-800">
-              Species: <span className="font-mono text-indigo-700">{config.formulaDisplay}</span>
+              Species: <span className="font-mono text-indigo-700">{effectiveConfig.formulaDisplay}</span>
             </span>
             <span className="font-mono font-bold text-slate-700">
               Valence e⁻ placed: {placedValenceTotal} / {expectedValenceTotal}
@@ -939,7 +1118,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-2">
             <svg
               role="img"
-              aria-label={`Covalent structure builder for ${config.formulaDisplay} with ${state.bonds.length} bond(s) and ${placedValenceTotal} of ${expectedValenceTotal} valence electrons placed`}
+              aria-label={`Covalent structure builder for ${effectiveConfig.formulaDisplay} with ${state.bonds.length} bond(s) and ${placedValenceTotal} of ${expectedValenceTotal} valence electrons placed`}
               viewBox="0 0 400 220"
               className="mx-auto h-48 w-full max-w-md"
             >
@@ -1044,7 +1223,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             >
               Cycle Bond (1/2/3/Off)
             </button>
-            {config.allowDativeBonds && (
+            {effectiveConfig.allowDativeBonds && (
               <button
                 type="button"
                 onClick={() => cycleBondBetween(bondFrom, bondTo, true)}
@@ -1101,7 +1280,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
       )}
 
       {/* MODE 4: MOLECULAR GEOMETRY & POLARITY (VSEPR) */}
-      {config.mode === 'molecular-geometry' && (
+      {effectiveConfig.mode === 'molecular-geometry' && (
         <div className="space-y-4">
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
@@ -1201,7 +1380,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             </label>
           </div>
 
-          {config.checkPolarity && (
+          {effectiveConfig.checkPolarity && (
             <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
               <span className="text-xs font-bold text-slate-700">Overall Molecular Polarity:</span>
               {(['polar', 'non-polar'] as const).map((pol) => (
@@ -1221,15 +1400,20 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             </div>
           )}
 
-          {/* Lightweight 2D VSEPR Projection Summary Card */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-xs text-slate-700">
-            <span className="font-bold text-slate-900">{config.moleculeFormula}</span> · Central:{' '}
-            <span className="font-mono font-bold">{config.centralElement}</span> · Surrounding:{' '}
-            <span className="font-mono font-bold">{(config.surroundingElements ?? []).join(', ')}</span> · Reference
-            angle for AX{state.bondingDomains}E{state.lonePairsCount}:{' '}
-            <span className="font-mono font-bold text-indigo-700">
-              {lookupVseprEntry(state.bondingDomains, state.lonePairsCount)?.referenceAngleLabel ?? 'Unsupported AXmEn'}
-            </span>
+          {/* Lightweight 2D VSEPR Projection Summary Card (distinguishes electron-domain geometry vs molecular shape & idealised vs measured angles) */}
+          <div className="space-y-1 rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-xs text-slate-700">
+            <div>
+              <span className="font-bold text-slate-900">{effectiveConfig.moleculeFormula}</span> · Central:{' '}
+              <span className="font-mono font-bold">{effectiveConfig.centralElement}</span> · Surrounding:{' '}
+              <span className="font-mono font-bold">{(effectiveConfig.surroundingElements ?? []).join(', ')}</span> · Reference
+              angle for AX{state.bondingDomains}E{state.lonePairsCount}:{' '}
+              <span className="font-mono font-bold text-indigo-700">
+                {lookupVseprEntry(state.bondingDomains, state.lonePairsCount)?.referenceAngleLabel ?? 'Unsupported AXmEn'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Electron-domain geometry counts all bonding domains + lone pairs; molecular shape describes bonded atom positions only. Reference angles distinguish idealised VSEPR angles (e.g. 109.5°) from measured lone-pair compression (e.g. ~107° in NH₃, ~104.5° in H₂O).
+            </p>
           </div>
         </div>
       )}

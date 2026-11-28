@@ -29,7 +29,7 @@ export const STOICHIOMETRY_LIMITS = {
   maxParenDepth: 2,
   maxSubscript: 99,
   minCoefficient: 1,
-  maxCoefficientHardCap: 12,
+  maxCoefficientHardCap: 15,
 } as const;
 
 export type ChemicalStateSymbol = 's' | 'l' | 'g' | 'aq';
@@ -224,7 +224,7 @@ export function evaluateEquationBalance(
 ): EquationBalanceEvaluation {
   const maxCoeff = Math.min(
     STOICHIOMETRY_LIMITS.maxCoefficientHardCap,
-    options.maxCoefficient ?? STOICHIOMETRY_LIMITS.maxCoefficientHardCap,
+    options.maxCoefficient ?? 12,
   );
   const requireSimplest = options.requireSimplestRatio ?? true;
 

@@ -2,15 +2,18 @@
 
 > Maintained by Gemini (Primary Developer) and reconciled by ChatGPT. Claude records independent audit outcomes in `CLAUDE_AUDIT_PROGRESS.md` (Gemini never edits `CLAUDE_AUDIT_PROGRESS.md` or alters Claude's audit scores or `VERIFICATION_REQUIRED` states).
 
-## Latest development commits (Step 5E Close-Out & Step 5F — 2026-11-28)
-- **Last reported development commit**: `512fca19` (`docs(enrichment): update Gemini progress, fix TS ratchet, and package Authoring Kit v2.5`).
+## Latest development commits (Step 5E Close-Out, Step 5F & PCV-1 Refinements 1–3 — 2026-11-28)
+- **Last reported foundation development commit**: `512fca19` (`docs(enrichment): update Gemini progress, fix TS ratchet, and package Authoring Kit v2.5`).
 - **PCV-1 discovery checkpoint**: `1bd9eaab`.
 - **PCV-1 implementation checkpoint**: `a35a207b` (published via `--skip-media`, catalogue `v98`).
 - **PCV-1 Refinement 1 checkpoint**: `5103e762` (`construction-lab 1.8.0` open-ended atomic playground, Periodic Table selector, 5-tier standard, live `Mr` & `s21` fixes at CDN `v100`).
-- **Current assignment**: **PCV-1 Refinement 2 (Dynamic Playground Architecture & Scientific Corrections)**:
-  - Completed all 6 scientific corrections in `evaluateFreeAtomicExploration` (`atom-bond-atomic.ts`): strict input integrity rejection (negative/fractional/NaN/over-capacity), independent shell/subshell capacity validation, unsupported subshell ions classified as `unverified-subshells` (`passed: false`), neutral atoms excluded from `isCommonIon`, isotope verification preserved, and explicit Group/Period invariance note for ion formation.
-  - Applied configuration-only dynamic improvements (`showDataTable`, full integer presets, `whatChanges`/`whyItMatters`/`reactionMeta`) to LIVE Hydrocarbons activities (`1.0.0–1.2.0`) and published via `--skip-media`.
-  - Audited all 43 pilot activities (A–E classification) and produced the complete 16-engine Dynamic Capability Matrix + proposed small reusable extensions (selectable banks for ionic/covalent/equation-balancer & isolated Explore Further control) for ChatGPT's review before implementation.
+- **PCV-1 Refinement 2 checkpoint**: `e6470751` (6 scientific fixes in `evaluateFreeAtomicExploration`, config-only live Hydrocarbons upgrades published at CDN `v101` hash `d81bff77545d`, 43-activity A–E audit & 16-engine Dynamic Capability Matrix).
+- **Current assignment**: **PCV-1 Refinement 3 (Reusable Dynamic Chemistry Playgrounds — `construction-lab 1.9.0`)**:
+  - Completed Section 3 atomic scientific validation hardening (`atom-bond-atomic.ts`, `ConstructionLabShell.tsx`, `AtomBondLab.tsx`): 3-tier `evaluationTier` (`'verified' | 'unverified-consistent' | 'incorrect'`), unsupported ions never certified as verified ground-state configs in `shells` or `subshells` mode, amber `"Unverified construction:"` UI banner (never green checkmark on unverified isotopes/ions), strict safe-integer/length/key validation in both `evaluateFreeAtomicExploration` and `evaluateAtomicConstruction`, simplified first-20 filling model clarification, and Helium Group 18 duet explanation.
+  - Implemented single shared typed `examples` selector pattern across `atom-bond-builder` (`ionic-bonding`, `covalent-bonding`, `molecular-geometry`) and `equation-balancer` (strictly validated by reusing existing subtype validators — zero duplicate validators or lesson-specific React components), plus reusable ionic electron-transfer conservation UI and `maxCoefficientHardCap: 15` supporting genuine butane complete combustion (`2C₄H₁₀ + 13O₂ → 8CO₂ + 10H₂O`).
+  - Added optional isolated `Explore Further` sandbox control inside `ConstructionLabShell` (Escape-to-close, focus restoration, isolated state, disabled when `isAssessment: true`, 0 Firestore writes).
+  - Added lightweight capability-level production activation (`productionCapabilities`) inside `SUPPORTED_INTERACTIVE_ENGINES` (`interactive-schema.ts`), currently holding `atom-bond-builder` at `1.2.0` and `equation-balancer` at `1.1.0` until manual Vercel promotion.
+  - Integrated dynamic playgrounds into both actual PCV-1 enriched pilot JSONs (`b8-sci-t1-atoms-and-the-periodic-table.refinement3-v1.9.0.json` and `cambridge-as-a-level-chemistry-hydrocarbons.refinement3-v1.9.0.json`) with 0 non-interactive field changes; NOT published to live CDN prior to owner manual Vercel promotion.
 - `f5150330` — **Step 5E-A (Shared Accessibility Improvements: D-038, D-039, D-040, D-042)**: Implemented; independent browser accessibility verification outstanding.
 - `1e2ed1b9` — **Step 5E-B (Geometry Educational Close-Out: D-031)**: Geometry educational close-out implemented.
 - `d9c64274` — **Step 5E-C (Simultaneous Linear Equations D-032 & Positional Quartiles D-011)**: Simultaneous equations and selectable quartile convention implemented.
@@ -23,7 +26,7 @@
 | Engine | engineVersion | productionVersion |
 |---|---|---|
 | code-playground | 1.0.0 | 1.0.0 |
-| construction-lab | 1.7.0 | **1.3.0** (measurement-lab 1.4.0, data-stats-lab 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0 NOT production-activated) |
+| construction-lab | 1.9.0 | **1.3.0** (`productionCapabilities`: `atom-bond-builder: 1.2.0`, `equation-balancer: 1.1.0`; `measurement-lab 1.4.0`, `data-stats-lab 1.5.0`, `geometry 5E 1.6.0`, `number-manipulative 1.7.0`, `atomic playground 1.8.0`, and `dynamic chemistry playgrounds & Explore Further 1.9.0` NOT production-activated prior to manual Vercel promotion) |
 | rule-explorer, graph-slider, process-stepper, diagram-hotspots | 1.0.0 | 1.0.0 |
 | math-evaluator | 1.1.0 | 1.1.0 (extended with exact `simultaneous-linear` 2×2/3×3 RREF) |
 | sort-classify | 1.0.0 | **null** |

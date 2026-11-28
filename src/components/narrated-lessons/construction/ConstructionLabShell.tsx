@@ -1,15 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   CheckCircle2,
+  Compass,
   HelpCircle,
   RotateCcw,
   Undo2,
   Wrench,
+  X,
   XCircle,
 } from 'lucide-react';
 import type { ConstructionPredictionDef } from '@/lib/narrated-lessons/interactive-schema';
+
+export interface ConstructionFeedbackState {
+  passed: boolean;
+  /** Optional 3-tier tone: 'verified' (green), 'unverified' (amber informational — never green!), 'error' (rose). */
+  tone?: 'verified' | 'unverified' | 'error';
+  message: string;
+}
 
 export interface ConstructionLabShellProps {
   id: string;
@@ -26,7 +36,14 @@ export interface ConstructionLabShellProps {
   onReset: () => void;
   onCheck: () => void;
   checkLabel?: string;
-  feedback?: { passed: boolean; message: string } | null;
+  feedback?: ConstructionFeedbackState | null;
+  /**
+   * Optional Explore Further drawer/panel callback (Refinement 3).
+   * Disabled automatically when omitted or when `disableExploreFurther` is true (e.g. mastery/exam checks).
+   */
+  exploreFurtherTitle?: string;
+  disableExploreFurther?: boolean;
+  renderExploreFurther?: (onClose: () => void) => React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -53,13 +70,42 @@ export function ConstructionLabShell({
   onCheck,
   checkLabel = 'Check construction',
   feedback,
+  exploreFurtherTitle = 'Explore Further',
+  disableExploreFurther = false,
+  renderExploreFurther,
   children,
 }: ConstructionLabShellProps) {
   const [predPick, setPredPick] = useState<number | null>(null);
   const [predChecked, setPredChecked] = useState(false);
   const [showHints, setShowHints] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(false);
+  const exploreTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const exploreCloseRef = useRef<HTMLButtonElement | null>(null);
+
+  const canExploreFurther = Boolean(renderExploreFurther) && !disableExploreFurther;
+
+  useEffect(() => {
+    if (!exploreOpen) return;
+    exploreCloseRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setExploreOpen(false);
+        setTimeout(() => exploreTriggerRef.current?.focus(), 0);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [exploreOpen]);
+
+  const closeExplore = () => {
+    setExploreOpen(false);
+    setTimeout(() => exploreTriggerRef.current?.focus(), 0);
+  };
 
   const predCorrect = Boolean(prediction && predChecked && predPick === prediction.correctIndex);
+  const resolvedTone: 'verified' | 'unverified' | 'error' | null = feedback
+    ? feedback.tone ?? (feedback.passed ? 'verified' : 'error')
+    : null;
 
   return (
     <section
@@ -179,28 +225,84 @@ export function ConstructionLabShell({
         >
           {checkLabel}
         </button>
+        {canExploreFurther && (
+          <button
+            ref={exploreTriggerRef}
+            type="button"
+            aria-expanded={exploreOpen}
+            onClick={() => setExploreOpen((prev) => !prev)}
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3.5 py-2 text-xs font-extrabold text-sky-900 transition motion-reduce:transition-none hover:bg-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-400"
+          >
+            <Compass className="h-3.5 w-3.5" />
+            {exploreOpen ? 'Close Explore Further' : exploreFurtherTitle}
+          </button>
+        )}
       </div>
 
-      {feedback && (
+      {feedback && resolvedTone && (
         <div
           role="status"
           aria-live="polite"
-          data-construction-feedback={feedback.passed ? 'passed' : 'needs-work'}
+          data-construction-feedback={
+            resolvedTone === 'verified'
+              ? 'passed'
+              : resolvedTone === 'unverified'
+                ? 'unverified'
+                : 'needs-work'
+          }
           className={`mt-3 flex items-start gap-2 rounded-xl border p-3 text-xs font-semibold ${
-            feedback.passed
+            resolvedTone === 'verified'
               ? 'border-emerald-300 bg-emerald-50 text-emerald-950'
-              : 'border-rose-300 bg-rose-50 text-rose-950'
+              : resolvedTone === 'unverified'
+                ? 'border-amber-300 bg-amber-50 text-amber-950'
+                : 'border-rose-300 bg-rose-50 text-rose-950'
           }`}
         >
-          {feedback.passed ? (
+          {resolvedTone === 'verified' ? (
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+          ) : resolvedTone === 'unverified' ? (
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
           ) : (
             <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
           )}
           <span>
-            {feedback.passed ? 'Verified: ' : 'Keep refining: '}
+            {resolvedTone === 'verified'
+              ? 'Verified: '
+              : resolvedTone === 'unverified'
+                ? 'Unverified construction: '
+                : 'Keep refining: '}
             {feedback.message}
           </span>
+        </div>
+      )}
+
+      {/* Isolated Explore Further Sandbox Panel (0 Firestore writes; closing restores main exercise untouched) */}
+      {canExploreFurther && exploreOpen && renderExploreFurther && (
+        <div
+          role="region"
+          aria-label={`${exploreFurtherTitle} sandbox`}
+          data-explore-further-panel="open"
+          className="mt-4 rounded-2xl border-2 border-sky-300 bg-sky-50/40 p-3 sm:p-4"
+        >
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2 border-b border-sky-200 pb-2">
+            <div className="flex items-center gap-1.5">
+              <Compass className="h-4 w-4 text-sky-700" />
+              <span className="text-xs font-extrabold uppercase tracking-wide text-sky-900">
+                {exploreFurtherTitle} — Isolated Sandbox (Press Esc to Return)
+              </span>
+            </div>
+            <button
+              ref={exploreCloseRef}
+              type="button"
+              onClick={closeExplore}
+              aria-label="Return to exercise"
+              className="inline-flex min-h-[36px] items-center gap-1 rounded-lg border border-sky-300 bg-white px-2.5 py-1 text-xs font-bold text-sky-900 hover:bg-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            >
+              <X className="h-3.5 w-3.5" />
+              Return to exercise
+            </button>
+          </div>
+          {renderExploreFurther(closeExplore)}
         </div>
       )}
 

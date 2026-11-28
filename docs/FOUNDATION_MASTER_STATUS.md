@@ -11,15 +11,15 @@ Single status page for the Student Enrichment foundation. Detail lives in the li
 | Engine | engineVersion | productionVersion | Notes |
 |---|---|---|---|
 | code-playground | 1.0.0 | 1.0.0 | Python now sandboxed (audit D-010) |
-| construction-lab | 1.8.0 | 1.3.0 | measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0, atomic playground 1.8.0 not production-activated (D-013) |
+| construction-lab | 1.9.0 | 1.3.0 | `productionCapabilities`: `atom-bond-builder: 1.2.0`, `equation-balancer: 1.1.0`; measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0, atomic playground 1.8.0, and Refinement 3 dynamic chemistry playgrounds & Explore Further 1.9.0 not production-activated prior to manual Vercel promotion (D-013) |
 | rule-explorer / graph-slider / process-stepper / diagram-hotspots | 1.0.0 | 1.0.0 | |
 | math-evaluator | 1.1.0 | 1.1.0 | Oracle gate enforced in CI (10,200 executed / 9,448 distinct, 0 discrepancies; simultaneous-linear added in 5E-C) |
 | sort-classify | 1.0.0 | null | Not activated |
 
 ## Roadmap position
-- **Last reported development commit**: `512fca19` (Steps 1–5F implemented; Step 5E-A independent browser accessibility verification outstanding; Step 5E-B, 5E-C, and 5F implemented).
+- **Last reported foundation development commit**: `512fca19` (Steps 1–5F implemented; Step 5E-A independent browser accessibility verification outstanding; Step 5E-B, 5E-C, and 5F implemented).
 - **Next foundation development assignment**: Step 5G (Physics Workbench); Step 5H (Visual Programming, Art Studio and Game Zone) and Step 6 (Final Foundation Integration) remain planned.
-- **Temporary assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**): Discovery (`1bd9eaab`) and 2-lesson Implementation published via `--skip-media` (catalogue `v98`: Hydrocarbons `739c1252e89e` → `f1e9f251f1d5`; Basic 8 Atoms `15080192a16a` → `f981f2d51c63`), awaiting owner practical testing & ChatGPT review.
+- **Temporary assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**): Discovery (`1bd9eaab`), Initial Implementation (`a35a207b`), Refinement 1 (`5103e762`), Refinement 2 (`e6470751`, live CDN catalogue `v101`: Hydrocarbons `739c1252e89e` → `d81bff77545d`; Basic 8 Atoms `15080192a16a` → `379856075c2c`), and **Refinement 3** (reusable dynamic chemistry playgrounds + `Explore Further` + capability-level production activation in `construction-lab 1.9.0`; awaiting owner manual Vercel promotion before activating chemistry capabilities and publishing `v1.9.0` pilot JSONs).
 - **Claude (audit)**: Checkpoint 3 remains temporarily paused at its previously recorded position (`baba1cdd`); no audit findings are marked independently verified by Gemini. See the two roadmaps and progress files.
 
 ## Quality gates (all in `.github/workflows/foundation-verification.yml`)

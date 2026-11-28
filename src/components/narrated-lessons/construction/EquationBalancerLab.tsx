@@ -16,36 +16,66 @@ interface CoeffState {
   products: number[];
 }
 
-export function EquationBalancerLab({ config }: { config: EquationBalancerConstructionConfig }) {
+export function EquationBalancerLab({
+  config,
+  isSandbox = false,
+}: {
+  config: EquationBalancerConstructionConfig;
+  isSandbox?: boolean;
+}) {
+  const examples = config.examples && config.examples.length > 0 ? config.examples : null;
+  const [exampleIdx, setExampleIdx] = useState<number>(0);
+  const [completedExamples, setCompletedExamples] = useState<Record<number, boolean>>({});
+  const activeExample = examples ? examples[Math.min(exampleIdx, examples.length - 1)] : null;
+
+  const activeReactants = activeExample ? activeExample.reactants : config.reactants;
+  const activeProducts = activeExample ? activeExample.products : config.products;
+  const activeArrow = activeExample?.arrow ?? config.arrow;
+  const activeRequireSimplest = activeExample?.requireSimplestRatio ?? config.requireSimplestRatio ?? true;
+  const activeModelNote = activeExample?.modelNote ?? config.modelNote;
+  const activeSuccessExplanation = activeExample?.successExplanation ?? config.successExplanation;
+
   const maxCoeff = Math.min(
     STOICHIOMETRY_LIMITS.maxCoefficientHardCap,
-    config.maxCoefficient ?? 10,
+    activeExample?.maxCoefficient ?? config.maxCoefficient ?? 10,
   );
   const initialState: CoeffState = useMemo(
     () => ({
-      reactants: config.reactants.map(() => 1),
-      products: config.products.map(() => 1),
+      reactants: activeReactants.map(() => 1),
+      products: activeProducts.map(() => 1),
     }),
-    [config.products, config.reactants],
+    [activeProducts, activeReactants],
   );
 
   const [state, setState] = useState<CoeffState>(initialState);
   const [history, setHistory] = useState<CoeffState[]>([]);
   const [checked, setChecked] = useState(false);
 
+  const switchExample = (idx: number) => {
+    if (!examples) return;
+    const nextEx = examples[Math.min(idx, examples.length - 1)];
+    setExampleIdx(idx);
+    setHistory([]);
+    setState({
+      reactants: nextEx.reactants.map(() => 1),
+      products: nextEx.products.map(() => 1),
+    });
+    setChecked(false);
+  };
+
   const evaluation = useMemo(
     () =>
       evaluateEquationBalance(
-        config.reactants,
-        config.products,
+        activeReactants,
+        activeProducts,
         state.reactants,
         state.products,
         {
-          requireSimplestRatio: config.requireSimplestRatio ?? true,
+          requireSimplestRatio: activeRequireSimplest,
           maxCoefficient: maxCoeff,
         },
       ),
-    [config.products, config.reactants, config.requireSimplestRatio, maxCoeff, state.products, state.reactants],
+    [activeProducts, activeReactants, activeRequireSimplest, maxCoeff, state.products, state.reactants],
   );
 
   const updateCoeff = (side: 'reactants' | 'products', idx: number, delta: -1 | 1) => {
@@ -77,14 +107,21 @@ export function EquationBalancerLab({ config }: { config: EquationBalancerConstr
   const passed = Boolean(
     evaluation.ok &&
       evaluation.isBalanced &&
-      ((config.requireSimplestRatio ?? true) ? evaluation.isSimplestRatio : true),
+      (activeRequireSimplest ? evaluation.isSimplestRatio : true),
   );
 
-  const arrow = config.arrow === '->' ? '→' : config.arrow ?? '→';
+  const handleCheck = () => {
+    setChecked(true);
+    if (passed && examples) {
+      setCompletedExamples((prev) => ({ ...prev, [exampleIdx]: true }));
+    }
+  };
+
+  const arrow = activeArrow === '->' ? '→' : activeArrow ?? '→';
 
   const renderSpeciesCard = (side: 'reactants' | 'products', idx: number) => {
-    const sp = side === 'reactants' ? config.reactants[idx] : config.products[idx];
-    const coeff = state[side][idx];
+    const sp = side === 'reactants' ? activeReactants[idx] : activeProducts[idx];
+    const coeff = state[side][idx] ?? 1;
     const label = formatSpeciesDisplay(sp);
     return (
       <div
@@ -127,36 +164,72 @@ export function EquationBalancerLab({ config }: { config: EquationBalancerConstr
 
   return (
     <ConstructionLabShell
-      id={config.id}
+      id={isSandbox ? `${config.id}-sandbox` : config.id}
       labKind={config.labKind}
-      title={config.title}
+      title={isSandbox ? `${config.title} (Explore Further)` : config.title}
       instructions={config.instructions}
       accessibilityLabel={config.accessibilityLabel}
       subjectTag={config.subjectTag ?? 'Chemistry'}
       modelNote={
-        config.modelNote ??
+        activeModelNote ??
         'Balance equations by adjusting whole-number coefficients only—never alter chemical subscripts. Conservation balancing does not by itself predict reaction feasibility or conditions.'
       }
       hints={config.hints}
-      prediction={config.prediction}
+      prediction={isSandbox ? undefined : config.prediction}
       canUndo={history.length > 0}
       onUndo={handleUndo}
       onReset={handleReset}
-      onCheck={() => setChecked(true)}
+      onCheck={handleCheck}
       checkLabel="Check equation balance"
       feedback={
         checked
           ? {
               passed,
-              message: passed && config.successExplanation ? config.successExplanation : evaluation.feedback,
+              tone: passed ? 'verified' : 'error',
+              message: passed && activeSuccessExplanation ? activeSuccessExplanation : evaluation.feedback,
             }
           : null
       }
+      disableExploreFurther={isSandbox || Boolean(config.isAssessment) || !config.exploreFurther}
+      renderExploreFurther={
+        !isSandbox && config.exploreFurther && !config.isAssessment
+          ? () => <EquationBalancerLab config={config} isSandbox />
+          : undefined
+      }
     >
+      {/* Shared Selectable Equation Bank */}
+      {examples && (
+        <div className="mb-3 rounded-xl border border-indigo-200 bg-indigo-50/70 p-3 space-y-2">
+          <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Select chemical equation example">
+            {examples.map((ex, idx) => (
+              <button
+                key={ex.id}
+                type="button"
+                role="tab"
+                aria-selected={exampleIdx === idx}
+                onClick={() => switchExample(idx)}
+                className={`min-h-[44px] rounded-lg px-3 text-xs font-bold transition ${
+                  exampleIdx === idx
+                    ? 'bg-indigo-700 text-white'
+                    : completedExamples[idx]
+                      ? 'border border-emerald-400 bg-emerald-50 text-emerald-900'
+                      : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-100'
+                }`}
+              >
+                {ex.label} {completedExamples[idx] ? '✓' : ''}
+              </button>
+            ))}
+          </div>
+          {activeExample?.prompt && (
+            <p className="text-xs font-bold text-indigo-950">{activeExample.prompt}</p>
+          )}
+        </div>
+      )}
+
       {/* Equation Workbench */}
       <div className="rounded-xl border border-slate-200 bg-white p-3">
         <div className="flex flex-wrap items-center justify-center gap-2">
-          {config.reactants.map((_, idx) => (
+          {activeReactants.map((_, idx) => (
             <React.Fragment key={`r-${idx}`}>
               {idx > 0 && <span className="font-extrabold text-slate-500">+</span>}
               {renderSpeciesCard('reactants', idx)}
@@ -165,7 +238,7 @@ export function EquationBalancerLab({ config }: { config: EquationBalancerConstr
           <span className="px-2 text-xl font-extrabold text-indigo-700" aria-label="yields">
             {arrow}
           </span>
-          {config.products.map((_, idx) => (
+          {activeProducts.map((_, idx) => (
             <React.Fragment key={`p-${idx}`}>
               {idx > 0 && <span className="font-extrabold text-slate-500">+</span>}
               {renderSpeciesCard('products', idx)}

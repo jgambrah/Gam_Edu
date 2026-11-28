@@ -284,13 +284,22 @@ See machine-readable valid examples for all six implemented engines in [examples
 
 | Mistake | Why Rejected |
 | :--- | :--- |
-| `"labKind": "atom-bond-builder"` or `"geometry-constructor"` | Deferred future construction extension — not yet implemented |
-| Step 4D `construction-lab` domain (`equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, or declarative `boolean-circuit` with `circuitConfig`) with `"minEngineVersion": "1.0.0"` | Step 4D domains require `"minEngineVersion": "1.1.0"` or higher |
+| `"labKind": "atom-bond-builder"` with `"minEngineVersion": "1.1.0"` | `atom-bond-builder` requires `"minEngineVersion": "1.2.0"` (`"1.8.0"` for open-ended atomic playground / Periodic Table selector, `"1.9.0"` for selectable `examples` banks or `exploreFurther: true`) |
+| Step 4D `construction-lab` domain (`equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, or declarative `boolean-circuit` with `circuitConfig`) with `"minEngineVersion": "1.0.0"` | Step 4D domains require `"minEngineVersion": "1.1.0"` or higher (`"1.9.0"` for `equation-balancer` selectable `examples` banks or `exploreFurther: true`) |
 | `"schemaVersion": 2` | Only `schemaVersion: 1` is supported |
-| `"minEngineVersion": "2.0.0"` | Exceeds verified `productionVersion` (`1.0.0` or `1.1.0`) |
+| `"minEngineVersion": "2.0.0"` | Exceeds verified `productionVersion` / `productionCapabilities` |
 | Unknown field like `"customCss": "..."` or `"onClick": "..."` | Strict schema allowlist rejects unknown keys |
 | `{ "operator": "AND", "operands": [{ "input": "a" }] }` | `AND`/`OR`/`XOR` require 2–8 operands (`NOT` requires exactly 1) |
 | `{ "input": "missingId" }` | References an input ID not declared in `inputs[]` |
 | Duplicate `"id"` on two activities (same slide or different slides) | Activity IDs must be unique per lesson |
 | `"sqlStarter": "DROP TABLE Stock;"` | Inline SQL is strictly read-only `SELECT` |
 | Including `"answerKey"` or `"hiddenTests"` | Protected teacher-only fields are prohibited in public CDN JSON |
+
+---
+
+## PCV-1 Refinement 3: Dynamic Chemistry Playgrounds (`construction-lab` `1.8.0`–`1.9.0`)
+
+- **Shared Selectable `examples` Bank (`1.9.0`)**: Both `atom-bond-builder` (`ionic-bonding`, `covalent-bonding`, `molecular-geometry`) and `equation-balancer` accept an optional `examples` array (1–8 items, unique `id`, non-empty `label`, optional `prompt`/`modelNote`/`successExplanation`). Every example is validated at authoring time by the exact same subtype validator (charge neutrality, simplest empirical ratio, valence electron conservation, VSEPR AXmEn consistency, and equation solvability within `1..maxCoefficient`, up to `maxCoefficientHardCap: 15` for butane complete combustion).
+- **Optional Isolated `Explore Further` Control (`1.9.0`)**: Setting `"exploreFurther": true` adds a keyboard-accessible (`Escape` to close, focus restored) sandbox panel inside `ConstructionLabShell` with isolated local React state (0 Firestore writes). Always set `"isAssessment": true` on formal mastery/exam exercises so `Explore Further` is automatically disabled.
+- **3-Tier Atomic Evaluation (`atom-bond-atomic.ts`)**: `evaluateFreeAtomicExploration` distinguishes `'verified'` (green), `'unverified-consistent'` (amber informational banner — never green checkmark on unverified isotopes or unsupported ions), and `'incorrect'` (rose).
+- **Capability-Level Production Activation (`interactive-schema.ts`)**: `SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionCapabilities` allows promoting verified chemistry capabilities (`construction-lab:atom-bond-builder`, `construction-lab:equation-balancer`) independently after manual Vercel production deployment without activating unverified sibling domains (`measurement-lab`, `data-stats-lab`, `geometry-constructor 1.6.0`, `number-manipulative`).

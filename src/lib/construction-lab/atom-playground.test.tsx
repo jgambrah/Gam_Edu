@@ -15,8 +15,8 @@ import {
 import { AtomBondLab } from '@/components/narrated-lessons/construction/AtomBondLab';
 
 describe('PCV-1 Refinement 1 — Open-Ended Atomic Structure Playground (construction-lab 1.8.0)', () => {
-  it('advances construction-lab engineVersion to 1.8.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.8.0');
+  it('advances construction-lab engineVersion to 1.9.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.9.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 
