@@ -1,0 +1,8 @@
+# GAM EDU — Cumulative Interactive Lesson Authoring Kit (v2.4)
+
+- **Scope:** everything in v2.3 (Steps 1–5E schemas, validators, engines, UI components, tests, 13 pilot fixtures, examples, oracle, guides, Step 5H audit) **plus** Independent Audit Checkpoints 1–2: corrected data-stats engine and UI, Python sandbox, Ask Teacher server authorisation, independent verification suites, CI/ratchet scripts, coordination documents and audit reports.
+- **Cumulative guarantee:** `MANIFEST.json` → `previousKitComparison` lists added, modified and renamed files and proves **0 unexpected removals vs v2.3**. Earlier kits (v1.7 reference, v2.3, AUDIT-1) are not overwritten.
+- **Layout:** the v2.3 layout is preserved (`schemas/`, `ui/`, `tests/`, `pilots/`, `oracle/`, `security/`, `examples/`); new folders `coordination/` (the seven permanent coordination documents), `audit/` (checkpoint reports and registers) and `scripts/` (lockfile check, TypeScript ratchet, kit and register builders).
+- **Status:** Student Enrichment remains **Under Construction and restricted**. Manual Vercel promotion; no `productionVersion` changed (construction-lab live 1.3.0, engine 1.6.0; sort-classify not activated).
+- **Archive:** 100 % POSIX `/` paths, UTF-8, no credentials or machine-specific secrets, per-file SHA-256 in the manifest.
+- **Behaviour changes since v2.3 authors must know:** "no mode" only when no value repeats; dot plots draw every observation; pictograms use proportional part-symbols and always print the exact frequency; frequency polygons plot frequency against mid-points (density for unequal widths) and charts have numeric y-axes; learner Python runs only in the isolated sandbox; Ask Teacher needs a signed-in school staff account while Under Construction.

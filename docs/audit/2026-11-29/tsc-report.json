@@ -1,0 +1,179 @@
+{
+  "total": 351,
+  "byArea": {
+    "src/lib (other)": 112,
+    "src/lib/data (seed/curriculum data typing)": 105,
+    "scripts (one-off tooling, not shipped)": 99,
+    "student enrichment": 13,
+    "CORE school management (finance/HR/attendance/admin)": 12,
+    "components": 6,
+    "dashboard pages (other)": 2,
+    "other": 1,
+    "app (other)": 1
+  },
+  "byCode": {
+    "TS2322": 92,
+    "TS2353": 92,
+    "TS2741": 63,
+    "TS2339": 27,
+    "TS2739": 16,
+    "TS2304": 15,
+    "TS2561": 12,
+    "TS7006": 10,
+    "TS2345": 7,
+    "TS18048": 5,
+    "TS2451": 2,
+    "TS2393": 2,
+    "TS18047": 2,
+    "TS2344": 1,
+    "TS7016": 1,
+    "TS5097": 1,
+    "TS2740": 1,
+    "TS2367": 1,
+    "TS2305": 1
+  },
+  "topFiles": [
+    {
+      "file": "scripts/seedCurriculum.ts",
+      "count": 68,
+      "area": "scripts (one-off tooling, not shipped)"
+    },
+    {
+      "file": "src/lib/data/jhs-curriculum-set-131.ts",
+      "count": 41,
+      "area": "src/lib/data (seed/curriculum data typing)"
+    },
+    {
+      "file": "src/lib/data/jhs-curriculum-set-132.ts",
+      "count": 41,
+      "area": "src/lib/data (seed/curriculum data typing)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-4-stories.ts",
+      "count": 18,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-5-stories.ts",
+      "count": 18,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/data/jhs-curriculum-set-67.ts",
+      "count": 16,
+      "area": "src/lib/data (seed/curriculum data typing)"
+    },
+    {
+      "file": "scripts/seed-dashboard-summaries.ts",
+      "count": 15,
+      "area": "scripts (one-off tooling, not shipped)"
+    },
+    {
+      "file": "src/app/dashboard/coding-club/python-academy/page.tsx",
+      "count": 13,
+      "area": "student enrichment"
+    },
+    {
+      "file": "src/app/dashboard/finance/shop/page.tsx",
+      "count": 12,
+      "area": "CORE school management (finance/HR/attendance/admin)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-38-stories.ts",
+      "count": 8,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-48-stories.ts",
+      "count": 8,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-56-stories.ts",
+      "count": 8,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/data/bece-math-mock-11.ts",
+      "count": 7,
+      "area": "src/lib/data (seed/curriculum data typing)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-52-stories.ts",
+      "count": 7,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-57-stories.ts",
+      "count": 7,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-53-stories.ts",
+      "count": 5,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-54-stories.ts",
+      "count": 5,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-55-stories.ts",
+      "count": 5,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-59-stories.ts",
+      "count": 5,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-60-stories.ts",
+      "count": 5,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-61-stories.ts",
+      "count": 5,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "scripts/update_local_mock_files.ts",
+      "count": 4,
+      "area": "scripts (one-off tooling, not shipped)"
+    },
+    {
+      "file": "scripts/update_local_mock_files_6to11.ts",
+      "count": 4,
+      "area": "scripts (one-off tooling, not shipped)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-51-stories.ts",
+      "count": 4,
+      "area": "src/lib (other)"
+    },
+    {
+      "file": "src/lib/story-library/pilot/batch-58-stories.ts",
+      "count": 4,
+      "area": "src/lib (other)"
+    }
+  ],
+  "possibleRuntimeBugs": [
+    "scripts/seed-dashboard-summaries.ts:138 Cannot find name 'currentAccounts'.",
+    "scripts/seed-dashboard-summaries.ts:141 Cannot find name 'age30Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:144 Cannot find name 'age60Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:147 Cannot find name 'age90Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:233 Cannot find name 'currentAccounts'.",
+    "scripts/seed-dashboard-summaries.ts:234 Cannot find name 'age30Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:235 Cannot find name 'currentAccounts'.",
+    "scripts/seed-dashboard-summaries.ts:235 Cannot find name 'age30Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:236 Cannot find name 'age60Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:237 Cannot find name 'age90Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:239 Cannot find name 'age30Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:239 Cannot find name 'age60Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:239 Cannot find name 'age90Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:240 Cannot find name 'age60Accounts'.",
+    "scripts/seed-dashboard-summaries.ts:240 Cannot find name 'age90Accounts'."
+  ]
+}
