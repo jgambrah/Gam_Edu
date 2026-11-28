@@ -18,6 +18,13 @@ describe('data-visualisation renderer fidelity (audit)', () => {
     expect(stack.getAttribute('data-dot-stack')).toBe('25');
     expect(stack.querySelectorAll('circle')).toHaveLength(25);
     expect(container.querySelector('[data-dot-value="7"]')!.querySelectorAll('circle')).toHaveLength(1);
+    // tall stacks print their count; short stacks do not need to
+    expect(stack.querySelector('[data-testid="dot-count"]')!.textContent).toBe('×25');
+    expect(container.querySelector('[data-dot-value="7"] [data-testid="dot-count"]')).toBeNull();
+    // the dots of one stack are distinguishable: spacing is larger than the dot diameter
+    const cys = [...stack.querySelectorAll('circle')].map((c) => Number(c.getAttribute('cy')));
+    const r = Number(stack.querySelector('circle')!.getAttribute('r'));
+    expect(cys[0] - cys[1]).toBeGreaterThan(r * 2);
   });
 
   it('pictogram never drops symbols beyond 20 and always prints the exact frequency', () => {
@@ -30,7 +37,23 @@ describe('data-visualisation renderer fidelity (audit)', () => {
     expect(maize.textContent).toContain('= 25');
     const rice = container.querySelector('[data-picto-row="Rice"]')!;
     expect(rice.getAttribute('data-full-symbols')).toBe('4');
-    expect(rice.getAttribute('data-half-symbol')).toBe('true');
+    expect(rice.getAttribute('data-partial-fraction')).toBe('0.5');
+  });
+
+  it('pictogram part-symbols are mathematically proportional, never rounded (1 symbol = 4 students: 5 students = 1 and a quarter)', () => {
+    const { container } = render(
+      <DataStatsLab config={{ ...base, chartKind: 'pictogram', pictogramUnit: 4, categories: [{ label: 'A', frequency: 5 }, { label: 'B', frequency: 6 }, { label: 'C', frequency: 7 }, { label: 'D', frequency: 8 }, { label: 'E', frequency: 1 }], expectedNumericAnswer: 5 }} />,
+    );
+    const frac = (l: string) => container.querySelector(`[data-picto-row="${l}"]`)!.getAttribute('data-partial-fraction');
+    const full = (l: string) => container.querySelector(`[data-picto-row="${l}"]`)!.getAttribute('data-full-symbols');
+    expect([full('A'), frac('A')]).toEqual(['1', '0.25']);
+    expect([full('B'), frac('B')]).toEqual(['1', '0.5']);
+    expect([full('C'), frac('C')]).toEqual(['1', '0.75']);
+    expect([full('D'), frac('D')]).toEqual(['2', '0']); // exactly representable: no part-symbol
+    expect([full('E'), frac('E')]).toEqual(['0', '0.25']);
+    const partialA = container.querySelector('[data-picto-row="A"] [data-testid="picto-partial"]') as HTMLElement;
+    expect(partialA.style.width).toBe('4px'); // 0.25 of a 16px symbol
+    expect(container.querySelector('[data-picto-row="D"] [data-testid="picto-partial"]')).toBeNull();
   });
 
   it('frequency polygon plots FREQUENCY against mid-points for equal class widths and closes to the axis', () => {

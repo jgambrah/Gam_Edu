@@ -577,24 +577,32 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
             const unit = config.pictogramUnit && config.pictogramUnit > 0 ? config.pictogramUnit : 1;
             return (
               <div className="space-y-2" data-testid="svg-pictogram">
-                <p className="font-bold text-slate-700">Key: ● = {unit} unit{unit === 1 ? '' : 's'} (◐ = {roundClean(unit / 2, 2)})</p>
+                <p className="font-bold text-slate-700">Key: ● = {unit} unit{unit === 1 ? '' : 's'}. A part-symbol is cut in proportion (¼ of a symbol = {roundClean(unit / 4, 4)}).</p>
                 <div className="space-y-1.5 rounded-lg border border-slate-200 bg-white p-2.5">
                   {config.categories.map((cat) => {
-                    // Symbols are rounded to the nearest half-symbol; the exact frequency is always printed too, so a
-                    // learner can never be shown a frequency different from the data. (Previously symbols beyond 20 were
-                    // silently dropped, so a frequency of 25 looked like 20.)
-                    const halves = Math.round((cat.frequency / unit) * 2);
-                    const fullCount = Math.floor(halves / 2);
-                    const hasHalf = halves % 2 === 1;
+                    // Mathematically proportional: whole symbols plus ONE part-symbol whose width is exactly the leftover
+                    // fraction of a symbol (5 students with 1 symbol = 4 students gives 1 symbol and a quarter symbol).
+                    // Nothing is rounded, and the exact frequency is always printed too.
+                    const exactSymbols = roundClean(cat.frequency / unit, 6);
+                    const fullCount = Math.floor(exactSymbols + 1e-9);
+                    const partial = roundClean(exactSymbols - fullCount, 4);
+                    const hasPartial = partial > 0.0001;
                     return (
-                      <div key={cat.label} className="flex items-center gap-2" data-picto-row={cat.label} data-full-symbols={fullCount} data-half-symbol={hasHalf ? 'true' : 'false'}>
+                      <div key={cat.label} className="flex items-center gap-2" data-picto-row={cat.label} data-full-symbols={fullCount} data-partial-fraction={hasPartial ? partial : 0}>
                         <span className="w-24 font-bold text-slate-800">{cat.label}</span>
                         <div className="flex flex-wrap items-center gap-1" aria-label={`${cat.label}: ${cat.frequency}`}>
                           {Array.from({ length: fullCount }).map((_, i) => (
                             <span key={i} className="inline-block h-4 w-4 rounded-full bg-emerald-600" aria-hidden="true" />
                           ))}
-                          {hasHalf && (
-                            <span className="inline-block h-4 w-2 rounded-l-full bg-emerald-600" aria-hidden="true" />
+                          {hasPartial && (
+                            <span
+                              data-testid="picto-partial"
+                              className="inline-block h-4 overflow-hidden"
+                              style={{ width: `${partial * 16}px` }}
+                              aria-hidden="true"
+                            >
+                              <span className="block h-4 w-4 rounded-full bg-emerald-600" />
+                            </span>
                           )}
                           <span className="ml-1 font-mono text-[11px] text-slate-600">= {cat.frequency}</span>
                         </div>
@@ -674,6 +682,12 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                         const step = Math.min(8, 70 / Math.max(1, st.count));
                         return <circle key={k} cx={x} cy={82 - k * step} r={Math.min(3.5, step / 2.2)} fill="#2563eb" />;
                       })}
+                      {/* Tall stacks get a printed count so very small dots stay unambiguous. */}
+                      {st.count > 10 && (
+                        <text data-testid="dot-count" x={x} y={Math.max(12, 82 - st.count * Math.min(8, 70 / st.count) - 4)} textAnchor="middle" fontSize="8" fontWeight="bold" fill="#1e3a8a">
+                          ×{st.count}
+                        </text>
+                      )}
                       <text x={x} y="106" textAnchor="middle" fontSize="8" fill="#0f172a">{st.value}</text>
                     </g>
                   );
