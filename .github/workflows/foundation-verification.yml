@@ -1,0 +1,65 @@
+name: Foundation verification
+
+# Student Enrichment foundation gates: reproducible install, security + enrichment tests, independent math oracle,
+# TypeScript ratchet. No Firebase, no secrets, no deployment; it never touches Vercel (promotion stays manual).
+on:
+  push:
+    branches: ['fixed-version']
+  pull_request:
+    branches: ['fixed-version']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Reproducible install
+        run: npm ci --no-audit --no-fund
+      - name: Installed versions must match package-lock.json
+        run: node scripts/audit/check-lockfile-sync.mjs
+      - name: Security, architecture-boundary and enrichment tests
+        run: >
+          npx vitest run
+          src/lib/narrated-lessons
+          src/lib/construction-lab
+          src/lib/math-evaluator
+          src/lib/sort-classify
+          src/lib/python-runner.sandbox.test.ts
+          src/lib/execution-adversarial.test.ts
+          src/lib/ask-teacher-guard.test.ts
+          src/app/api/narrated-lessons
+          src/app/dashboard/clubs
+      - name: Independent mathematical oracle (fails on any discrepancy)
+        run: npx tsx scripts/math-oracle/run-independent-oracle.ts --no-write
+      - name: TypeScript error ratchet (count may only go down)
+        run: node scripts/audit/tsc-report.mjs --ratchet
+
+  rules:
+    # Firebase emulator security-rules suites (Firestore + Storage). Needs Java, which GitHub runners provide.
+    # Covers tenant isolation, role permissions, protected records, storage paths and the server-only Ask Teacher counters.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci --no-audit --no-fund
+      - name: Security rules tests (emulators, demo- project ids, synthetic data only)
+        run: npm run test:rules
+      - name: The two firestore.rules copies must be identical
+        run: diff -q firestore.rules src/firestore.rules

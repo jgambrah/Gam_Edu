@@ -96,7 +96,15 @@ type OracleCase = OracleSingleCase | OracleWorkspaceCase;
 const cases: OracleCase[] = [];
 const seenKeys = new Set<string>();
 const seenStructuralKeys = new Set<string>();
-let structuralDuplicateCount = 0;
+let structuralDuplicateCount = 0; // executed cases whose (spec, submission) structure was already generated
+const structuralDuplicatesByTopic: Record<string, number> = {};
+/**
+ * Minimum number of structurally distinct cases the corpus must contain. Audit D-012: rejecting duplicates outright
+ * was tried and cut the corpus to 7,311 because several families generate a fixed number of draws (not "until N
+ * distinct"), so the corpus keeps its 10,000 executions, REPORTS the distinct count honestly, and fails if the
+ * distinct count ever drops below this floor.
+ */
+const MIN_STRUCTURALLY_DISTINCT = Number(process.env.ORACLE_MIN_DISTINCT) || 9000; // env override exists so the failing path can be exercised
 
 function addUnique(key: string, c: OracleCase): boolean {
   if (seenKeys.has(key)) return false;
@@ -108,6 +116,7 @@ function addUnique(key: string, c: OracleCase): boolean {
   );
   if (seenStructuralKeys.has(structKey)) {
     structuralDuplicateCount += 1;
+    structuralDuplicatesByTopic[c.topic] = (structuralDuplicatesByTopic[c.topic] ?? 0) + 1;
   } else {
     seenStructuralKeys.add(structKey);
   }
@@ -1511,21 +1520,42 @@ const totals = summaryRows.reduce(
 const report = {
   seed: 20260503,
   generatedAt: new Date().toISOString(),
+  /** Cases actually executed. */
+  totalExecutedCases: totals.total,
+  /** Cases with a distinct (spec, submission) structure. */
+  totalStructurallyDistinctCases: seenStructuralKeys.size,
+  /** Backward-compatible field: counts cases by unique id (NOT structural distinctness); prefer the two fields above. */
   totalUniqueCases: totals.total,
   totalStructuralUniqueCases: seenStructuralKeys.size,
   structuralDuplicateCount,
+  structuralDuplicatesByTopic,
   totalWallMs: Number(totalMs.toFixed(2)),
   totals,
   byTopic: summaryRows,
   sampleDiscrepancies: discrepancies.slice(0, 25),
 };
 
+// CLI: `--no-write` leaves the committed report untouched (CI); the process ALWAYS fails on any discrepancy.
 const outJson = path.resolve(process.cwd(), 'scripts/math-oracle/step5a3-oracle-report.json');
-fs.writeFileSync(outJson, JSON.stringify(report, null, 2) + '\n', 'utf8');
+if (!process.argv.includes('--no-write')) {
+  fs.writeFileSync(outJson, JSON.stringify(report, null, 2) + '\n', 'utf8');
+}
 
-console.log(`ORACLE_COMPLETE: ${totals.total} unique cases in ${totalMs.toFixed(1)} ms`);
+console.log(`ORACLE_COMPLETE: ${totals.total} cases executed, ${seenStructuralKeys.size} structurally distinct, in ${totalMs.toFixed(1)} ms`);
 console.log(JSON.stringify(totals, null, 2));
 if (discrepancies.length > 0) {
   console.log(`DISCREPANCIES (${discrepancies.length} total, showing first 10):`);
   console.log(JSON.stringify(discrepancies.slice(0, 10), null, 2));
+}
+
+// Verification gate: any false accept, false reject, unexpected indeterminate, marking mismatch, duplicate or excessive
+// marks, or any recorded discrepancy fails the run. (An uncaught exception inside the evaluator already exits non-zero.)
+const failureCount =
+  totals.falseAccept + totals.falseReject + totals.unexpectedIndeterminate + totals.markingMismatch +
+  totals.duplicateMarks + totals.exceededMaxMarks + discrepancies.length;
+if (failureCount > 0 || seenStructuralKeys.size < MIN_STRUCTURALLY_DISTINCT || totals.total < 10000) {
+  console.error(`ORACLE_FAILED: ${failureCount} failures; executed=${totals.total} (need 10000) distinct=${seenStructuralKeys.size} (need >= ${MIN_STRUCTURALLY_DISTINCT})`);
+  process.exitCode = 1;
+} else {
+  console.log('ORACLE_PASSED: 0 false accepts, 0 false rejects, 0 unexpected indeterminates, 0 marking discrepancies.');
 }

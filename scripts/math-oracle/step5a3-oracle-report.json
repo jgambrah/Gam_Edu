@@ -1,10 +1,18 @@
 {
   "seed": 20260503,
-  "generatedAt": "2026-11-27T21:14:32.526Z",
+  "generatedAt": "2026-11-28T06:52:53.571Z",
+  "totalExecutedCases": 10000,
+  "totalStructurallyDistinctCases": 9248,
   "totalUniqueCases": 10000,
   "totalStructuralUniqueCases": 9248,
   "structuralDuplicateCount": 752,
-  "totalWallMs": 2046.87,
+  "structuralDuplicatesByTopic": {
+    "arithmetic-fractions-percentages": 15,
+    "equations-solution-sets": 222,
+    "differentiation-integration": 212,
+    "multi-step-reasoning-marking": 303
+  },
+  "totalWallMs": 2299.31,
   "totals": {
     "total": 10000,
     "correctAccept": 5217,
@@ -30,10 +38,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0792,
-      "p50Ms": 0.0524,
-      "p95Ms": 0.1292,
-      "maxMs": 6.0159
+      "avgMs": 0.0922,
+      "p50Ms": 0.061,
+      "p95Ms": 0.1514,
+      "maxMs": 8.2154
     },
     {
       "topic": "algebra-polynomial-equivalence",
@@ -47,10 +55,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.2018,
-      "p50Ms": 0.148,
-      "p95Ms": 0.4481,
-      "maxMs": 5.687
+      "avgMs": 0.1701,
+      "p50Ms": 0.1421,
+      "p95Ms": 0.2897,
+      "maxMs": 2.6695
     },
     {
       "topic": "rational-expressions-domains",
@@ -64,10 +72,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.2328,
-      "p50Ms": 0.1629,
-      "p95Ms": 0.6518,
-      "maxMs": 5.2509
+      "avgMs": 0.1694,
+      "p50Ms": 0.1606,
+      "p95Ms": 0.3684,
+      "maxMs": 1.786
     },
     {
       "topic": "equations-solution-sets",
@@ -81,10 +89,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0943,
-      "p50Ms": 0.0785,
-      "p95Ms": 0.1838,
-      "maxMs": 1.6983
+      "avgMs": 0.0949,
+      "p50Ms": 0.086,
+      "p95Ms": 0.1662,
+      "maxMs": 1.0175
     },
     {
       "topic": "inequalities-intervals",
@@ -98,10 +106,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0618,
-      "p50Ms": 0.0511,
-      "p95Ms": 0.1129,
-      "maxMs": 0.9235
+      "avgMs": 0.0621,
+      "p50Ms": 0.0577,
+      "p95Ms": 0.069,
+      "maxMs": 1.0068
     },
     {
       "topic": "surds-indices-logarithms",
@@ -115,10 +123,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.1643,
-      "p50Ms": 0.1558,
-      "p95Ms": 0.3546,
-      "maxMs": 1.2955
+      "avgMs": 0.1555,
+      "p50Ms": 0.1528,
+      "p95Ms": 0.372,
+      "maxMs": 1.3513
     },
     {
       "topic": "differentiation-integration",
@@ -132,10 +140,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.1911,
-      "p50Ms": 0.1703,
-      "p95Ms": 0.4294,
-      "maxMs": 1.591
+      "avgMs": 0.2082,
+      "p50Ms": 0.179,
+      "p95Ms": 0.4601,
+      "maxMs": 1.3852
     },
     {
       "topic": "units-precision-finance",
@@ -149,10 +157,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0638,
-      "p50Ms": 0.055,
-      "p95Ms": 0.109,
-      "maxMs": 1.5351
+      "avgMs": 0.0748,
+      "p50Ms": 0.0643,
+      "p95Ms": 0.1396,
+      "maxMs": 1.4318
     },
     {
       "topic": "multi-step-reasoning-marking",
@@ -166,10 +174,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.658,
-      "p50Ms": 0.6004,
-      "p95Ms": 1.1997,
-      "maxMs": 5.952
+      "avgMs": 0.8963,
+      "p50Ms": 0.7818,
+      "p95Ms": 1.8071,
+      "maxMs": 4.7739
     },
     {
       "topic": "adversarial-resource-bounds",
@@ -183,10 +191,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0863,
-      "p50Ms": 0.0579,
-      "p95Ms": 0.1622,
-      "maxMs": 0.8594
+      "avgMs": 0.1492,
+      "p50Ms": 0.1129,
+      "p95Ms": 0.2871,
+      "maxMs": 1.6084
     }
   ],
   "sampleDiscrepancies": []
