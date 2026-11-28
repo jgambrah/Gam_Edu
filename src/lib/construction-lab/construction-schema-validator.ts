@@ -251,9 +251,12 @@ export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown
   if (obj.labKind === 'geometry-constructor') {
     const mode = obj.mode;
     const ct = obj.circleTheorem as Record<string, unknown> | undefined;
+    const cg = obj.constructionGoal as Record<string, unknown> | undefined;
     if (
       mode === 'cube-nets' ||
       mode === 'loci-regions' ||
+      (mode === 'compass-straightedge' &&
+        (cg?.kind === 'triangle-rhs' || cg?.kind === 'protractor-angle')) ||
       (mode === 'circle-theorems' &&
         (ct?.theorem === 'alternate-segment' ||
           ct?.theorem === 'equal-tangents' ||

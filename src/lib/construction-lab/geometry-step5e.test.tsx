@@ -18,7 +18,11 @@ import {
 import {
   SUPPORTED_INTERACTIVE_ENGINES,
   assertValidLessonInteractives,
+  type GeometryCircleTheoremConfig,
+  type GeometryCompassConfig,
   type GeometryCubeNetConfig,
+  type GeometryLociRegionConfig,
+  type GeometryTransformationConfig,
 } from '@/lib/narrated-lessons/interactive-schema';
 import { GeometryConstructorLab } from '@/components/narrated-lessons/construction/GeometryConstructorLab';
 
@@ -217,6 +221,175 @@ describe('Step 5E — Remaining Geometry Capabilities (construction-lab: geometr
       render(<GeometryConstructorLab config={cfg} />);
       fireEvent.click(screen.getByRole('button', { name: 'Test 3D Foldability' }));
       expect(screen.getByText(/Valid cube net!/i)).toBeTruthy();
+      expect(screen.getByText(/Folded face labels:/i)).toBeTruthy();
+    });
+
+    it('supports learner-facing RHS triangle construction (reflected solution + arc provenance) in CompassWorkbench (D-031)', () => {
+      const rhsCfg: GeometryCompassConfig = {
+        id: 'ui-rhs-1',
+        engine: 'construction-lab',
+        labKind: 'geometry-constructor',
+        mode: 'compass-straightedge',
+        schemaVersion: 1,
+        minEngineVersion: '1.6.0',
+        curriculumLevel: 'igcse',
+        title: 'RHS 3-4-5 Triangle',
+        instructions: 'Construct a 3-4-5 right triangle on AB.',
+        accessibilityLabel: 'RHS triangle construction',
+        fallbackText: '3-4-5 right triangle with hypotenuse 5.',
+        gridBounds: { xMin: -2, xMax: 6, yMin: -6, yMax: 6, step: 1 },
+        initialPoints: [
+          { id: 'A', label: 'A', x: 0, y: 0, locked: true },
+          { id: 'B', label: 'B', x: 3, y: 0, locked: true },
+        ],
+        initialSegments: [{ id: 'AB', from: 'A', to: 'B', locked: true }],
+        constructionGoal: {
+          kind: 'triangle-rhs',
+          referencePointIds: ['A', 'B'],
+          targetMeasures: [3, 5],
+          requireConstructionArcs: true,
+        },
+      };
+      render(<GeometryConstructorLab config={rhsCfg} />);
+      // Draw hypotenuse compass arc radius 5 centred at B
+      fireEvent.change(screen.getByLabelText('Compass centre point'), { target: { value: 'B' } });
+      fireEvent.change(screen.getByLabelText('Compass radius'), { target: { value: '5' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Draw Arc' }));
+      // Place reflected vertex C at (0, -4)
+      fireEvent.change(screen.getByLabelText('New point x coordinate'), { target: { value: '0' } });
+      fireEvent.change(screen.getByLabelText('New point y coordinate'), { target: { value: '-4' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Add Point' }));
+      // Connect A -> P3 and B -> P3
+      fireEvent.change(screen.getByLabelText('Segment start point'), { target: { value: 'A' } });
+      fireEvent.change(screen.getByLabelText('Segment end point'), { target: { value: 'P3' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Connect Segment' }));
+      fireEvent.change(screen.getByLabelText('Segment start point'), { target: { value: 'B' } });
+      fireEvent.change(screen.getByLabelText('Segment end point'), { target: { value: 'P3' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Connect Segment' }));
+      fireEvent.click(screen.getByRole('button', { name: /Check/i }));
+      expect(screen.getByText(/Verified RHS triangle/i)).toBeTruthy();
+      expect(screen.getByText(/Hypotenuse compass arc provenance verified/i)).toBeTruthy();
+    });
+
+    it('supports learner-facing Virtual Protractor angle construction in CompassWorkbench (D-031)', () => {
+      const protCfg: GeometryCompassConfig = {
+        id: 'ui-prot-1',
+        engine: 'construction-lab',
+        labKind: 'geometry-constructor',
+        mode: 'compass-straightedge',
+        schemaVersion: 1,
+        minEngineVersion: '1.6.0',
+        curriculumLevel: 'introductory',
+        title: 'Protractor 52° Angle',
+        instructions: 'Plot a 52° ray from O.',
+        accessibilityLabel: 'Virtual protractor angle construction',
+        fallbackText: '52 degree angle using virtual protractor.',
+        gridBounds: { xMin: -1, xMax: 6, yMin: -1, yMax: 6, step: 1 },
+        initialPoints: [
+          { id: 'O', label: 'O', x: 0, y: 0, locked: true },
+          { id: 'A', label: 'A', x: 5, y: 0, locked: true },
+        ],
+        initialSegments: [{ id: 'OA', from: 'O', to: 'A', locked: true }],
+        constructionGoal: {
+          kind: 'protractor-angle',
+          referencePointIds: ['O', 'A'],
+          targetMeasures: [52],
+        },
+      };
+      render(<GeometryConstructorLab config={protCfg} />);
+      fireEvent.change(screen.getByLabelText('Protractor angle in degrees'), { target: { value: '52' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Plot Protractor Ray' }));
+      fireEvent.click(screen.getByRole('button', { name: /Check/i }));
+      expect(screen.getByText(/Verified virtual-protractor angle/i)).toBeTruthy();
+    });
+
+    it('renders SVG geometry for alternate-segment, equal-tangents, and chord-perp-bisector circle theorems (D-031)', () => {
+      const theorems: Array<{ theorem: 'alternate-segment' | 'equal-tangents' | 'chord-perp-bisector'; fixed: number[]; mov: number; ans: string }> = [
+        { theorem: 'alternate-segment', fixed: [270, 30], mov: 150, ans: '60' },
+        { theorem: 'equal-tangents', fixed: [0, 2], mov: 0, ans: '60' },
+        { theorem: 'chord-perp-bisector', fixed: [210, 330], mov: 270, ans: '90' },
+      ];
+      for (const tc of theorems) {
+        const cfg: GeometryCircleTheoremConfig = {
+          id: `ui-ct-${tc.theorem}`,
+          engine: 'construction-lab',
+          labKind: 'geometry-constructor',
+          mode: 'circle-theorems',
+          schemaVersion: 1,
+          minEngineVersion: '1.6.0',
+          curriculumLevel: 'igcse',
+          title: `Theorem ${tc.theorem}`,
+          instructions: 'Deduce the angle.',
+          accessibilityLabel: `Circle theorem ${tc.theorem}`,
+          fallbackText: `Expected ${tc.ans} degrees.`,
+          circleTheorem: {
+            theorem: tc.theorem,
+            fixedAnglesDeg: tc.fixed,
+            movablePointAngleDeg: tc.mov,
+            targetPrompt: 'Enter angle in degrees.',
+          },
+        };
+        const { container, unmount } = render(<GeometryConstructorLab config={cfg} />);
+        expect(container.querySelectorAll('svg line').length).toBeGreaterThanOrEqual(4);
+        fireEvent.change(screen.getByLabelText('Deduced angle in degrees'), { target: { value: tc.ans } });
+        fireEvent.click(screen.getByRole('button', { name: /Check/i }));
+        expect(screen.getByText(/Verified: derived angle/i)).toBeTruthy();
+        unmount();
+      }
+    });
+
+    it('renders SVG locus boundaries, finite-segment endpoint arcs, shaded feasible region, and Congruence/Similarity readout (D-031)', () => {
+      const lociCfg: GeometryLociRegionConfig = {
+        id: 'ui-loci-1',
+        engine: 'construction-lab',
+        labKind: 'geometry-constructor',
+        mode: 'loci-regions',
+        schemaVersion: 1,
+        minEngineVersion: '1.6.0',
+        curriculumLevel: 'igcse',
+        title: 'Stadium & Feasible Region',
+        instructions: 'Test a point inside the feasible region.',
+        accessibilityLabel: 'Loci feasible region canvas',
+        fallbackText: '(1, 1) is inside.',
+        gridBounds: { xMin: -4, xMax: 6, yMin: -4, yMax: 4, step: 1 },
+        locusConstraints: [
+          { kind: 'fixed-distance-segment', p1: { x: 0, y: 0 }, p2: { x: 4, y: 0 }, distance: 2, relation: 'lte' },
+          { kind: 'equidistant-two-points', p1: { x: 0, y: 0 }, p2: { x: 4, y: 0 }, relation: 'closer-to-p1' },
+        ],
+        targetPrompt: 'Find a point within 2 units of segment (0,0)-(4,0) and closer to (0,0).',
+      };
+      const { container, unmount } = render(<GeometryConstructorLab config={lociCfg} />);
+      expect(container.querySelector('[aria-label="Finite segment stadium locus with semicircular endpoint arcs"]')).toBeTruthy();
+      expect(container.querySelector('[aria-label="Shaded feasible region"]')).toBeTruthy();
+      fireEvent.change(screen.getByLabelText('Locus test point x'), { target: { value: '1' } });
+      fireEvent.change(screen.getByLabelText('Locus test point y'), { target: { value: '1' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Test Locus Point' }));
+      expect(screen.getByText(/Verified!/i)).toBeTruthy();
+      unmount();
+
+      const simCfg: GeometryTransformationConfig = {
+        id: 'ui-sim-1',
+        engine: 'construction-lab',
+        labKind: 'geometry-constructor',
+        mode: 'transformations',
+        schemaVersion: 1,
+        minEngineVersion: '1.3.0',
+        curriculumLevel: 'igcse',
+        title: 'Similarity Enlargement',
+        instructions: 'Enlarge by scale factor 2.',
+        accessibilityLabel: 'Similarity enlargement grid',
+        fallbackText: 'Scale factor 2 doubles side lengths.',
+        gridBounds: { xMin: -2, xMax: 8, yMin: -2, yMax: 8, step: 1 },
+        preImageVertices: [
+          { x: 1, y: 1, label: 'A' },
+          { x: 3, y: 1, label: 'B' },
+          { x: 1, y: 2, label: 'C' },
+        ],
+        transformation: { kind: 'enlargement', cx: 0, cy: 0, scaleFactor: 2 },
+      };
+      render(<GeometryConstructorLab config={simCfg} />);
+      expect(screen.getByText(/Congruence & Similarity Readout/i)).toBeTruthy();
+      expect(screen.getByText(/scale factor k = 2/i)).toBeTruthy();
     });
   });
 });

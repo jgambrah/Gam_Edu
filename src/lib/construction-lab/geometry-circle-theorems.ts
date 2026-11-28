@@ -258,7 +258,13 @@ export function evaluateCircleTheoremAnswer(input: CircleTheoremEvalInput): {
             ? `Opposite angles of a cyclic quadrilateral sum to 180° (180° − ${derived.relatedAngleDeg}° = ${(180 - derived.relatedAngleDeg).toFixed(1)}°).`
             : input.theorem === 'tangent-radius'
               ? 'A tangent to a circle is always perpendicular (90°) to the radius at the point of contact.'
-              : `Angles subtended by the same arc in the same segment are equal (${expected}°).`;
+              : input.theorem === 'alternate-segment'
+                ? `The angle between a tangent and a chord equals the inscribed angle in the alternate segment (${expected}°).`
+                : input.theorem === 'equal-tangents'
+                  ? `Tangents from external point E meet radii at 90°, so ∠T₁ET₂ = 180° − ∠T₁OT₂ = 180° − ${derived.relatedAngleDeg}° = ${expected}°.`
+                  : input.theorem === 'chord-perp-bisector'
+                    ? 'The line from the centre O to the midpoint M of a chord AB is always perpendicular (90°) to the chord.'
+                    : `Angles subtended by the same arc in the same segment are equal (${expected}°).`;
     return {
       passed: false,
       feedback: `Check your angle: you entered ${input.learnerAnswerDeg}°. ${theoremHint}`,

@@ -13,6 +13,7 @@ import {
   isReachableOnGrid,
   isSimplePolygon,
   isValidTriangleASA,
+  isValidTriangleRHS,
   isValidTriangleSAS,
   isValidTriangleSSS,
   transformPoint,
@@ -91,6 +92,8 @@ const VALID_COMPASS_GOALS = new Set<CompassGoalKind>([
   'triangle-sss',
   'triangle-sas',
   'triangle-asa',
+  'triangle-rhs',
+  'protractor-angle',
   'locus-circle',
   'parallel-line',
   'perpendicular-through-point',
@@ -274,6 +277,20 @@ export function validateGeometryConstructorConfig(
         if (!isValidTriangleASA(m[0], ab, m[1])) {
           errors.push(`Impossible ASA triangle angles: ${m[0]}° + ${m[1]}° must be strictly less than 180° with AB > 0.`);
         }
+      }
+    }
+    if (goal.kind === 'triangle-rhs') {
+      const m = goal.targetMeasures as number[] | undefined;
+      if (!Array.isArray(m) || m.length < 2 || !isFiniteNum(m[0]) || !isFiniteNum(m[1]) || refIds.length < 2) {
+        errors.push('triangle-rhs requires 2 baseline referencePointIds and [leg, hypotenuse].');
+      } else if (!isValidTriangleRHS(m[0], m[1])) {
+        errors.push(`Impossible RHS triangle dimensions: hypotenuse (${m[1]}) must strictly exceed leg (${m[0]}) > 0.`);
+      }
+    }
+    if (goal.kind === 'protractor-angle') {
+      const m = goal.targetMeasures as number[] | undefined;
+      if (!Array.isArray(m) || m.length < 1 || !isFiniteNum(m[0]) || m[0] <= 0 || m[0] >= 180 || refIds.length < 2) {
+        errors.push('protractor-angle requires 2 referencePointIds [vertex, baseRayPoint] and [angleDeg] in (0, 180).');
       }
     }
     return;

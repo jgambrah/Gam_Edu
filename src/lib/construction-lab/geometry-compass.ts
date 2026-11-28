@@ -20,6 +20,7 @@ import {
   type GeoPoint,
   type GeoSegment,
 } from './geometry-primitives';
+import { evaluateProtractorAngle, evaluateTriangleRHS } from './geometry-step5e';
 
 export type CompassGoalKind =
   | 'perpendicular-bisector'
@@ -27,6 +28,8 @@ export type CompassGoalKind =
   | 'triangle-sss'
   | 'triangle-sas'
   | 'triangle-asa'
+  | 'triangle-rhs'
+  | 'protractor-angle'
   | 'locus-circle'
   | 'parallel-line'
   | 'perpendicular-through-point';
@@ -292,6 +295,84 @@ export function evaluateCompassConstruction(input: CompassEvaluationInput): Comp
       passed: true,
       hasValidProvenanceArcs: true,
       feedback: `Verified: ASA triangle constructed with ∠${B.label}${A.label}${candidateC.label} = ${angleADeg}° and ∠${A.label}${B.label}${candidateC.label} = ${angleBDeg}°.`,
+    };
+  }
+
+  // 4c. TRIANGLE RHS (baseline leg A-B or right angle at A/B, accepts both reflected orientations!)
+  if (input.goal.kind === 'triangle-rhs') {
+    if (refs.length < 2 || !input.goal.targetMeasures || input.goal.targetMeasures.length < 2) {
+      return { passed: false, feedback: 'RHS triangle requires baseline points A, B and target measures [leg, hypotenuse].', hasValidProvenanceArcs: false };
+    }
+    const [A, B] = refs;
+    const [targetLeg, targetHyp] = input.goal.targetMeasures;
+    const hasHypArc = input.arcs.some(
+      (arc) => (arc.centreId === A.id || arc.centreId === B.id) && Math.abs(arc.radius - targetHyp) <= distTol,
+    );
+    const candidateC = input.points.find((p) => {
+      if (p.id === A.id || p.id === B.id) return false;
+      return evaluateTriangleRHS(A, B, p, targetLeg, targetHyp, distTol, angTol).passed;
+    });
+    if (!candidateC) {
+      return {
+        passed: false,
+        hasValidProvenanceArcs: hasHypArc,
+        feedback: `Construct vertex C forming a 90° angle with leg = ${targetLeg} and hypotenuse = ${targetHyp} (either reflected orientation above or below ${A.label}${B.label} is accepted).`,
+      };
+    }
+    const hasEdgeAC = input.segments.some(
+      (s) => (s.from === A.id && s.to === candidateC.id) || (s.from === candidateC.id && s.to === A.id),
+    );
+    const hasEdgeBC = input.segments.some(
+      (s) => (s.from === B.id && s.to === candidateC.id) || (s.from === candidateC.id && s.to === B.id),
+    );
+    if (!hasEdgeAC || !hasEdgeBC) {
+      return {
+        passed: false,
+        hasValidProvenanceArcs: hasHypArc,
+        feedback: `Vertex ${candidateC.label} forms the exact RHS right triangle! Connect segments ${A.label}${candidateC.label} and ${B.label}${candidateC.label} to complete it.`,
+      };
+    }
+    if (requireArcs && !hasHypArc) {
+      return {
+        passed: false,
+        hasValidProvenanceArcs: false,
+        feedback: `Your RHS triangle dimensions match, but genuine compass construction requires an arc of radius ${targetHyp} (the hypotenuse) centred at ${A.label} or ${B.label}.`,
+      };
+    }
+    const rhsRes = evaluateTriangleRHS(A, B, candidateC, targetLeg, targetHyp, distTol, angTol);
+    return {
+      passed: true,
+      hasValidProvenanceArcs: hasHypArc,
+      feedback: `${rhsRes.feedback}${hasHypArc ? ' Hypotenuse compass arc provenance verified.' : ''}`,
+    };
+  }
+
+  // 4d. VIRTUAL-PROTRACTOR ANGLE CONSTRUCTION (explicitly distinguished from pure compass construction)
+  if (input.goal.kind === 'protractor-angle') {
+    if (refs.length < 2 || !input.goal.targetMeasures || input.goal.targetMeasures.length < 1) {
+      return { passed: false, feedback: 'Virtual-protractor angle requires [vertex, baseRayPoint] and targetMeasures [angleDeg].', hasValidProvenanceArcs: false };
+    }
+    const [vertex, baseRay] = refs;
+    const [targetAngleDeg] = input.goal.targetMeasures;
+    const learnerSegs = input.segments.filter((s) => !s.locked);
+    for (const s of learnerSegs) {
+      const otherId = s.from === vertex.id ? s.to : s.to === vertex.id ? s.from : null;
+      if (!otherId || otherId === baseRay.id) continue;
+      const otherPt = ptMap.get(otherId);
+      if (!otherPt) continue;
+      const res = evaluateProtractorAngle(vertex, baseRay, otherPt, targetAngleDeg, angTol);
+      if (res.passed) {
+        return {
+          passed: true,
+          hasValidProvenanceArcs: true,
+          feedback: res.feedback,
+        };
+      }
+    }
+    return {
+      passed: false,
+      hasValidProvenanceArcs: false,
+      feedback: `Use the virtual protractor to plot a ray from vertex ${vertex.label} at ${targetAngleDeg}° (±${angTol}°) from baseline ${vertex.label}${baseRay.label}.`,
     };
   }
 

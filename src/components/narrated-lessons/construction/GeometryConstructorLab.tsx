@@ -163,6 +163,18 @@ function CompassWorkbench({ config }: { config: GeometryCompassConfig }) {
   const [arcCentre, setArcCentre] = useState<string>(initialState.points[0]?.id ?? '');
   const [arcRadius, setArcRadius] = useState<string>('4');
 
+  // Step 5E-B: Interactive Virtual Protractor tool (distinct from pure compass construction)
+  const [showProtractor, setShowProtractor] = useState<boolean>(config.constructionGoal.kind === 'protractor-angle');
+  const [protVertex, setProtVertex] = useState<string>(initialState.points[0]?.id ?? '');
+  const [protBase, setProtBase] = useState<string>(initialState.points[1]?.id ?? initialState.points[0]?.id ?? '');
+  const [protAngleDeg, setProtAngleDeg] = useState<number>(
+    config.constructionGoal.kind === 'protractor-angle' && config.constructionGoal.targetMeasures?.[0]
+      ? Math.max(1, Math.min(179, Math.round(config.constructionGoal.targetMeasures[0])))
+      : 60,
+  );
+  const [protDirection, setProtDirection] = useState<'ccw' | 'cw'>('ccw');
+  const [protLength, setProtLength] = useState<string>('4');
+
   const commit = (next: CompassState) => {
     setHistory((h) => [...h.slice(-24), state]);
     setState(next);
@@ -193,6 +205,25 @@ function CompassWorkbench({ config }: { config: GeometryCompassConfig }) {
     commit({
       ...state,
       arcs: [...state.arcs, { id: `C${state.arcs.length + 1}`, centreId: arcCentre, radius: r }],
+    });
+  };
+
+  const plotProtractorRay = () => {
+    const ptLookup = new Map(state.points.map((p) => [p.id, p]));
+    const vPt = ptLookup.get(protVertex);
+    const bPt = ptLookup.get(protBase);
+    const len = Number(protLength);
+    if (!vPt || !bPt || vPt.id === bPt.id || !Number.isFinite(len) || len <= 0) return;
+    if (state.points.length >= GEOMETRY_LIMITS.maxPoints || state.segments.length >= GEOMETRY_LIMITS.maxSegments) return;
+    const baseAngleRad = Math.atan2(bPt.y - vPt.y, bPt.x - vPt.x);
+    const deltaRad = ((protDirection === 'ccw' ? 1 : -1) * protAngleDeg * Math.PI) / 180;
+    const rx = Number((vPt.x + len * Math.cos(baseAngleRad + deltaRad)).toFixed(3));
+    const ry = Number((vPt.y + len * Math.sin(baseAngleRad + deltaRad)).toFixed(3));
+    const newId = `R${state.points.length + 1}`;
+    commit({
+      ...state,
+      points: [...state.points, { id: newId, label: newId, x: rx, y: ry }],
+      segments: [...state.segments, { id: `S${state.segments.length + 1}`, from: vPt.id, to: newId }],
     });
   };
 
@@ -357,6 +388,58 @@ function CompassWorkbench({ config }: { config: GeometryCompassConfig }) {
               </text>
             </g>
           ))}
+          {showProtractor && (() => {
+            const vPt = ptMap.get(protVertex);
+            const bPt = ptMap.get(protBase);
+            if (!vPt || !bPt || vPt.id === bPt.id) return null;
+            const vx = proj.toSvgX(vPt.x);
+            const vy = proj.toSvgY(vPt.y);
+            const baseRad = Math.atan2(bPt.y - vPt.y, bPt.x - vPt.x);
+            const prR = 64;
+            const dir = protDirection === 'ccw' ? 1 : -1;
+            const rayRad = baseRad + (dir * protAngleDeg * Math.PI) / 180;
+            const arcPts: string[] = [];
+            for (let deg = 0; deg <= 180; deg += 10) {
+              const a = baseRad + (dir * deg * Math.PI) / 180;
+              arcPts.push(`${(vx + prR * Math.cos(a)).toFixed(1)},${(vy - prR * Math.sin(a)).toFixed(1)}`);
+            }
+            return (
+              <g aria-label="Virtual protractor overlay" opacity={0.9}>
+                <polyline
+                  points={arcPts.join(' ')}
+                  fill="rgba(245,158,11,0.12)"
+                  stroke="#d97706"
+                  strokeWidth={1.5}
+                />
+                <line
+                  x1={vx}
+                  y1={vy}
+                  x2={vx + prR * Math.cos(baseRad)}
+                  y2={vy - prR * Math.sin(baseRad)}
+                  stroke="#b45309"
+                  strokeWidth={1.2}
+                  strokeDasharray="3 2"
+                />
+                <line
+                  x1={vx}
+                  y1={vy}
+                  x2={vx + (prR + 12) * Math.cos(rayRad)}
+                  y2={vy - (prR + 12) * Math.sin(rayRad)}
+                  stroke="#b45309"
+                  strokeWidth={2}
+                />
+                <text
+                  x={vx + (prR + 16) * Math.cos(rayRad)}
+                  y={vy - (prR + 16) * Math.sin(rayRad)}
+                  fontSize="10"
+                  fontWeight="bold"
+                  fill="#92400e"
+                >
+                  {protAngleDeg}°
+                </text>
+              </g>
+            );
+          })()}
         </svg>
 
         <div className="space-y-3 text-xs">
@@ -481,6 +564,99 @@ function CompassWorkbench({ config }: { config: GeometryCompassConfig }) {
                 Add Point
               </button>
             </div>
+          </div>
+
+          <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-bold text-amber-950">4. Virtual Protractor Tool (Measurement Mode)</p>
+              <button
+                type="button"
+                onClick={() => setShowProtractor((s) => !s)}
+                aria-pressed={showProtractor}
+                className="min-h-[44px] rounded-lg border border-amber-300 bg-white px-3 font-bold text-amber-900 hover:bg-amber-100"
+              >
+                {showProtractor ? 'Hide Protractor' : 'Show Protractor'}
+              </button>
+            </div>
+            {showProtractor && (
+              <div className="mt-2 space-y-2">
+                <p className="text-[11px] text-amber-900">
+                  Virtual protractor measurement is distinct from pure straightedge-and-compass construction.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="flex items-center gap-1">
+                    <span>Vertex:</span>
+                    <select
+                      aria-label="Protractor vertex point"
+                      value={protVertex}
+                      onChange={(e) => setProtVertex(e.target.value)}
+                      className="min-h-[44px] rounded-lg border border-amber-300 bg-white px-2"
+                    >
+                      {state.points.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <span>Baseline:</span>
+                    <select
+                      aria-label="Protractor baseline point"
+                      value={protBase}
+                      onChange={(e) => setProtBase(e.target.value)}
+                      className="min-h-[44px] rounded-lg border border-amber-300 bg-white px-2"
+                    >
+                      {state.points.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <span>Angle (°):</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={179}
+                      aria-label="Protractor angle in degrees"
+                      value={protAngleDeg}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (Number.isFinite(v)) setProtAngleDeg(Math.max(1, Math.min(179, v)));
+                      }}
+                      className="min-h-[44px] w-20 rounded-lg border border-amber-300 bg-white px-2"
+                    />
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <span>Ray len:</span>
+                    <input
+                      type="number"
+                      step={step}
+                      aria-label="Protractor ray length"
+                      value={protLength}
+                      onChange={(e) => setProtLength(e.target.value)}
+                      className="min-h-[44px] w-16 rounded-lg border border-amber-300 bg-white px-2"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setProtDirection((d) => (d === 'ccw' ? 'cw' : 'ccw'))}
+                    className="min-h-[44px] rounded-lg border border-amber-300 bg-white px-2.5 font-bold text-amber-900 hover:bg-amber-100"
+                  >
+                    {protDirection === 'ccw' ? 'Anticlockwise (+)' : 'Clockwise (−)'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={plotProtractorRay}
+                    className="min-h-[44px] rounded-lg bg-amber-800 px-3 font-bold text-white hover:bg-amber-900"
+                  >
+                    Plot Protractor Ray
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -672,6 +848,27 @@ function TransformationsWorkbench({ config }: { config: GeometryTransformationCo
               </div>
             );
           })}
+          {(() => {
+            const perim = (pts: ReadonlyArray<Point2D>) =>
+              pts.reduce((acc, p, i) => acc + distance2D(p, pts[(i + 1) % pts.length]), 0);
+            const preP = perim(config.preImageVertices);
+            const imgP = perim(imageVertices);
+            const ratio = preP > 1e-6 ? imgP / preP : 1;
+            const isIsometry = config.transformation.kind !== 'enlargement';
+            return (
+              <div className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-2.5 text-[11px] text-indigo-950">
+                <p className="font-bold">Congruence &amp; Similarity Readout</p>
+                <p>
+                  Pre-image perimeter: {preP.toFixed(2)} · Image perimeter: {imgP.toFixed(2)} · Ratio: {ratio.toFixed(2)}×
+                </p>
+                <p>
+                  {isIsometry
+                    ? 'Rigid isometry (congruent image: side lengths and angles preserved, ratio = 1.00×).'
+                    : `Similarity enlargement (scale factor k = ${config.transformation.scaleFactor}; side lengths scale by |k| = ${Math.abs(config.transformation.scaleFactor)}×).`}
+                </p>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </ConstructionLabShell>
@@ -894,7 +1091,11 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
 
   const cx = SVG_SIZE / 2;
   const cy = SVG_SIZE / 2;
-  const R = 122;
+  const maxNorm = Math.max(
+    1,
+    ...Object.values(computed.points).map((p) => Math.hypot(p.x, p.y)),
+  );
+  const R = maxNorm > 1.05 ? Math.floor(136 / maxNorm) : 122;
   const toSvg = (p: Point2D) => ({ x: cx + p.x * R, y: cy - p.y * R });
 
   const ptA = computed.points.A ? toSvg(computed.points.A) : null;
@@ -902,6 +1103,10 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
   const ptC = computed.points.C ? toSvg(computed.points.C) : null;
   const ptP = computed.points.P ? toSvg(computed.points.P) : null;
   const ptT = computed.points.T ? toSvg(computed.points.T) : null;
+  const ptE = computed.points.E ? toSvg(computed.points.E) : null;
+  const ptT1 = computed.points.T1 ? toSvg(computed.points.T1) : null;
+  const ptT2 = computed.points.T2 ? toSvg(computed.points.T2) : null;
+  const ptM = computed.points.M ? toSvg(computed.points.M) : null;
 
   return (
     <ConstructionLabShell
@@ -991,6 +1196,40 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
               <line x1={ptA.x} y1={ptA.y} x2={ptT.x} y2={ptT.y} stroke="#059669" strokeWidth={2.5} />
             </>
           )}
+          {ct.theorem === 'alternate-segment' && ptA && ptB && ptP && ptT && (
+            <g aria-label="Alternate segment theorem geometry">
+              <line x1={cx} y1={cy} x2={ptA.x} y2={ptA.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
+              <line
+                x1={ptA.x - (ptT.x - ptA.x) * 0.75}
+                y1={ptA.y - (ptT.y - ptA.y) * 0.75}
+                x2={ptT.x}
+                y2={ptT.y}
+                stroke="#d97706"
+                strokeWidth={2.5}
+              />
+              <line x1={ptA.x} y1={ptA.y} x2={ptB.x} y2={ptB.y} stroke="#4f46e5" strokeWidth={2.5} />
+              <line x1={ptP.x} y1={ptP.y} x2={ptA.x} y2={ptA.y} stroke="#059669" strokeWidth={2} />
+              <line x1={ptP.x} y1={ptP.y} x2={ptB.x} y2={ptB.y} stroke="#059669" strokeWidth={2} />
+            </g>
+          )}
+          {ct.theorem === 'equal-tangents' && ptE && ptT1 && ptT2 && (
+            <g aria-label="Equal tangents from external point geometry">
+              <line x1={cx} y1={cy} x2={ptE.x} y2={ptE.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
+              <line x1={cx} y1={cy} x2={ptT1.x} y2={ptT1.y} stroke="#4f46e5" strokeWidth={2} />
+              <line x1={cx} y1={cy} x2={ptT2.x} y2={ptT2.y} stroke="#4f46e5" strokeWidth={2} />
+              <line x1={ptE.x} y1={ptE.y} x2={ptT1.x} y2={ptT1.y} stroke="#059669" strokeWidth={2.5} />
+              <line x1={ptE.x} y1={ptE.y} x2={ptT2.x} y2={ptT2.y} stroke="#059669" strokeWidth={2.5} />
+            </g>
+          )}
+          {ct.theorem === 'chord-perp-bisector' && ptA && ptB && ptM && (
+            <g aria-label="Chord perpendicular bisector geometry">
+              <line x1={cx} y1={cy} x2={ptA.x} y2={ptA.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
+              <line x1={cx} y1={cy} x2={ptB.x} y2={ptB.y} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
+              <line x1={ptA.x} y1={ptA.y} x2={ptB.x} y2={ptB.y} stroke="#4f46e5" strokeWidth={2.5} />
+              <line x1={cx} y1={cy} x2={ptM.x} y2={ptM.y} stroke="#059669" strokeWidth={2.5} />
+              <rect x={ptM.x - 4} y={ptM.y - 4} width={8} height={8} fill="none" stroke="#059669" strokeWidth={1.5} />
+            </g>
+          )}
 
           {Object.entries(computed.points)
             .filter(([k]) => k !== 'O')
@@ -1032,7 +1271,7 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
                 step={1}
                 value={angleDeg}
                 onChange={(e) => setMovableAngle(Number(e.target.value))}
-                className="mt-2 w-full"
+                className="mt-2 min-h-[44px] w-full"
               />
             </label>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -1091,10 +1330,12 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
 
 function CubeNetWorkbench({ config }: { config: GeometryCubeNetConfig }) {
   const [cells, setCells] = useState<Array<{ r: number; c: number }>>(config.initialCells ?? []);
-  const [status, setStatus] = useState<{ passed: boolean; feedback: string } | null>(null);
+  const [history, setHistory] = useState<Array<Array<{ r: number; c: number }>>>([]);
+  const [status, setStatus] = useState<{ passed: boolean; feedback: string; faceMap?: Record<string, string> } | null>(null);
 
   const toggleCell = (r: number, c: number) => {
     setStatus(null);
+    setHistory((h) => [...h.slice(-24), cells]);
     setCells((prev) => {
       const exists = prev.some((p) => p.r === r && p.c === c);
       if (exists) return prev.filter((p) => !(p.r === r && p.c === c));
@@ -1105,11 +1346,12 @@ function CubeNetWorkbench({ config }: { config: GeometryCubeNetConfig }) {
 
   const handleCheck = () => {
     const res = evaluateCubeNet(cells);
-    setStatus({ passed: res.valid, feedback: res.reason });
+    setStatus({ passed: res.valid, feedback: res.reason, faceMap: res.foldedFaceMap });
   };
 
   const handleReset = () => {
     setCells(config.initialCells ?? []);
+    setHistory([]);
     setStatus(null);
   };
 
@@ -1130,8 +1372,15 @@ function CubeNetWorkbench({ config }: { config: GeometryCubeNetConfig }) {
       accessibilityLabel={config.accessibilityLabel}
       subjectTag={config.subjectTag}
       hints={config.hints}
-      canUndo={false}
-      onUndo={() => undefined}
+      canUndo={history.length > 0}
+      onUndo={() => {
+        const prev = history[history.length - 1];
+        if (prev) {
+          setCells(prev);
+          setHistory((h) => h.slice(0, -1));
+          setStatus(null);
+        }
+      }}
       onReset={handleReset}
       onCheck={handleCheck}
       checkLabel="Test 3D Foldability"
@@ -1146,24 +1395,31 @@ function CubeNetWorkbench({ config }: { config: GeometryCubeNetConfig }) {
             const r = Math.floor(idx / 6);
             const c = idx % 6;
             const active = cells.some((p) => p.r === r && p.c === c);
+            const faceTag = status?.faceMap?.[`${r},${c}`];
+            const shortFace = faceTag ? faceTag.slice(0, 1).toUpperCase() : '■';
             return (
               <button
                 key={`${r}-${c}`}
                 type="button"
                 aria-pressed={active}
-                aria-label={`Grid cell row ${r + 1} col ${c + 1}`}
+                aria-label={`Grid cell row ${r + 1} col ${c + 1}${faceTag ? ` (${faceTag} face)` : ''}`}
                 onClick={() => toggleCell(r, c)}
                 className={`h-11 w-11 rounded-lg border text-[11px] font-bold transition ${
                   active
-                    ? 'border-indigo-600 bg-indigo-500 text-white'
-                    : 'border-slate-300 bg-white text-slate-500 hover:bg-slate-100'
+                    ? 'border-indigo-700 bg-indigo-700 text-white'
+                    : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                {active ? '■' : ''}
+                {active ? shortFace : ''}
               </button>
             );
           })}
         </div>
+        {status?.passed && (
+          <p className="text-[11px] font-medium text-indigo-800">
+            Folded face labels: B = bottom, T = top, N = north, S = south, E = east, W = west.
+          </p>
+        )}
         {metrics && (
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-[11px] text-slate-700">
             <strong>Cuboid Reference ({config.cuboidDimensions!.length} × {config.cuboidDimensions!.width} × {config.cuboidDimensions!.height}):</strong>{' '}
@@ -1180,9 +1436,63 @@ function CubeNetWorkbench({ config }: { config: GeometryCubeNetConfig }) {
 /* ========================================================================== */
 
 function LociRegionWorkbench({ config }: { config: GeometryLociRegionConfig }) {
+  const step = config.gridBounds.step ?? 0.5;
+  const proj = useMemo(() => createProjection(config.gridBounds), [config.gridBounds]);
   const [px, setPx] = useState<string>('0');
   const [py, setPy] = useState<string>('0');
+  const [history, setHistory] = useState<Array<{ x: string; y: string }>>([]);
   const [status, setStatus] = useState<{ passed: boolean; feedback: string } | null>(null);
+
+  const hasInequality = useMemo(
+    () =>
+      config.locusConstraints.some(
+        (c) =>
+          ('relation' in c && c.relation !== 'eq'),
+      ),
+    [config.locusConstraints],
+  );
+
+  // Sample a deterministic 22x22 grid to shade feasible regions when inequality constraints exist
+  const shadedCells = useMemo(() => {
+    if (!hasInequality) return [];
+    const N = 22;
+    const dx = (config.gridBounds.xMax - config.gridBounds.xMin) / N;
+    const dy = (config.gridBounds.yMax - config.gridBounds.yMin) / N;
+    const cells: Array<{ sx: number; sy: number; w: number; h: number }> = [];
+    const cellW = Math.abs(proj.toSvgX(config.gridBounds.xMin + dx) - proj.toSvgX(config.gridBounds.xMin));
+    const cellH = Math.abs(proj.toSvgY(config.gridBounds.yMin) - proj.toSvgY(config.gridBounds.yMin + dy));
+    for (let ix = 0; ix < N; ix++) {
+      const cxVal = config.gridBounds.xMin + (ix + 0.5) * dx;
+      for (let iy = 0; iy < N; iy++) {
+        const cyVal = config.gridBounds.yMin + (iy + 0.5) * dy;
+        if (evaluateCombinedLocus(config.locusConstraints, { x: cxVal, y: cyVal }, 0.05).passed) {
+          cells.push({
+            sx: proj.toSvgX(config.gridBounds.xMin + ix * dx),
+            sy: proj.toSvgY(config.gridBounds.yMin + (iy + 1) * dy),
+            w: cellW + 0.6,
+            h: cellH + 0.6,
+          });
+        }
+      }
+    }
+    return cells;
+  }, [config.gridBounds, config.locusConstraints, hasInequality, proj]);
+
+  const setPoint = (nx: string, ny: string) => {
+    setHistory((h) => [...h.slice(-24), { x: px, y: py }]);
+    setPx(nx);
+    setPy(ny);
+    setStatus(null);
+  };
+
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+    const svgX = ((e.clientX - rect.left) / rect.width) * SVG_SIZE;
+    const svgY = ((e.clientY - rect.top) / rect.height) * SVG_SIZE;
+    const pt = proj.fromSvg(svgX, svgY, step);
+    setPoint(String(pt.x), String(pt.y));
+  };
 
   const handleCheck = () => {
     const x = Number(px);
@@ -1195,6 +1505,10 @@ function LociRegionWorkbench({ config }: { config: GeometryLociRegionConfig }) {
     setStatus({ passed: res.passed, feedback: res.feedback });
   };
 
+  const numX = Number(px);
+  const numY = Number(py);
+  const hasValidNum = Number.isFinite(numX) && Number.isFinite(numY);
+
   return (
     <ConstructionLabShell
       id={config.id}
@@ -1204,48 +1518,202 @@ function LociRegionWorkbench({ config }: { config: GeometryLociRegionConfig }) {
       accessibilityLabel={config.accessibilityLabel}
       subjectTag={config.subjectTag}
       hints={config.hints}
-      canUndo={false}
-      onUndo={() => undefined}
+      canUndo={history.length > 0}
+      onUndo={() => {
+        const prev = history[history.length - 1];
+        if (prev) {
+          setPx(prev.x);
+          setPy(prev.y);
+          setHistory((h) => h.slice(0, -1));
+          setStatus(null);
+        }
+      }}
       onReset={() => {
         setPx('0');
         setPy('0');
+        setHistory([]);
         setStatus(null);
       }}
       onCheck={handleCheck}
       checkLabel="Test Locus Point"
       feedback={status ? { passed: status.passed, message: status.feedback } : null}
     >
-      <div className="space-y-3 text-xs">
-        <p className="font-bold text-slate-800">{config.targetPrompt}</p>
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-1.5 font-semibold text-slate-700">
-            x:
-            <input
-              type="number"
-              step="0.5"
-              aria-label="Locus test point x"
-              value={px}
-              onChange={(e) => {
-                setPx(e.target.value);
-                setStatus(null);
-              }}
-              className="min-h-[44px] w-24 rounded-lg border border-slate-300 px-2 font-mono"
-            />
-          </label>
-          <label className="flex items-center gap-1.5 font-semibold text-slate-700">
-            y:
-            <input
-              type="number"
-              step="0.5"
-              aria-label="Locus test point y"
-              value={py}
-              onChange={(e) => {
-                setPy(e.target.value);
-                setStatus(null);
-              }}
-              className="min-h-[44px] w-24 rounded-lg border border-slate-300 px-2 font-mono"
-            />
-          </label>
+      <div className="grid gap-4 md:grid-cols-[minmax(0,360px)_1fr]">
+        <svg
+          viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          aria-label={`${config.title} loci and feasible region plane`}
+          onClick={handleSvgClick}
+          className="w-full max-w-[360px] cursor-crosshair rounded-xl border border-slate-200 bg-white"
+        >
+          <GridAxesSvg bounds={config.gridBounds} proj={proj} />
+          {/* Shaded feasible region cells (for inequality constraints) */}
+          {shadedCells.length > 0 && (
+            <g aria-label="Shaded feasible region">
+              {shadedCells.map((cell, idx) => (
+                <rect
+                  key={`fr-${idx}`}
+                  x={cell.sx}
+                  y={cell.sy}
+                  width={cell.w}
+                  height={cell.h}
+                  fill="rgba(16,185,129,0.22)"
+                />
+              ))}
+            </g>
+          )}
+          {/* Analytical locus boundaries & reference geometry */}
+          {config.locusConstraints.map((c, idx) => {
+            if (c.kind === 'fixed-distance-point') {
+              return (
+                <g key={`lc-${idx}`}>
+                  <circle
+                    cx={proj.toSvgX(c.center.x)}
+                    cy={proj.toSvgY(c.center.y)}
+                    r={c.distance * proj.scale}
+                    fill="none"
+                    stroke="#4f46e5"
+                    strokeWidth={2}
+                    strokeDasharray={c.relation === 'eq' ? undefined : '5 3'}
+                  />
+                  <circle cx={proj.toSvgX(c.center.x)} cy={proj.toSvgY(c.center.y)} r={4} fill="#312e81" />
+                </g>
+              );
+            }
+            if (c.kind === 'fixed-distance-line') {
+              const vx = c.p2.x - c.p1.x;
+              const vy = c.p2.y - c.p1.y;
+              const len = Math.hypot(vx, vy) || 1;
+              const nx = (-vy / len) * c.distance;
+              const ny = (vx / len) * c.distance;
+              return (
+                <g key={`lc-${idx}`}>
+                  <line x1={proj.toSvgX(c.p1.x)} y1={proj.toSvgY(c.p1.y)} x2={proj.toSvgX(c.p2.x)} y2={proj.toSvgY(c.p2.y)} stroke="#0f172a" strokeWidth={2} />
+                  <line x1={proj.toSvgX(c.p1.x + nx)} y1={proj.toSvgY(c.p1.y + ny)} x2={proj.toSvgX(c.p2.x + nx)} y2={proj.toSvgY(c.p2.y + ny)} stroke="#4f46e5" strokeWidth={2} strokeDasharray="5 3" />
+                  <line x1={proj.toSvgX(c.p1.x - nx)} y1={proj.toSvgY(c.p1.y - ny)} x2={proj.toSvgX(c.p2.x - nx)} y2={proj.toSvgY(c.p2.y - ny)} stroke="#4f46e5" strokeWidth={2} strokeDasharray="5 3" />
+                </g>
+              );
+            }
+            if (c.kind === 'fixed-distance-segment') {
+              const vx = c.p2.x - c.p1.x;
+              const vy = c.p2.y - c.p1.y;
+              const len = Math.hypot(vx, vy) || 1;
+              const nx = (-vy / len) * c.distance;
+              const ny = (vx / len) * c.distance;
+              const rSvg = c.distance * proj.scale;
+              const a1x = proj.toSvgX(c.p1.x + nx);
+              const a1y = proj.toSvgY(c.p1.y + ny);
+              const b1x = proj.toSvgX(c.p2.x + nx);
+              const b1y = proj.toSvgY(c.p2.y + ny);
+              const b2x = proj.toSvgX(c.p2.x - nx);
+              const b2y = proj.toSvgY(c.p2.y - ny);
+              const a2x = proj.toSvgX(c.p1.x - nx);
+              const a2y = proj.toSvgY(c.p1.y - ny);
+              const stadiumD = `M ${a1x} ${a1y} L ${b1x} ${b1y} A ${rSvg} ${rSvg} 0 0 1 ${b2x} ${b2y} L ${a2x} ${a2y} A ${rSvg} ${rSvg} 0 0 1 ${a1x} ${a1y} Z`;
+              return (
+                <g key={`lc-${idx}`} aria-label="Finite segment stadium locus with semicircular endpoint arcs">
+                  <path d={stadiumD} fill="rgba(79,70,229,0.08)" stroke="#4f46e5" strokeWidth={2} strokeDasharray="5 3" />
+                  <line x1={proj.toSvgX(c.p1.x)} y1={proj.toSvgY(c.p1.y)} x2={proj.toSvgX(c.p2.x)} y2={proj.toSvgY(c.p2.y)} stroke="#0f172a" strokeWidth={3} />
+                  <circle cx={proj.toSvgX(c.p1.x)} cy={proj.toSvgY(c.p1.y)} r={4} fill="#0f172a" />
+                  <circle cx={proj.toSvgX(c.p2.x)} cy={proj.toSvgY(c.p2.y)} r={4} fill="#0f172a" />
+                </g>
+              );
+            }
+            if (c.kind === 'equidistant-two-points') {
+              const mx = (c.p1.x + c.p2.x) / 2;
+              const my = (c.p1.y + c.p2.y) / 2;
+              const vx = c.p2.x - c.p1.x;
+              const vy = c.p2.y - c.p1.y;
+              const len = Math.hypot(vx, vy) || 1;
+              const span = Math.max(config.gridBounds.xMax - config.gridBounds.xMin, config.gridBounds.yMax - config.gridBounds.yMin);
+              const pxDir = (-vy / len) * span;
+              const pyDir = (vx / len) * span;
+              return (
+                <g key={`lc-${idx}`}>
+                  <line
+                    x1={proj.toSvgX(mx - pxDir)}
+                    y1={proj.toSvgY(my - pyDir)}
+                    x2={proj.toSvgX(mx + pxDir)}
+                    y2={proj.toSvgY(my + pyDir)}
+                    stroke="#4f46e5"
+                    strokeWidth={2}
+                    strokeDasharray="5 3"
+                  />
+                  <circle cx={proj.toSvgX(c.p1.x)} cy={proj.toSvgY(c.p1.y)} r={4.5} fill="#312e81" />
+                  <circle cx={proj.toSvgX(c.p2.x)} cy={proj.toSvgY(c.p2.y)} r={4.5} fill="#312e81" />
+                </g>
+              );
+            }
+            if (c.kind === 'equidistant-parallel-lines') {
+              const mid1 = { x: (c.l1p1.x + c.l2p1.x) / 2, y: (c.l1p1.y + c.l2p1.y) / 2 };
+              const mid2 = { x: (c.l1p2.x + c.l2p2.x) / 2, y: (c.l1p2.y + c.l2p2.y) / 2 };
+              return (
+                <g key={`lc-${idx}`}>
+                  <line x1={proj.toSvgX(c.l1p1.x)} y1={proj.toSvgY(c.l1p1.y)} x2={proj.toSvgX(c.l1p2.x)} y2={proj.toSvgY(c.l1p2.y)} stroke="#0f172a" strokeWidth={2} />
+                  <line x1={proj.toSvgX(c.l2p1.x)} y1={proj.toSvgY(c.l2p1.y)} x2={proj.toSvgX(c.l2p2.x)} y2={proj.toSvgY(c.l2p2.y)} stroke="#0f172a" strokeWidth={2} />
+                  <line x1={proj.toSvgX(mid1.x)} y1={proj.toSvgY(mid1.y)} x2={proj.toSvgX(mid2.x)} y2={proj.toSvgY(mid2.y)} stroke="#4f46e5" strokeWidth={2} strokeDasharray="5 3" />
+                </g>
+              );
+            }
+            // equidistant-intersecting-lines
+            return (
+              <g key={`lc-${idx}`}>
+                <line x1={proj.toSvgX(c.l1p1.x)} y1={proj.toSvgY(c.l1p1.y)} x2={proj.toSvgX(c.l1p2.x)} y2={proj.toSvgY(c.l1p2.y)} stroke="#0f172a" strokeWidth={2} />
+                <line x1={proj.toSvgX(c.l2p1.x)} y1={proj.toSvgY(c.l2p1.y)} x2={proj.toSvgX(c.l2p2.x)} y2={proj.toSvgY(c.l2p2.y)} stroke="#0f172a" strokeWidth={2} />
+              </g>
+            );
+          })}
+          {/* Learner's live test point */}
+          {hasValidNum && (
+            <g>
+              <circle
+                cx={proj.toSvgX(numX)}
+                cy={proj.toSvgY(numY)}
+                r={6}
+                fill={status ? (status.passed ? '#059669' : '#e11d48') : '#0369a1'}
+                stroke="#ffffff"
+                strokeWidth={2}
+              />
+              <text x={proj.toSvgX(numX) + 8} y={proj.toSvgY(numY) - 6} fontSize="11" fontWeight="bold" fill="#0f172a">
+                P({numX},{numY})
+              </text>
+            </g>
+          )}
+        </svg>
+
+        <div className="space-y-3 text-xs">
+          <p className="font-bold text-slate-800">{config.targetPrompt}</p>
+          <p className="text-[11px] text-slate-600">
+            Click anywhere on the coordinate plane or type coordinates below.{' '}
+            {hasInequality
+              ? 'Green shading indicates the feasible region; dashed curves show boundary loci.'
+              : 'Dashed curves show the exact boundary locus.'}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1.5 font-semibold text-slate-700">
+              x:
+              <input
+                type="number"
+                step="0.5"
+                aria-label="Locus test point x"
+                value={px}
+                onChange={(e) => setPoint(e.target.value, py)}
+                className="min-h-[44px] w-24 rounded-lg border border-slate-300 px-2 font-mono"
+              />
+            </label>
+            <label className="flex items-center gap-1.5 font-semibold text-slate-700">
+              y:
+              <input
+                type="number"
+                step="0.5"
+                aria-label="Locus test point y"
+                value={py}
+                onChange={(e) => setPoint(px, e.target.value)}
+                className="min-h-[44px] w-24 rounded-lg border border-slate-300 px-2 font-mono"
+              />
+            </label>
+          </div>
         </div>
       </div>
     </ConstructionLabShell>
