@@ -11,13 +11,16 @@ Single status page for the Student Enrichment foundation. Detail lives in the li
 | Engine | engineVersion | productionVersion | Notes |
 |---|---|---|---|
 | code-playground | 1.0.0 | 1.0.0 | Python now sandboxed (audit D-010) |
-| construction-lab | 1.6.0 | 1.3.0 | measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0 not production-activated (D-013) |
+| construction-lab | 1.7.0 | 1.3.0 | measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0 not production-activated (D-013) |
 | rule-explorer / graph-slider / process-stepper / diagram-hotspots | 1.0.0 | 1.0.0 | |
-| math-evaluator | 1.1.0 | 1.1.0 | Oracle gate enforced in CI |
+| math-evaluator | 1.1.0 | 1.1.0 | Oracle gate enforced in CI (10,200 executed / 9,448 distinct, 0 discrepancies; simultaneous-linear added in 5E-C) |
 | sort-classify | 1.0.0 | null | Not activated |
 
 ## Roadmap position
-Gemini (development): Steps 1–5E implemented; **next: 5E close-out, then 5F**; 5G, 5H, 6 planned. Claude (audit): checkpoints 1–2 complete; **next: checkpoint 3**. See the two roadmaps and progress files.
+- **Last reported development commit**: `512fca19` (Steps 1–5F implemented; Step 5E-A independent browser accessibility verification outstanding; Step 5E-B, 5E-C, and 5F implemented).
+- **Next foundation development assignment**: Step 5G (Physics Workbench); Step 5H (Visual Programming, Art Studio and Game Zone) and Step 6 (Final Foundation Integration) remain planned.
+- **Temporary assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**).
+- **Claude (audit)**: Checkpoint 3 remains temporarily paused at its previously recorded position (`baba1cdd`); no audit findings are marked independently verified by Gemini. See the two roadmaps and progress files.
 
 ## Quality gates (all in `.github/workflows/foundation-verification.yml`)
 Lockfile sync · enrichment + security + sandbox + execution + Ask Teacher tests · independent math oracle (fails on any discrepancy) · TypeScript ratchet (351) · Firestore/Storage emulator rules tests.
