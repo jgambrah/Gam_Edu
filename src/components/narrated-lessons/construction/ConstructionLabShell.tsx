@@ -50,11 +50,11 @@ export interface ConstructionLabShellProps {
 }
 
 /**
- * Thin Shared Construction Laboratory Shell (Step 4D).
+ * Thin Shared Construction Laboratory Shell (Step 4D + PCV-1 Refinement 3).
  *
  * Provides uniform Brilliant.org-style discovery framing (Understand -> Predict -> Construct ->
  * Test -> Observe -> Explain -> Refine), keyboard-accessible Undo/Reset/Check controls,
- * colour-independent aria-live feedback, hints, and zero Firestore writes.
+ * colour-independent aria-live feedback, hints, isolated Explore Further sandbox, and zero Firestore writes.
  */
 export function ConstructionLabShell({
   id,
