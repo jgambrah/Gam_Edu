@@ -167,7 +167,7 @@ describe('PCV-1 Refinement 1 — Open-Ended Atomic Structure Playground (constru
         { id: 'c-ca', prompt: 'Construct a neutral Calcium atom (Z = 20) from its atomic number.', targetElement: 'Ca', targetMassNumber: 40, targetCharge: 0, lockNucleus: true, initialElectrons: 0 },
       ],
     };
-    // Verify production gate blocks 1.8.0 until owner activates it!
+    // Verify dev gate passes and scoped production activation (atom-bond-builder: 1.9.0) permits 1.8.0 atomic challenges
     expect(() =>
       assertValidLessonInteractives(
         { lessonId: 'test-180', slides: [{ id: 's1', interactive: [chCfg] }] },
@@ -179,7 +179,7 @@ describe('PCV-1 Refinement 1 — Open-Ended Atomic Structure Playground (constru
         { lessonId: 'test-180', slides: [{ id: 's1', interactive: [chCfg] }] },
         { allowDevOnlyEngines: false },
       ),
-    ).toThrow(/1\.8\.0|production/i);
+    ).not.toThrow();
 
     render(<AtomBondLab config={chCfg} />);
     expect(screen.getByText(/Construct a neutral Hydrogen atom/i)).toBeTruthy();

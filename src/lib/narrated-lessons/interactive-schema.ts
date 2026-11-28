@@ -163,12 +163,12 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
     engineVersion: '1.9.0',
     productionVersion: '1.3.0',
     productionCapabilities: {
-      'construction-lab:atom-bond-builder': '1.2.0',
-      'construction-lab:equation-balancer': '1.1.0',
+      'construction-lab:atom-bond-builder': '1.9.0',
+      'construction-lab:equation-balancer': '1.9.0',
     },
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0 LIVE + open-ended atomic playground 1.8.0 + dynamic selectable chemistry playgrounds & Explore Further 1.9.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0; measurement-lab 1.4.0; data-stats-lab 1.5.0; number-manipulative 1.7.0).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer 1.9.0 LIVE; electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.9.0 LIVE incl. open-ended atomic playground 1.8.0 + dynamic selectable chemistry playgrounds & Explore Further 1.9.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 gated; measurement-lab 1.4.0 gated; data-stats-lab 1.5.0 gated; number-manipulative 1.7.0 gated).',
   },
   'rule-explorer': {
     id: 'rule-explorer',

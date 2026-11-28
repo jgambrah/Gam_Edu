@@ -11,7 +11,7 @@ Single status page for the Student Enrichment foundation. Detail lives in the li
 | Engine | engineVersion | productionVersion | Notes |
 |---|---|---|---|
 | code-playground | 1.0.0 | 1.0.0 | Python now sandboxed (audit D-010) |
-| construction-lab | 1.9.0 | 1.3.0 | `productionCapabilities`: `atom-bond-builder: 1.2.0`, `equation-balancer: 1.1.0`; measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0, atomic playground 1.8.0, and Refinement 3 dynamic chemistry playgrounds & Explore Further 1.9.0 not production-activated prior to manual Vercel promotion (D-013) |
+| construction-lab | 1.9.0 | 1.3.0 | `productionCapabilities`: **`atom-bond-builder: 1.9.0`**, **`equation-balancer: 1.9.0`** (scoped-activated after manual Vercel promotion of `bdb57e90`/`c689e9d8`); measurement 1.4.0, stats 1.5.0, geometry 5E 1.6.0, number-manipulative 1.7.0 remain **NOT** production-activated (D-013) |
 | rule-explorer / graph-slider / process-stepper / diagram-hotspots | 1.0.0 | 1.0.0 | |
 | math-evaluator | 1.1.0 | 1.1.0 | Oracle gate enforced in CI (10,200 executed / 9,448 distinct, 0 discrepancies; simultaneous-linear added in 5E-C) |
 | sort-classify | 1.0.0 | null | Not activated |

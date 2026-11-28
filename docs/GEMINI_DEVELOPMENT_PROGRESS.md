@@ -27,7 +27,7 @@
 | Engine | engineVersion | productionVersion |
 |---|---|---|
 | code-playground | 1.0.0 | 1.0.0 |
-| construction-lab | 1.9.0 | **1.3.0** (`productionCapabilities`: `atom-bond-builder: 1.2.0`, `equation-balancer: 1.1.0`; `measurement-lab 1.4.0`, `data-stats-lab 1.5.0`, `geometry 5E 1.6.0`, `number-manipulative 1.7.0`, `atomic playground 1.8.0`, and `dynamic chemistry playgrounds & Explore Further 1.9.0` NOT production-activated prior to manual Vercel promotion) |
+| construction-lab | 1.9.0 | **1.3.0** (`productionCapabilities`: **`atom-bond-builder: 1.9.0`**, **`equation-balancer: 1.9.0`** scoped-activated after `bdb57e90`/`c689e9d8` Vercel promotion; `measurement-lab 1.4.0`, `data-stats-lab 1.5.0`, `geometry 5E 1.6.0`, and `number-manipulative 1.7.0` remain **NOT** production-activated) |
 | rule-explorer, graph-slider, process-stepper, diagram-hotspots | 1.0.0 | 1.0.0 |
 | math-evaluator | 1.1.0 | 1.1.0 (extended with exact `simultaneous-linear` 2×2/3×3 RREF) |
 | sort-classify | 1.0.0 | **null** |

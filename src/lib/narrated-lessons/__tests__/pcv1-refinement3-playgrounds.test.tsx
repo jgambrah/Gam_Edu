@@ -352,7 +352,7 @@ describe('PCV-1 Refinement 3: Strengthened Ionic Electron-Transfer Validation', 
 });
 
 describe('PCV-1 Refinement 3: Portable Actual Enriched Lesson Validation & Capability-Level Gate', () => {
-  it('validates both actual enriched Refinement 3 lesson JSONs (dev passes, pre-activation prod fails, scoped activation passes)', () => {
+  it('validates both actual enriched Refinement 3 lesson JSONs (pre-activation registry fails, live scoped 1.9.0 activation passes while shared productionVersion remains 1.3.0)', () => {
     expect(B8_REF3_LESSON.slides.length).toBe(26);
     expect(HC_REF3_LESSON.slides.length).toBe(71);
 
@@ -360,25 +360,39 @@ describe('PCV-1 Refinement 3: Portable Actual Enriched Lesson Validation & Capab
     expect(() => assertValidLessonInteractives(B8_REF3_LESSON, { allowDevOnlyEngines: true })).not.toThrow();
     expect(() => assertValidLessonInteractives(HC_REF3_LESSON, { allowDevOnlyEngines: true })).not.toThrow();
 
-    // Strict pre-activation production gate MUST reject both (capabilities held at 1.2.0 / 1.1.0 until Vercel promotion)
-    expect(() => assertValidLessonInteractives(B8_REF3_LESSON, { allowDevOnlyEngines: false })).toThrow();
-    expect(() => assertValidLessonInteractives(HC_REF3_LESSON, { allowDevOnlyEngines: false })).toThrow();
-
-    // Scoped post-promotion capability activation (atom-bond-builder: 1.9.0, equation-balancer: 1.9.0; shared productionVersion stays 1.3.0)
-    const activatedRegistry = makeScopedChemistryActivatedRegistry();
-    expect(activatedRegistry['construction-lab'].productionVersion).toBe('1.3.0');
+    // Simulated pre-activation registry (capabilities held at 1.2.0 / 1.1.0) MUST reject both
+    const preActivationRegistry: Record<InteractiveEngineId, InteractiveEngineMeta> = {
+      ...SUPPORTED_INTERACTIVE_ENGINES,
+      'construction-lab': {
+        ...SUPPORTED_INTERACTIVE_ENGINES['construction-lab'],
+        productionVersion: '1.3.0',
+        productionCapabilities: {
+          'construction-lab:atom-bond-builder': '1.2.0',
+          'construction-lab:equation-balancer': '1.1.0',
+        },
+      },
+    };
     expect(() =>
       assertValidLessonInteractives(B8_REF3_LESSON, {
         allowDevOnlyEngines: false,
-        engineRegistry: activatedRegistry,
+        engineRegistry: preActivationRegistry,
       }),
-    ).not.toThrow();
+    ).toThrow();
     expect(() =>
       assertValidLessonInteractives(HC_REF3_LESSON, {
         allowDevOnlyEngines: false,
-        engineRegistry: activatedRegistry,
+        engineRegistry: preActivationRegistry,
       }),
-    ).not.toThrow();
+    ).toThrow();
+
+    // Live scoped production activation (atom-bond-builder: 1.9.0, equation-balancer: 1.9.0; shared productionVersion stays 1.3.0)
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionCapabilities).toEqual({
+      'construction-lab:atom-bond-builder': '1.9.0',
+      'construction-lab:equation-balancer': '1.9.0',
+    });
+    expect(() => assertValidLessonInteractives(B8_REF3_LESSON, { allowDevOnlyEngines: false })).not.toThrow();
+    expect(() => assertValidLessonInteractives(HC_REF3_LESSON, { allowDevOnlyEngines: false })).not.toThrow();
   });
 
   it('keeps genuine valid Measurement (1.4.0), Data Stats (1.5.0), Geometry (1.6.0), and Number Manipulative (1.7.0) pilots blocked even after Chemistry capability activation, while preserving 1.1.0-1.3.0 production compatibility and blocking version-omission bypasses', () => {
