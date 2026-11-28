@@ -379,7 +379,10 @@ export function ProcessStepperEngine({ config, lessonId }: ProcessStepperEngineP
         {currentStage.equation && (
           <div
             data-stage-equation="true"
-            className="mt-2.5 overflow-x-auto rounded-lg border border-slate-300 bg-slate-900 px-3 py-2 font-mono text-xs font-bold text-amber-200 sm:text-sm"
+            tabIndex={0}
+            role="region"
+            aria-label="Stage equation"
+            className="mt-2.5 overflow-x-auto rounded-lg border border-slate-300 bg-slate-900 px-3 py-2 font-mono text-xs font-bold text-amber-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 sm:text-sm"
           >
             {currentStage.equation}
           </div>
@@ -499,7 +502,12 @@ export function ProcessStepperEngine({ config, lessonId }: ProcessStepperEngineP
                 </button>
               )}
             </div>
-            <div className="mt-2 overflow-x-auto">
+            <div
+              tabIndex={0}
+              role="region"
+              aria-label="Process state comparison table"
+              className="mt-2 overflow-x-auto rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
               <table className="w-full border-collapse text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-[11px] text-slate-500">

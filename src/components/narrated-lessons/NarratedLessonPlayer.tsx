@@ -978,7 +978,7 @@ export function NarratedLessonPlayer({
                   </span>
                 )}
               </div>
-              <p className="truncate text-[11px] text-slate-500">
+              <p className="truncate text-[11px] text-slate-700">
                 {lesson.meta.class} {lesson.meta.subject} ·{' '}
                 {lesson.meta.indicators?.length
                   ? lesson.meta.indicators.join(' · ')
@@ -994,9 +994,9 @@ export function NarratedLessonPlayer({
               onClick={() => setSettingsOpen((v) => !v)}
               aria-expanded={settingsOpen}
               aria-label="Lesson settings"
-              className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+              className={`inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                 settingsOpen
-                  ? 'border-sky-400 bg-sky-50 text-sky-900'
+                  ? 'border-sky-600 bg-sky-50 text-sky-900'
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               }`}
             >
@@ -1034,7 +1034,7 @@ export function NarratedLessonPlayer({
                 <button
                   type="button"
                   onClick={handleCopyShareLink}
-                  className="inline-flex items-center gap-1 rounded-lg bg-sky-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700"
+                  className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-lg bg-sky-700 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-800"
                   title="Copy review link"
                 >
                   <Copy className="h-3.5 w-3.5" />
@@ -1105,10 +1105,10 @@ export function NarratedLessonPlayer({
                 <button
                   type="button"
                   onClick={() => handleChangeStage('listen')}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                  className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
                     activeStage === 'listen'
-                      ? 'bg-sky-600 text-white shadow-2xs'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      ? 'bg-sky-700 text-white shadow-2xs'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   <BookOpen className="h-3.5 w-3.5" />
@@ -1117,10 +1117,10 @@ export function NarratedLessonPlayer({
                 <button
                   type="button"
                   onClick={() => handleChangeStage('notes')}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                  className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
                     activeStage === 'notes'
-                      ? 'bg-teal-600 text-white shadow-2xs'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      ? 'bg-teal-700 text-white shadow-2xs'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   <FileText className="h-3.5 w-3.5" />
@@ -1129,10 +1129,10 @@ export function NarratedLessonPlayer({
                 <button
                   type="button"
                   onClick={() => handleChangeStage('questions')}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                  className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
                     activeStage === 'questions'
-                      ? 'bg-indigo-600 text-white shadow-2xs'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      ? 'bg-indigo-700 text-white shadow-2xs'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   <HelpCircle className="h-3.5 w-3.5" />
@@ -1327,7 +1327,7 @@ export function NarratedLessonPlayer({
               {/* Slide Header */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-5 py-3.5">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-sky-600">
+                  <span className="text-xs font-bold uppercase tracking-wider text-sky-800">
                     Slide {currentStep.slide.order} of {lesson.slides.length} · {currentStep.slide.indicatorIds.join(', ')}
                   </span>
                   <h2 className="text-lg font-extrabold text-slate-900 sm:text-xl">
@@ -1337,7 +1337,7 @@ export function NarratedLessonPlayer({
                 <button
                   type="button"
                   onClick={() => setAskOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-bold text-sky-800 hover:bg-sky-100"
+                  className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3.5 py-2 text-xs font-bold text-sky-900 hover:bg-sky-100"
                 >
                   <MessageCircleQuestion className="h-4 w-4" />
                   Ask Teacher
@@ -1367,7 +1367,12 @@ export function NarratedLessonPlayer({
                         ? lessonMediaUrl(lesson.lessonId, currentStep.slide.visual.imageUrl)
                         : lessonMediaUrl(lesson.lessonId, `images/${currentStep.slide.id}.webp`, lesson.schemaVersion)
                     }
-                    alt={currentStep.slide.visual.altText}
+                    alt={
+                      currentStep.slide.visual.altText ||
+                      (currentStep.slide.visual as { caption?: string }).caption ||
+                      currentStep.slide.title ||
+                      'Lesson visual illustration'
+                    }
                     className="h-full w-full object-cover"
                     loading="eager"
                   />
@@ -1454,7 +1459,7 @@ export function NarratedLessonPlayer({
                       <button
                         type="button"
                         onClick={togglePlay}
-                        className="inline-flex h-11 items-center gap-2 rounded-xl bg-sky-600 px-5 text-sm font-bold text-white shadow-sm hover:bg-sky-700"
+                        className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-sky-700 px-5 text-sm font-bold text-white shadow-sm hover:bg-sky-800"
                       >
                         {isPlaying ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
                         {isPlaying ? 'Pause Teacher' : 'Listen to Teacher'}
@@ -1463,7 +1468,7 @@ export function NarratedLessonPlayer({
                       <button
                         type="button"
                         onClick={replayAudio}
-                        className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
                         Replay
@@ -1472,14 +1477,14 @@ export function NarratedLessonPlayer({
                       <button
                         type="button"
                         onClick={cycleSpeed}
-                        className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                        className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-slate-300 bg-white px-3 text-xs font-bold text-slate-800 hover:bg-slate-50"
                         title="Change voice speed"
                       >
                         {playbackRate}x
                       </button>
 
                       <div className="flex flex-1 items-center gap-2 min-w-[160px]">
-                        <span className="w-10 text-right text-xs font-medium text-slate-500">
+                        <span className="w-10 text-right text-xs font-medium text-slate-700">
                           {formatTime(audioCurrent)}
                         </span>
                         <input
@@ -1494,27 +1499,27 @@ export function NarratedLessonPlayer({
                             setAudioCurrent(t);
                           }}
                           aria-label="Audio progress"
-                          className="h-2 flex-1 cursor-pointer accent-sky-600"
+                          className="min-h-[44px] flex-1 cursor-pointer accent-sky-700"
                         />
-                        <span className="w-10 text-xs font-medium text-slate-500">
+                        <span className="w-10 text-xs font-medium text-slate-700">
                           {formatTime(audioDuration || currentStep.slide.narration.estSeconds)}
                         </span>
                       </div>
                     </div>
 
                     {audioError && (
-                      <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
                         <VolumeX className="h-4 w-4 shrink-0" />
                         Audio is still loading or unavailable on this network. Open the transcript below to read along.
                       </div>
                     )}
 
                     {/* Transcript & Teacher Note Toggles */}
-                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs">
+                    <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
                       <button
                         type="button"
                         onClick={() => setShowTranscript((v) => !v)}
-                        className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:underline"
+                        className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-2 py-2 font-semibold text-sky-800 hover:underline"
                       >
                         <Volume2 className="h-3.5 w-3.5" />
                         {showTranscript ? 'Hide Spoken Script' : 'Read Spoken Script'}
@@ -1522,7 +1527,7 @@ export function NarratedLessonPlayer({
                       <button
                         type="button"
                         onClick={() => setShowTeacherNote((v) => !v)}
-                        className="inline-flex items-center gap-1 font-semibold text-slate-600 hover:underline"
+                        className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-2 py-2 font-semibold text-slate-700 hover:underline"
                       >
                         <HelpCircle className="h-3.5 w-3.5" />
                         {showTeacherNote ? 'Hide Teacher Note' : 'Show Teacher Note'}
@@ -2143,7 +2148,12 @@ export function NarratedLessonPlayer({
                         ? lessonMediaUrl(lesson.lessonId, currentStep.slide.visual.imageUrl)
                         : lessonMediaUrl(lesson.lessonId, `images/${currentStep.slide.id}.webp`, lesson.schemaVersion)
                     }
-                    alt={currentStep.slide.visual.altText}
+                    alt={
+                      currentStep.slide.visual.altText ||
+                      (currentStep.slide.visual as { caption?: string }).caption ||
+                      currentStep.slide.title ||
+                      'Lesson visual illustration'
+                    }
                     className="h-full w-full object-contain bg-slate-900"
                   />
                 )}

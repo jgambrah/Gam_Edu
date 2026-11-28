@@ -800,7 +800,7 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                     type="button"
                     disabled={stopwatchStep >= config.repeatedTrials.length}
                     onClick={handleRecordTrial}
-                    className="min-h-[44px] rounded-lg bg-teal-600 px-3 py-1.5 font-bold text-white hover:bg-teal-700 disabled:opacity-40"
+                    className="min-h-[44px] rounded-lg bg-teal-700 px-3 py-1.5 font-bold text-white hover:bg-teal-800 disabled:opacity-40"
                   >
                     Record Trial {Math.min(stopwatchStep + 1, config.repeatedTrials.length)}/{config.repeatedTrials.length}
                   </button>

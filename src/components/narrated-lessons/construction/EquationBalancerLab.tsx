@@ -175,7 +175,12 @@ export function EquationBalancerLab({ config }: { config: EquationBalancerConstr
       </div>
 
       {/* Live Atom & Charge Conservation Table */}
-      <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200">
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Chemical atom conservation table"
+        className="mt-3 overflow-x-auto rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-600">
             <tr>

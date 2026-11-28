@@ -282,7 +282,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
         <button
           type="button"
           onClick={handleReset}
-          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400"
+          className="inline-flex min-h-[44px] items-center gap-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-600"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset
@@ -321,7 +321,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
               type="button"
               disabled={selectedPrediction === null}
               onClick={() => setPredictionChecked(true)}
-              className="rounded-lg bg-amber-600 px-3 py-1 text-xs font-bold text-white hover:bg-amber-700 disabled:opacity-40"
+              className="min-h-[44px] rounded-lg bg-amber-800 px-3.5 py-2 text-xs font-bold text-white hover:bg-amber-900 disabled:opacity-40"
             >
               Check prediction
             </button>
@@ -499,7 +499,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
           value={traceX}
           onChange={(e) => setTraceX(Number(e.target.value))}
           aria-label={`Inspect ${config.axes.xLabel} coordinate`}
-          className="mt-1.5 h-2 w-full cursor-pointer accent-slate-600"
+          className="mt-1.5 min-h-[44px] w-full cursor-pointer accent-slate-700"
         />
         <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-medium text-slate-700">
           {traceReadouts.map(({ curve, y }) => (
@@ -587,7 +587,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
                     value={val}
                     aria-valuetext={`${val}${unitSuffix}`}
                     onChange={(e) => updateSlider(s.id, Number(e.target.value), s.min, s.max)}
-                    className="h-2 flex-1 cursor-pointer accent-sky-600"
+                    className="min-h-[44px] flex-1 cursor-pointer accent-sky-700"
                   />
                   <button
                     type="button"
@@ -605,7 +605,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
                         key={p}
                         type="button"
                         onClick={() => updateSlider(s.id, p, s.min, s.max)}
-                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold transition ${
+                        className={`min-h-[44px] rounded-md px-3 py-1.5 text-xs font-bold transition ${
                           Math.abs(val - p) < 1e-6
                             ? 'bg-sky-600 text-white'
                             : 'bg-slate-100 text-slate-700 hover:bg-slate-200'

@@ -9,7 +9,11 @@
       "id": "geo-s01",
       "title": "1. Perpendicular Bisector (Arc Provenance)",
       "narration": "Construct the perpendicular bisector of segment AB using two equal-radius compass arcs centred at A and B with radius greater than half of AB.",
-      "visual": { "type": "diagram", "caption": "Perpendicular bisector with compass provenance." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Perpendicular bisector with compass provenance.",
+        "altText": "Perpendicular bisector with compass provenance."
+      },
       "interactive": [
         {
           "id": "geo-act-01-perp-bisector",
@@ -24,17 +28,43 @@
           "instructions": "Draw two equal-radius compass arcs (radius > 4, e.g. 5) centred at A(-4, 0) and B(4, 0), mark their intersections, and connect them with a straightedge segment.",
           "accessibilityLabel": "Perpendicular bisector compass and straightedge construction",
           "fallbackText": "Draw equal arcs of radius 5 from A(-4,0) and B(4,0). Connect their two intersections (0,3) and (0,-3) to form the perpendicular bisector x = 0.",
-          "gridBounds": { "xMin": -8, "xMax": 8, "yMin": -8, "yMax": 8, "step": 1 },
+          "gridBounds": {
+            "xMin": -8,
+            "xMax": 8,
+            "yMin": -8,
+            "yMax": 8,
+            "step": 1
+          },
           "initialPoints": [
-            { "id": "A", "label": "A", "x": -4, "y": 0, "locked": true },
-            { "id": "B", "label": "B", "x": 4, "y": 0, "locked": true }
+            {
+              "id": "A",
+              "label": "A",
+              "x": -4,
+              "y": 0,
+              "locked": true
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 4,
+              "y": 0,
+              "locked": true
+            }
           ],
           "initialSegments": [
-            { "id": "AB", "from": "A", "to": "B", "locked": true }
+            {
+              "id": "AB",
+              "from": "A",
+              "to": "B",
+              "locked": true
+            }
           ],
           "constructionGoal": {
             "kind": "perpendicular-bisector",
-            "referencePointIds": ["A", "B"],
+            "referencePointIds": [
+              "A",
+              "B"
+            ],
             "requireConstructionArcs": true
           },
           "hints": [
@@ -49,7 +79,11 @@
       "id": "geo-s02",
       "title": "2. Angle Bisector (Compass Provenance)",
       "narration": "Bisect the 90° angle ∠ABC into two equal 45° angles using genuine compass arcs.",
-      "visual": { "type": "diagram", "caption": "Angle bisector construction." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Angle bisector construction.",
+        "altText": "Angle bisector construction."
+      },
       "interactive": [
         {
           "id": "geo-act-02-angle-bisector",
@@ -64,19 +98,57 @@
           "instructions": "Draw an arc centred at vertex B(0, 0), mark its intersections on rays BA and BC, draw two equal arcs from those intersections, mark their meeting point, and connect it to B.",
           "accessibilityLabel": "Angle bisector compass and straightedge construction",
           "fallbackText": "Draw an arc from B(0,0) cutting BA and BC at equal distances, then draw two equal arcs from those points to meet along y = x, dividing 90° into two 45° angles.",
-          "gridBounds": { "xMin": -2, "xMax": 8, "yMin": -2, "yMax": 8, "step": 1 },
+          "gridBounds": {
+            "xMin": -2,
+            "xMax": 8,
+            "yMin": -2,
+            "yMax": 8,
+            "step": 1
+          },
           "initialPoints": [
-            { "id": "A", "label": "A", "x": 6, "y": 0, "locked": true },
-            { "id": "B", "label": "B", "x": 0, "y": 0, "locked": true },
-            { "id": "C", "label": "C", "x": 0, "y": 6, "locked": true }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 6,
+              "y": 0,
+              "locked": true
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 0,
+              "y": 0,
+              "locked": true
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 0,
+              "y": 6,
+              "locked": true
+            }
           ],
           "initialSegments": [
-            { "id": "BA", "from": "B", "to": "A", "locked": true },
-            { "id": "BC", "from": "B", "to": "C", "locked": true }
+            {
+              "id": "BA",
+              "from": "B",
+              "to": "A",
+              "locked": true
+            },
+            {
+              "id": "BC",
+              "from": "B",
+              "to": "C",
+              "locked": true
+            }
           ],
           "constructionGoal": {
             "kind": "angle-bisector",
-            "referencePointIds": ["A", "B", "C"],
+            "referencePointIds": [
+              "A",
+              "B",
+              "C"
+            ],
             "requireConstructionArcs": true
           },
           "hints": [
@@ -91,7 +163,11 @@
       "id": "geo-s03",
       "title": "3. SSS Triangle Construction (Both Orientations)",
       "narration": "Construct a 3–4–5 triangle on baseline AB of length 5 using compass arcs of radii 4 and 3.",
-      "visual": { "type": "diagram", "caption": "SSS triangle construction accepting both mirrored orientations." },
+      "visual": {
+        "type": "diagram",
+        "caption": "SSS triangle construction accepting both mirrored orientations.",
+        "altText": "SSS triangle construction accepting both mirrored orientations."
+      },
       "interactive": [
         {
           "id": "geo-act-03-triangle-sss",
@@ -106,18 +182,47 @@
           "instructions": "Baseline AB has length 5. Draw an arc of radius 4 from A and an arc of radius 3 from B, mark their intersection C (above or below AB), and connect AC and BC.",
           "accessibilityLabel": "SSS triangle compass construction",
           "fallbackText": "Draw arcs of radius 4 from A(0,0) and radius 3 from B(5,0). Their intersections at (3.2, 2.4) and (3.2, -2.4) both form valid congruent 3-4-5 triangles.",
-          "gridBounds": { "xMin": -2, "xMax": 8, "yMin": -5, "yMax": 5, "step": 0.5 },
+          "gridBounds": {
+            "xMin": -2,
+            "xMax": 8,
+            "yMin": -5,
+            "yMax": 5,
+            "step": 0.5
+          },
           "initialPoints": [
-            { "id": "A", "label": "A", "x": 0, "y": 0, "locked": true },
-            { "id": "B", "label": "B", "x": 5, "y": 0, "locked": true }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 0,
+              "y": 0,
+              "locked": true
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 5,
+              "y": 0,
+              "locked": true
+            }
           ],
           "initialSegments": [
-            { "id": "AB", "from": "A", "to": "B", "locked": true }
+            {
+              "id": "AB",
+              "from": "A",
+              "to": "B",
+              "locked": true
+            }
           ],
           "constructionGoal": {
             "kind": "triangle-sss",
-            "referencePointIds": ["A", "B"],
-            "targetMeasures": [4, 3],
+            "referencePointIds": [
+              "A",
+              "B"
+            ],
+            "targetMeasures": [
+              4,
+              3
+            ],
             "requireConstructionArcs": true
           },
           "hints": [
@@ -132,7 +237,11 @@
       "id": "geo-s04",
       "title": "4. SAS & ASA Triangle Constructions (Multi-Activity Slide)",
       "narration": "Construct triangles defined by Side-Angle-Side (SAS) and Angle-Side-Angle (ASA) invariants.",
-      "visual": { "type": "diagram", "caption": "SAS and ASA triangle construction." },
+      "visual": {
+        "type": "diagram",
+        "caption": "SAS and ASA triangle construction.",
+        "altText": "SAS and ASA triangle construction."
+      },
       "interactive": [
         {
           "id": "geo-act-04a-triangle-sas",
@@ -147,18 +256,47 @@
           "instructions": "Place vertex C at distance 4 from A(0, 0) with included angle ∠BAC = 90° (above or below AB).",
           "accessibilityLabel": "SAS triangle construction workbench",
           "fallbackText": "Place vertex C at (0, 4) or (0, -4) so that AC = 4 and ∠BAC = 90°.",
-          "gridBounds": { "xMin": -2, "xMax": 8, "yMin": -5, "yMax": 5, "step": 1 },
+          "gridBounds": {
+            "xMin": -2,
+            "xMax": 8,
+            "yMin": -5,
+            "yMax": 5,
+            "step": 1
+          },
           "initialPoints": [
-            { "id": "A", "label": "A", "x": 0, "y": 0, "locked": true },
-            { "id": "B", "label": "B", "x": 6, "y": 0, "locked": true }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 0,
+              "y": 0,
+              "locked": true
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 6,
+              "y": 0,
+              "locked": true
+            }
           ],
           "initialSegments": [
-            { "id": "AB", "from": "A", "to": "B", "locked": true }
+            {
+              "id": "AB",
+              "from": "A",
+              "to": "B",
+              "locked": true
+            }
           ],
           "constructionGoal": {
             "kind": "triangle-sas",
-            "referencePointIds": ["A", "B"],
-            "targetMeasures": [4, 90]
+            "referencePointIds": [
+              "A",
+              "B"
+            ],
+            "targetMeasures": [
+              4,
+              90
+            ]
           },
           "successExplanation": "Vertex C satisfies |AC| = 4 and included angle ∠BAC = 90°."
         },
@@ -175,18 +313,47 @@
           "instructions": "Place vertex C where the 45° ray from A(0, 0) meets the 45° ray from B(6, 0).",
           "accessibilityLabel": "ASA triangle construction workbench",
           "fallbackText": "The 45° rays from A(0,0) and B(6,0) meet at (3, 3) or (3, -3), forming an isosceles right triangle.",
-          "gridBounds": { "xMin": -2, "xMax": 8, "yMin": -5, "yMax": 5, "step": 1 },
+          "gridBounds": {
+            "xMin": -2,
+            "xMax": 8,
+            "yMin": -5,
+            "yMax": 5,
+            "step": 1
+          },
           "initialPoints": [
-            { "id": "A", "label": "A", "x": 0, "y": 0, "locked": true },
-            { "id": "B", "label": "B", "x": 6, "y": 0, "locked": true }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 0,
+              "y": 0,
+              "locked": true
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 6,
+              "y": 0,
+              "locked": true
+            }
           ],
           "initialSegments": [
-            { "id": "AB", "from": "A", "to": "B", "locked": true }
+            {
+              "id": "AB",
+              "from": "A",
+              "to": "B",
+              "locked": true
+            }
           ],
           "constructionGoal": {
             "kind": "triangle-asa",
-            "referencePointIds": ["A", "B"],
-            "targetMeasures": [45, 45]
+            "referencePointIds": [
+              "A",
+              "B"
+            ],
+            "targetMeasures": [
+              45,
+              45
+            ]
           },
           "successExplanation": "Since ∠A = ∠B = 45°, ∠C = 90° and C lies at (3, 3) or (3, -3)."
         }
@@ -196,7 +363,11 @@
       "id": "geo-s05",
       "title": "5. Translation & Reflection Across y = −x (Multi-Activity Slide)",
       "narration": "Explore two independent rigid transformations on the same slide: a vector translation and a reflection across the diagonal line y = −x.",
-      "visual": { "type": "diagram", "caption": "Independent translation and reflection activities." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Independent translation and reflection activities.",
+        "altText": "Independent translation and reflection activities."
+      },
       "interactive": [
         {
           "id": "geo-act-05a-translation",
@@ -211,13 +382,35 @@
           "instructions": "Move vertices A', B', C' to the image of triangle A(1,3), B(4,3), C(1,5) under translation vector (3, −2).",
           "accessibilityLabel": "Polygon translation on coordinate grid",
           "fallbackText": "Add (3, -2) to each vertex: A'(4,1), B'(7,1), C'(4,3).",
-          "gridBounds": { "xMin": -2, "xMax": 8, "yMin": -2, "yMax": 8, "step": 1 },
+          "gridBounds": {
+            "xMin": -2,
+            "xMax": 8,
+            "yMin": -2,
+            "yMax": 8,
+            "step": 1
+          },
           "preImageVertices": [
-            { "x": 1, "y": 3, "label": "A" },
-            { "x": 4, "y": 3, "label": "B" },
-            { "x": 1, "y": 5, "label": "C" }
+            {
+              "x": 1,
+              "y": 3,
+              "label": "A"
+            },
+            {
+              "x": 4,
+              "y": 3,
+              "label": "B"
+            },
+            {
+              "x": 1,
+              "y": 5,
+              "label": "C"
+            }
           ],
-          "transformation": { "kind": "translation", "dx": 3, "dy": -2 },
+          "transformation": {
+            "kind": "translation",
+            "dx": 3,
+            "dy": -2
+          },
           "requireLabelledCorrespondence": true,
           "successExplanation": "Translation preserves size, shape, and orientation."
         },
@@ -234,13 +427,34 @@
           "instructions": "Reflect A(1,2), B(4,2), C(1,4) across the line y = −x. Remember (x, y) maps to (−y, −x).",
           "accessibilityLabel": "Polygon reflection across y equals minus x",
           "fallbackText": "Reflecting across y = -x maps (x, y) to (-y, -x): A'(-2,-1), B'(-2,-4), C'(-4,-1).",
-          "gridBounds": { "xMin": -6, "xMax": 6, "yMin": -6, "yMax": 6, "step": 1 },
+          "gridBounds": {
+            "xMin": -6,
+            "xMax": 6,
+            "yMin": -6,
+            "yMax": 6,
+            "step": 1
+          },
           "preImageVertices": [
-            { "x": 1, "y": 2, "label": "A" },
-            { "x": 4, "y": 2, "label": "B" },
-            { "x": 1, "y": 4, "label": "C" }
+            {
+              "x": 1,
+              "y": 2,
+              "label": "A"
+            },
+            {
+              "x": 4,
+              "y": 2,
+              "label": "B"
+            },
+            {
+              "x": 1,
+              "y": 4,
+              "label": "C"
+            }
           ],
-          "transformation": { "kind": "reflection", "axis": "y=-x" },
+          "transformation": {
+            "kind": "reflection",
+            "axis": "y=-x"
+          },
           "requireLabelledCorrespondence": true,
           "successExplanation": "Reflection across y = −x swaps and negates both coordinates."
         }
@@ -250,7 +464,11 @@
       "id": "geo-s06",
       "title": "6. Rotation About a Non-Origin Centre",
       "narration": "Rotate triangle ABC by 90° anticlockwise about the non-origin centre (2, 1).",
-      "visual": { "type": "diagram", "caption": "90° anticlockwise rotation about (2, 1)." },
+      "visual": {
+        "type": "diagram",
+        "caption": "90° anticlockwise rotation about (2, 1).",
+        "altText": "90° anticlockwise rotation about (2, 1)."
+      },
       "interactive": [
         {
           "id": "geo-act-06-rotation-non-origin",
@@ -265,13 +483,36 @@
           "instructions": "Plot the image of A(4,1), B(6,1), C(4,3) after a 90° anticlockwise rotation about centre (2, 1).",
           "accessibilityLabel": "Non-origin rotation workbench",
           "fallbackText": "Subtract (2,1), rotate (dx, dy) -> (-dy, dx), and add (2,1): A'(2,3), B'(2,5), C'(0,3).",
-          "gridBounds": { "xMin": -4, "xMax": 8, "yMin": -2, "yMax": 8, "step": 1 },
+          "gridBounds": {
+            "xMin": -4,
+            "xMax": 8,
+            "yMin": -2,
+            "yMax": 8,
+            "step": 1
+          },
           "preImageVertices": [
-            { "x": 4, "y": 1, "label": "A" },
-            { "x": 6, "y": 1, "label": "B" },
-            { "x": 4, "y": 3, "label": "C" }
+            {
+              "x": 4,
+              "y": 1,
+              "label": "A"
+            },
+            {
+              "x": 6,
+              "y": 1,
+              "label": "B"
+            },
+            {
+              "x": 4,
+              "y": 3,
+              "label": "C"
+            }
           ],
-          "transformation": { "kind": "rotation", "cx": 2, "cy": 1, "angleDeg": 90 },
+          "transformation": {
+            "kind": "rotation",
+            "cx": 2,
+            "cy": 1,
+            "angleDeg": 90
+          },
           "requireLabelledCorrespondence": true,
           "successExplanation": "Each vertex shifts by vector (−dy, dx) relative to the centre of rotation (2, 1)."
         }
@@ -281,7 +522,11 @@
       "id": "geo-s07",
       "title": "7. Fractional & Negative Enlargement (Multi-Activity Slide)",
       "narration": "Investigate enlargements with a fractional scale factor (k = 0.5 on a 0.5-step grid) and a negative scale factor (k = −2, inverting orientation through the centre).",
-      "visual": { "type": "diagram", "caption": "Fractional and negative scale-factor enlargements." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Fractional and negative scale-factor enlargements.",
+        "altText": "Fractional and negative scale-factor enlargements."
+      },
       "interactive": [
         {
           "id": "geo-act-07a-enlargement-fractional",
@@ -296,13 +541,36 @@
           "instructions": "Plot the half-scale image of A(1,2), B(5,2), C(1,6) about centre (0, 0). Grid step is 0.5.",
           "accessibilityLabel": "Fractional enlargement workbench",
           "fallbackText": "Multiply each coordinate by 0.5: A'(0.5, 1), B'(2.5, 1), C'(0.5, 3).",
-          "gridBounds": { "xMin": -1, "xMax": 7, "yMin": -1, "yMax": 7, "step": 0.5 },
+          "gridBounds": {
+            "xMin": -1,
+            "xMax": 7,
+            "yMin": -1,
+            "yMax": 7,
+            "step": 0.5
+          },
           "preImageVertices": [
-            { "x": 1, "y": 2, "label": "A" },
-            { "x": 5, "y": 2, "label": "B" },
-            { "x": 1, "y": 6, "label": "C" }
+            {
+              "x": 1,
+              "y": 2,
+              "label": "A"
+            },
+            {
+              "x": 5,
+              "y": 2,
+              "label": "B"
+            },
+            {
+              "x": 1,
+              "y": 6,
+              "label": "C"
+            }
           ],
-          "transformation": { "kind": "enlargement", "cx": 0, "cy": 0, "scaleFactor": 0.5 },
+          "transformation": {
+            "kind": "enlargement",
+            "cx": 0,
+            "cy": 0,
+            "scaleFactor": 0.5
+          },
           "requireLabelledCorrespondence": true,
           "successExplanation": "Scale factor 0.5 halves every side length and quarters the area."
         },
@@ -319,13 +587,36 @@
           "instructions": "Plot the inverted image of A(1,1), B(3,1), C(1,2) under enlargement scale factor k = −2 about (0, 0).",
           "accessibilityLabel": "Negative enlargement workbench",
           "fallbackText": "Multiply each coordinate by -2: A'(-2,-2), B'(-6,-2), C'(-2,-4).",
-          "gridBounds": { "xMin": -8, "xMax": 6, "yMin": -6, "yMax": 6, "step": 1 },
+          "gridBounds": {
+            "xMin": -8,
+            "xMax": 6,
+            "yMin": -6,
+            "yMax": 6,
+            "step": 1
+          },
           "preImageVertices": [
-            { "x": 1, "y": 1, "label": "A" },
-            { "x": 3, "y": 1, "label": "B" },
-            { "x": 1, "y": 2, "label": "C" }
+            {
+              "x": 1,
+              "y": 1,
+              "label": "A"
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "label": "B"
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "label": "C"
+            }
           ],
-          "transformation": { "kind": "enlargement", "cx": 0, "cy": 0, "scaleFactor": -2 },
+          "transformation": {
+            "kind": "enlargement",
+            "cx": 0,
+            "cy": 0,
+            "scaleFactor": -2
+          },
           "requireLabelledCorrespondence": true,
           "successExplanation": "A negative scale factor doubles lengths and projects the image through the centre of enlargement."
         }
@@ -335,7 +626,11 @@
       "id": "geo-s08",
       "title": "8. Horizontal & Vertical Perpendicular Lines",
       "narration": "Construct a vertical line perpendicular to a horizontal line without slope-intercept division-by-zero errors.",
-      "visual": { "type": "diagram", "caption": "Perpendicular horizontal and vertical lines." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Perpendicular horizontal and vertical lines.",
+        "altText": "Perpendicular horizontal and vertical lines."
+      },
       "interactive": [
         {
           "id": "geo-act-08-horiz-vert-perp",
@@ -350,13 +645,31 @@
           "instructions": "Plot two points P1 and P2 defining the line through T(1, −3) that is perpendicular to the horizontal line y = 2.",
           "accessibilityLabel": "Horizontal and vertical perpendicular line workbench",
           "fallbackText": "A line perpendicular to horizontal y = 2 through (1, -3) is the vertical line x = 1 (e.g. P1(1,-3) and P2(1,4)) with undefined gradient.",
-          "gridBounds": { "xMin": -6, "xMax": 6, "yMin": -6, "yMax": 6, "step": 1 },
+          "gridBounds": {
+            "xMin": -6,
+            "xMax": 6,
+            "yMin": -6,
+            "yMax": 6,
+            "step": 1
+          },
           "coordGoal": {
             "kind": "perpendicular-through-point",
             "givenPoints": [
-              { "x": -4, "y": 2, "label": "A" },
-              { "x": 4, "y": 2, "label": "B" },
-              { "x": 1, "y": -3, "label": "T" }
+              {
+                "x": -4,
+                "y": 2,
+                "label": "A"
+              },
+              {
+                "x": 4,
+                "y": 2,
+                "label": "B"
+              },
+              {
+                "x": 1,
+                "y": -3,
+                "label": "T"
+              }
             ]
           },
           "successExplanation": "The general line form ax + by + c = 0 handles vertical lines (x = 1, gradient undefined) seamlessly."
@@ -367,7 +680,11 @@
       "id": "geo-s09",
       "title": "9. Midpoint & Coordinate Plotting",
       "narration": "Find and plot the exact midpoint of segment AB on the Cartesian plane.",
-      "visual": { "type": "diagram", "caption": "Midpoint coordinate construction." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Midpoint coordinate construction.",
+        "altText": "Midpoint coordinate construction."
+      },
       "interactive": [
         {
           "id": "geo-act-09-midpoint",
@@ -382,12 +699,26 @@
           "instructions": "Click on the grid or enter coordinates for the exact midpoint M of segment AB.",
           "accessibilityLabel": "Midpoint plotting workbench",
           "fallbackText": "Midpoint M = ((-3 + 5)/2, (2 + -4)/2) = (1, -1).",
-          "gridBounds": { "xMin": -6, "xMax": 6, "yMin": -6, "yMax": 6, "step": 1 },
+          "gridBounds": {
+            "xMin": -6,
+            "xMax": 6,
+            "yMin": -6,
+            "yMax": 6,
+            "step": 1
+          },
           "coordGoal": {
             "kind": "midpoint",
             "givenPoints": [
-              { "x": -3, "y": 2, "label": "A" },
-              { "x": 5, "y": -4, "label": "B" }
+              {
+                "x": -3,
+                "y": 2,
+                "label": "A"
+              },
+              {
+                "x": 5,
+                "y": -4,
+                "label": "B"
+              }
             ]
           },
           "successExplanation": "M(1, −1) averages the x-coordinates and y-coordinates of A and B."
@@ -398,7 +729,11 @@
       "id": "geo-s10",
       "title": "10. Circle Theorem: Angle at Centre & Circumference",
       "narration": "Drag point P along the major arc and verify that the angle at the centre is always twice the angle at the circumference.",
-      "visual": { "type": "diagram", "caption": "Angle at centre equals twice angle at circumference." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Angle at centre equals twice angle at circumference.",
+        "altText": "Angle at centre equals twice angle at circumference."
+      },
       "interactive": [
         {
           "id": "geo-act-10-angle-at-centre",
@@ -415,7 +750,10 @@
           "fallbackText": "When minor arc AB subtends 120° at centre O, any point P on the major arc gives ∠APB = 60°.",
           "circleTheorem": {
             "theorem": "angle-at-centre",
-            "fixedAnglesDeg": [210, 330],
+            "fixedAnglesDeg": [
+              210,
+              330
+            ],
             "movablePointAngleDeg": 90,
             "targetPrompt": "With ∠AOB = 120° on the minor arc, what is the invariant angle ∠APB on the major arc?",
             "expectedAngleDeg": 60,
@@ -429,7 +767,11 @@
       "id": "geo-s11",
       "title": "11. Cyclic Quadrilateral & Tangent–Radius (Multi-Activity Slide)",
       "narration": "Verify opposite angles of a cyclic quadrilateral sum to 180°, and confirm a tangent meets the radius at 90°.",
-      "visual": { "type": "diagram", "caption": "Cyclic quadrilateral and tangent-radius theorems." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Cyclic quadrilateral and tangent-radius theorems.",
+        "altText": "Cyclic quadrilateral and tangent-radius theorems."
+      },
       "interactive": [
         {
           "id": "geo-act-11a-cyclic-quad",
@@ -446,7 +788,11 @@
           "fallbackText": "Opposite angles of a cyclic quadrilateral sum to 180°, so ∠APB = 180° - 60° = 120°.",
           "circleTheorem": {
             "theorem": "cyclic-quadrilateral",
-            "fixedAnglesDeg": [210, 330, 90],
+            "fixedAnglesDeg": [
+              210,
+              330,
+              90
+            ],
             "movablePointAngleDeg": 270,
             "targetPrompt": "Since opposite angle ∠ACB = 60°, what must ∠APB equal?",
             "expectedAngleDeg": 120,
@@ -469,7 +815,9 @@
           "fallbackText": "A tangent to a circle is always perpendicular (90°) to the radius at the point of contact.",
           "circleTheorem": {
             "theorem": "tangent-radius",
-            "fixedAnglesDeg": [45],
+            "fixedAnglesDeg": [
+              45
+            ],
             "movablePointAngleDeg": 45,
             "targetPrompt": "What angle does the tangent line always make with radius OA?",
             "expectedAngleDeg": 90,
@@ -483,7 +831,11 @@
       "id": "geo-s12",
       "title": "12. Locus Construction (Fixed Distance from a Point)",
       "narration": "Construct the exact locus of all points at fixed distance 4 units from point O(0, 0).",
-      "visual": { "type": "diagram", "caption": "Analytical circle locus r = 4." },
+      "visual": {
+        "type": "diagram",
+        "caption": "Analytical circle locus r = 4.",
+        "altText": "Analytical circle locus r = 4."
+      },
       "interactive": [
         {
           "id": "geo-act-12-locus-circle",
@@ -498,14 +850,30 @@
           "instructions": "Use the compass tool to draw the complete circle centred at O(0, 0) with radius 4.",
           "accessibilityLabel": "Fixed distance locus construction",
           "fallbackText": "The locus of all points at distance 4 from O(0,0) is the circle centred at O with radius 4.",
-          "gridBounds": { "xMin": -6, "xMax": 6, "yMin": -6, "yMax": 6, "step": 1 },
+          "gridBounds": {
+            "xMin": -6,
+            "xMax": 6,
+            "yMin": -6,
+            "yMax": 6,
+            "step": 1
+          },
           "initialPoints": [
-            { "id": "O", "label": "O", "x": 0, "y": 0, "locked": true }
+            {
+              "id": "O",
+              "label": "O",
+              "x": 0,
+              "y": 0,
+              "locked": true
+            }
           ],
           "constructionGoal": {
             "kind": "locus-circle",
-            "referencePointIds": ["O"],
-            "targetMeasures": [4]
+            "referencePointIds": [
+              "O"
+            ],
+            "targetMeasures": [
+              4
+            ]
           },
           "successExplanation": "The analytical circle x² + y² = 16 represents every point exactly 4 units from O."
         }
@@ -515,7 +883,11 @@
       "id": "geo-s13",
       "title": "13. Solid Geometry Nets (Reusing Existing Process Stepper)",
       "narration": "Explore how a 2D net folds into a 3D square-based pyramid using the existing process-stepper engine — zero duplicate engine code required.",
-      "visual": { "type": "diagram", "caption": "3D solid net folding sequence via process-stepper." },
+      "visual": {
+        "type": "diagram",
+        "caption": "3D solid net folding sequence via process-stepper.",
+        "altText": "3D solid net folding sequence via process-stepper."
+      },
       "interactive": [
         {
           "id": "geo-act-13-solid-net-stepper",
