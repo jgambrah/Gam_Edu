@@ -46,3 +46,8 @@ scratch/membership-audit/
 /public/story-spark-preview/candidates/
 /public/story-spark-preview/packages/*.*.json
 /public/story-spark-preview/info/*.*.json
+
+# Playwright (development-only browser verification) outputs and generated harness bundles
+test-results/
+playwright-report/
+scripts/audit/python-sandbox-harness/*.bundle.js

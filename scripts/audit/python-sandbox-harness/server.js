@@ -33,6 +33,7 @@ const attacker = http.createServer((req, res) => {
   res.end('ok');
 });
 const control = http.createServer((req, res) => {
+  if (req.url === '/reset') hits.length = 0; // lets automated runs start from a clean attacker log
   res.writeHead(200, { 'access-control-allow-origin': '*', 'content-type': 'application/json' });
   res.end(JSON.stringify(hits));
 });

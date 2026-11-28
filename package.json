@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:read-budget": "node scripts/verify-read-budgets.mjs",
     "test:watch": "vitest",
+    "e2e": "playwright test",
     "test:rules": "npx --yes firebase-tools@15.35.0 emulators:exec --only firestore,storage --project demo-gam-edu --config firebase.emulators.json \"vitest run --config vitest.rules.config.ts\"",
     "story:media": "tsx scripts/library/seed-batch-media.ts",
     "story:publish": "tsx scripts/library/publish-to-storage.ts",
@@ -92,6 +93,7 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/typography": "^0.5.13",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
