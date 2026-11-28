@@ -1,0 +1,33 @@
+<!doctype html><meta charset="utf-8"><title>Sandbox functional + resource tests</title>
+<body style="font:13px monospace"><button id="go">run</button><pre id="out">idle</pre>
+<script src="python-runner.sandbox.bundle.js"></script>
+<script>
+const R = [];
+async function t(name, fn) {
+  const t0 = performance.now();
+  try { const r = await fn(); R.push({ name, pass: !!r.pass, detail: r.detail, ms: Math.round(performance.now() - t0) }); }
+  catch (e) { R.push({ name, pass: false, detail: 'EXC ' + e, ms: Math.round(performance.now() - t0) }); }
+  document.getElementById('out').textContent = JSON.stringify(R, null, 1);
+}
+document.getElementById('go').onclick = async () => {
+  await t('print', async () => { const r = await PR.runPython('print("hello pupils")'); return { pass: r.ok && r.output.trim() === 'hello pupils', detail: r.output }; });
+  await t('input() with supplied stdin', async () => { const r = await PR.runPython('n=int(input())\nprint(n*2)', { stdin: '21', strictInput: true }); return { pass: r.ok && r.output.trim() === '42', detail: r.output }; });
+  await t('strict input EOF raises EOFError', async () => { const r = await PR.runPython('input()', { stdin: '', strictInput: true }); return { pass: !r.ok && /EOF/.test(r.error || ''), detail: r.error }; });
+  await t('validation expression sees program variables', async () => { const r = await PR.runPython('x = 5', { validation: 'x == 5' }); return { pass: r.ok && r.passed === true, detail: String(r.passed) }; });
+  await t('validation false when wrong', async () => { const r = await PR.runPython('x = 4', { validation: 'x == 5' }); return { pass: r.ok && r.passed === false, detail: String(r.passed) }; });
+  await t('NameError reported with line', async () => { const r = await PR.runPython('a = 1\nprint(b)'); return { pass: !r.ok && /NameError/.test(r.error || '') && /line 2/.test(r.error || ''), detail: r.error }; });
+  await t('variables do not leak between runs', async () => { await PR.runPython('secret_value = 99'); const r = await PR.runPython('print(secret_value)'); return { pass: !r.ok && /NameError/.test(r.error || ''), detail: r.error }; });
+  await t('matplotlib returns a PNG', async () => { const r = await PR.runPython('import matplotlib.pyplot as plt\nplt.plot([1,2,3],[1,4,9])', { timeoutMs: 60000 }); return { pass: r.ok && typeof r.image === 'string' && r.image.length > 1000 && r.image.startsWith('iVBOR'), detail: 'image chars=' + (r.image ? r.image.length : 0) + ' err=' + r.error }; });
+  await t('pygame stub imports (Python Academy)', async () => { const r = await PR.runPython('import pygame\nprint("pygame ok")', { timeoutMs: 30000 }); return { pass: r.ok && /pygame ok/.test(r.output), detail: r.output + (r.error || '') }; });
+  await t('infinite loop is stopped, runtime restarts, next run works', async () => { const a = await PR.runPython('while True:\n    pass', { timeoutMs: 1500 }); const b = await PR.runPython('print("alive again")', { timeoutMs: 60000 }); return { pass: a.timedOut === true && b.ok && /alive again/.test(b.output), detail: (a.error || '') + ' | ' + b.output }; });
+  await t('output flood is capped (<= ~200k chars) and does not crash the page', async () => { const r = await PR.runPython('for i in range(3000000):\n    print("x"*60)', { timeoutMs: 6000 }); return { pass: (r.output.length <= 200200), detail: 'ok=' + r.ok + ' timedOut=' + r.timedOut + ' outputChars=' + r.output.length }; });
+  await t('memory bomb: MemoryError or clean stop, page stays alive, next run works', async () => { const a = await PR.runPython('x = bytearray(3 * 10**9)\nprint(len(x))', { timeoutMs: 20000 }); const b = await PR.runPython('print("recovered")', { timeoutMs: 60000 }); return { pass: !/^3000000000/.test(a.output) && b.ok && /recovered/.test(b.output), detail: 'first: ok=' + a.ok + ' err=' + (a.error || '').slice(0, 80) + ' | after: ' + b.output }; });
+  await t('oversized code is refused before running', async () => { const r = await PR.runPython('x = 1\n'.repeat(30000)); return { pass: !r.ok && /too long/.test(r.error || ''), detail: r.error }; });
+  await t('malicious: js.fetch to same-origin API is blocked', async () => { const r = await PR.runPython('import js\nr = await js.fetch("http://localhost:4173/api/whoami", {"credentials":"include"})\nprint(await r.text())'); return { pass: !/SYNTHETIC/.test(r.output) && (!r.ok), detail: (r.error || '') + r.output }; });
+  await t('malicious: reading IndexedDB is blocked', async () => { const r = await PR.runPython('import js\nr = js.indexedDB.open("firebaseLocalStorageDb")\nprint("opened", r)'); return { pass: !/SYNTHETIC-REFRESH/.test(r.output), detail: (r.error || '') + r.output }; });
+  await t('runPython honours canRunPythonSafely()', async () => ({ pass: PR.canRunPythonSafely() === true, detail: String(PR.canRunPythonSafely()) }));
+  const hits = await (await fetch('http://localhost:4175/')).json();
+  R.push({ name: 'attacker server request count (earlier unsandboxed run left exactly 3; must still be 3)', pass: hits.length === 3, detail: String(hits.length) });
+  document.getElementById('out').textContent = JSON.stringify(R, null, 1); window.__done = true;
+};
+</script>

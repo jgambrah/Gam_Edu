@@ -584,7 +584,45 @@ with open('/home/pyodide/django/contrib/auth/decorators.py', 'w') as _f:
 ''')
 `;
 
+/**
+ * Hard limits applied to learner code and to everything the sandbox sends back.
+ * The sandbox is untrusted: pupils can edit and run arbitrary Python, and pasted snippets can come from anywhere.
+ */
+export const PYTHON_SANDBOX_LIMITS = {
+  maxCodeChars: 100_000,
+  maxStdinChars: 50_000,
+  maxValidationChars: 20_000,
+  /** Stdout+stderr kept inside the sandbox; anything beyond is dropped and flagged. */
+  maxOutputChars: 200_000,
+  maxErrorChars: 2_000,
+  maxImageBase64Chars: 8_000_000,
+} as const;
+
+/**
+ * Content-Security-Policy applied INSIDE the sandbox iframe (the worker inherits it):
+ *  - connect-src only the Pyodide CDN path => learner code cannot fetch/XHR/WebSocket anywhere else
+ *    (no school API, no attacker server, no PyPI).
+ *  - script-src only the Pyodide CDN path + blob: (the worker bootstrap) + eval/wasm that Pyodide itself needs.
+ *  - worker-src blob: only; everything else default-src 'none'.
+ */
+export const PYTHON_SANDBOX_CSP = [
+  "default-src 'none'",
+  `script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net/pyodide/`,
+  `connect-src https://cdn.jsdelivr.net/pyodide/`,
+  "worker-src blob:",
+  "img-src data: blob:",
+  "style-src 'unsafe-inline'",
+  "form-action 'none'",
+  "base-uri 'none'",
+].join('; ');
+
 const WORKER_SOURCE = `
+// Fail closed: the runtime only starts inside a sandbox with an opaque origin. If this worker ever runs with a real
+// origin (same-origin as the school app) it could reach cookies, IndexedDB and authenticated APIs, so refuse to start.
+if (self.origin !== 'null') {
+  postMessage({ type: 'failed', error: 'Python is disabled because the safe sandbox could not be established.' });
+  throw new Error('sandbox isolation check failed');
+}
 importScripts('${PYODIDE_BASE}pyodide.js');
 let py = null;
 const ready = loadPyodide({ indexURL: '${PYODIDE_BASE}' }).then(async p => {
@@ -609,8 +647,16 @@ onmessage = async (e) => {
   await ready;
   if (!py) { postMessage({ type: 'result', id, ok: false, output: '', error: 'Python could not start. Check your internet connection and reload.', passed: null, image: null }); return; }
   const out = [];
-  py.setStdout({ batched: s => out.push(s) });
-  py.setStderr({ batched: s => out.push(s) });
+  let outLen = 0;
+  const MAX_OUT = ${PYTHON_SANDBOX_LIMITS.maxOutputChars};
+  const keep = s => {
+    if (outLen >= MAX_OUT) return;
+    const t = String(s);
+    out.push(t); outLen += t.length + 1;
+    if (outLen >= MAX_OUT) out.push('[output truncated: too much text]');
+  };
+  py.setStdout({ batched: keep });
+  py.setStderr({ batched: keep });
   if (strictInput) {
     const lines = stdin === undefined ? [] : String(stdin).replace(/\\r\\n/g, '\\n').split('\\n');
     let next = 0;
@@ -638,7 +684,7 @@ onmessage = async (e) => {
     if (usesPlot) await py.runPythonAsync("import matplotlib\\nmatplotlib.use('Agg')\\nimport matplotlib.pyplot as plt\\nplt.close('all')\\nplt.show = lambda *a, **k: None", { globals: ns });
     py.runPython('import os, pygame\\npygame._event_calls = 0\\ntry:\\n    os.chdir(' + JSON.stringify(cwd || '/home/pyodide') + ')\\nexcept Exception:\\n    pass', { globals: ns });
     if (strictInput) {
-      py.runPython('import sys\\ndef input(prompt=""):\\n    line = sys.stdin.readline()\\n    if line == "":\\n        raise EOFError("EOF when reading a line")\\n    return line.rstrip("\\r\\n")\\n', { globals: ns });
+      py.runPython('import sys\\ndef input(prompt=""):\\n    line = sys.stdin.readline()\\n    if line == "":\\n        raise EOFError("EOF when reading a line")\\n    return line.rstrip("\\\\r\\\\n")\\n', { globals: ns });
     }
     try {
       await py.runPythonAsync(code, { globals: ns });
@@ -675,28 +721,94 @@ type Pending = {
   timer: ReturnType<typeof setTimeout> | null;
 };
 
-let worker: Worker | null = null;
+/**
+ * The Python runtime lives in a SANDBOXED IFRAME (sandbox="allow-scripts", never allow-same-origin) whose document
+ * carries a restrictive CSP and which starts the Pyodide worker. Because the frame has an opaque origin, learner code
+ * cannot read the school app's cookies, IndexedDB (Firebase Auth), Cache Storage or call authenticated same-origin
+ * APIs, and the CSP stops it contacting any host except the Pyodide CDN. The page talks to it only through
+ * validated postMessage traffic. Removing the iframe is how a runaway program is stopped.
+ */
+let frame: HTMLIFrameElement | null = null;
+let messageListener: ((e: MessageEvent) => void) | null = null;
 let readyPromise: Promise<void> | null = null;
 let readyListeners: ((ok: boolean) => void)[] = [];
 let runSeq = 0;
 const pending = new Map<number, Pending>();
 
-function startWorker() {
-  const blob = new Blob([WORKER_SOURCE], { type: 'application/javascript' });
-  const url = URL.createObjectURL(blob);
-  const w = new Worker(url);
-  URL.revokeObjectURL(url);
+const BASE64_RE = /^[A-Za-z0-9+/]*={0,2}$/;
+
+function buildSandboxDocument(): string {
+  // "<" is escaped so the embedded worker source can never close the inline script element early.
+  const embedded = JSON.stringify(WORKER_SOURCE).replace(/</g, '\\u003c');
+  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${PYTHON_SANDBOX_CSP}"></head><body><script>
+(function () {
+  var w = new Worker(URL.createObjectURL(new Blob([${embedded}], { type: 'application/javascript' })));
+  w.onmessage = function (e) { parent.postMessage(e.data, '*'); };
+  w.onerror = function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); parent.postMessage({ type: 'crashed' }, '*'); };
+  addEventListener('message', function (e) { if (e.source === parent) w.postMessage(e.data); });
+})();
+</script></body></html>`;
+}
+
+/** True when this browser can run Python in a real sandbox. If not, Python is disabled rather than run unsafely. */
+export function canRunPythonSafely(): boolean {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  const probe = document.createElement('iframe');
+  return 'sandbox' in probe && 'srcdoc' in probe && typeof Worker !== 'undefined';
+}
+
+/** Test hooks: the exact worker bootstrap text and the ability to discard the sandbox between tests. */
+export const PYTHON_WORKER_SOURCE_FOR_TESTS = WORKER_SOURCE;
+export function resetPythonSandbox() {
+  failAllPending('Stopped.');
+  destroySandbox();
+}
+
+function destroySandbox() {
+  if (messageListener) window.removeEventListener('message', messageListener);
+  messageListener = null;
+  try { frame?.remove(); } catch {}
+  frame = null;
+  readyPromise = null;
+}
+
+/** Normalise anything the sandbox sends back: it is untrusted data, never trusted markup. */
+function cleanResult(m: any): PythonRunResult {
+  const limits = PYTHON_SANDBOX_LIMITS;
+  const output = typeof m.output === 'string' ? m.output.slice(0, limits.maxOutputChars + 100) : '';
+  const error = typeof m.error === 'string' ? m.error.slice(0, limits.maxErrorChars) : undefined;
+  const image =
+    typeof m.image === 'string' && m.image.length <= limits.maxImageBase64Chars && BASE64_RE.test(m.image)
+      ? m.image
+      : null;
+  return { ok: m.ok === true, output, error, passed: typeof m.passed === 'boolean' ? m.passed : null, image };
+}
+
+function failAllPending(message: string) {
+  pending.forEach(p => {
+    if (p.timer) clearTimeout(p.timer);
+    p.resolve({ ok: false, output: '', passed: null, image: null, error: message });
+  });
+  pending.clear();
+}
+
+function startSandbox() {
+  const iframe = document.createElement('iframe');
+  iframe.setAttribute('sandbox', 'allow-scripts'); // deliberately WITHOUT allow-same-origin
+  iframe.setAttribute('referrerpolicy', 'no-referrer');
+  iframe.setAttribute('aria-hidden', 'true');
+  iframe.setAttribute('tabindex', '-1');
+  iframe.setAttribute('title', 'Python sandbox');
+  iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;pointer-events:none';
+  iframe.srcdoc = buildSandboxDocument();
+
   readyPromise = new Promise<void>((resolve, reject) => {
     let settled = false;
     const failBoot = (errMsg: string) => {
       if (settled) return;
       settled = true;
       clearTimeout(bootTimer);
-      try { w.terminate(); } catch {}
-      if (worker === w) {
-        worker = null;
-        readyPromise = null;
-      }
+      if (frame === iframe) destroySandbox();
       reject(new Error(errMsg));
       readyListeners.forEach(f => f(false));
     };
@@ -704,8 +816,11 @@ function startWorker() {
       failBoot('Python runtime took too long to load. Check your internet connection and try again.');
     }, 30000);
 
-    w.onmessage = (e: MessageEvent) => {
-      const m = e.data || {};
+    const listener = (e: MessageEvent) => {
+      // Only accept messages from OUR sandbox frame, never from any other window.
+      if (!frame || e.source !== frame.contentWindow) return;
+      const m = e.data;
+      if (!m || typeof m !== 'object' || typeof m.type !== 'string') return;
       if (m.type === 'ready') {
         if (!settled) {
           settled = true;
@@ -716,51 +831,58 @@ function startWorker() {
         return;
       }
       if (m.type === 'failed') {
-        failBoot(m.error || 'Python runtime failed to initialize.');
+        failBoot(typeof m.error === 'string' ? m.error.slice(0, 300) : 'Python runtime failed to initialize.');
         return;
       }
-      const p = pending.get(m.id);
+      if (m.type === 'crashed') {
+        // The worker died (for example it ran out of memory): stop everything and start clean next time.
+        failAllPending('Your program stopped unexpectedly (it may have used too much memory).');
+        if (!settled) failBoot('Python worker failed to load.');
+        else destroySandbox();
+        return;
+      }
+      const id = typeof m.id === 'number' ? m.id : NaN;
+      const p = pending.get(id);
       if (!p) return;
       if (m.type === 'started') {
         // The clock starts once packages are downloaded.
-        p.timer = setTimeout(() => stopRun(m.id), p.timeoutMs);
+        p.timer = setTimeout(() => stopRun(id), p.timeoutMs);
         return;
       }
       if (m.type === 'result') {
         if (p.timer) clearTimeout(p.timer);
-        pending.delete(m.id);
-        p.resolve({ ok: !!m.ok, output: m.output || '', error: m.error, passed: m.passed ?? null, image: m.image || null });
+        pending.delete(id);
+        p.resolve(cleanResult(m));
       }
     };
-    w.onerror = (ev) => {
-      ev.preventDefault?.();
-      failBoot('Python worker failed to load.');
-    };
+    messageListener = listener;
+    window.addEventListener('message', listener);
   });
   readyPromise.catch(() => {});
-  worker = w;
+  frame = iframe;
+  document.body.appendChild(iframe);
 }
 
 function stopRun(id: number) {
   const p = pending.get(id);
   if (!p) return;
   pending.delete(id);
-  // The only way to stop a running Python loop is to end the worker; start a fresh one for next time.
-  try { worker?.terminate(); } catch {}
-  worker = null;
-  readyPromise = null;
+  // The only way to stop a running Python loop is to destroy the sandbox; a fresh one starts for the next run.
+  destroySandbox();
   p.resolve({
     ok: false, output: '', passed: null, image: null, timedOut: true,
     error: 'Your program ran for too long and was stopped. Is there a loop that never ends?',
   });
-  pending.forEach(other => { if (other.timer) clearTimeout(other.timer); other.resolve({ ok: false, output: '', passed: null, image: null, error: 'Stopped.' }); });
-  pending.clear();
+  failAllPending('Stopped.');
 }
 
 /** Start loading Python in the background. Resolves when ready; rejects if it cannot load. */
 export function preparePython(): Promise<void> {
-  if (typeof window === 'undefined' || typeof Worker === 'undefined') return Promise.reject(new Error('Python needs a browser'));
-  if (!worker || !readyPromise) startWorker();
+  if (typeof window === 'undefined') return Promise.reject(new Error('Python needs a browser'));
+  if (!canRunPythonSafely()) {
+    return Promise.reject(new Error('Python is disabled on this browser because it cannot be run safely.'));
+  }
+  if (!frame || !readyPromise) startSandbox();
   return readyPromise!;
 }
 
@@ -771,15 +893,29 @@ export function onPythonReady(fn: (ok: boolean) => void) {
 }
 
 export async function runPython(code: string, opts: PythonRunOptions = {}): Promise<PythonRunResult> {
+  const limits = PYTHON_SANDBOX_LIMITS;
+  if (
+    typeof code !== 'string' || code.length > limits.maxCodeChars ||
+    (opts.stdin !== undefined && String(opts.stdin).length > limits.maxStdinChars) ||
+    (opts.validation !== undefined && String(opts.validation).length > limits.maxValidationChars)
+  ) {
+    return { ok: false, output: '', passed: null, image: null, error: 'Your program is too long to run here. Please shorten it.' };
+  }
   try {
     await preparePython();
-  } catch {
-    return { ok: false, output: '', passed: null, image: null, error: 'Python could not start. Check your internet connection and reload the page.' };
+  } catch (e) {
+    const msg = e instanceof Error && /disabled/i.test(e.message)
+      ? e.message
+      : 'Python could not start. Check your internet connection and reload the page.';
+    return { ok: false, output: '', passed: null, image: null, error: msg };
   }
   const id = ++runSeq;
   return new Promise<PythonRunResult>((resolve) => {
     pending.set(id, { resolve, timeoutMs: opts.timeoutMs ?? 8000, timer: null });
-    worker!.postMessage({ type: 'run', id, code, stdin: opts.strictInput ? opts.stdin : (opts.stdin ?? ''), strictInput: Boolean(opts.strictInput), validation: opts.validation, cwd: opts.cwd });
+    frame!.contentWindow!.postMessage(
+      { type: 'run', id, code, stdin: opts.strictInput ? opts.stdin : (opts.stdin ?? ''), strictInput: Boolean(opts.strictInput), validation: opts.validation, cwd: opts.cwd },
+      '*',
+    );
   });
 }
 
