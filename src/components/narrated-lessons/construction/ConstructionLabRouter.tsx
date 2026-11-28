@@ -61,6 +61,11 @@ const LazyNumberManipulativeLab = dynamic(
   { ssr: false, loading: DomainLoading },
 );
 
+const LazyPhysicsWorkbenchLab = dynamic(
+  () => import('./PhysicsWorkbenchLab').then((m) => m.PhysicsWorkbenchLab),
+  { ssr: false, loading: DomainLoading },
+);
+
 export interface ConstructionLabRouterProps {
   config: ConstructionLabInteractiveConfig;
   lessonId: string;
@@ -90,5 +95,7 @@ export function ConstructionLabRouter({ config, lessonId, slideId }: Constructio
       return <LazyDataStatsLab config={config} />;
     case 'number-manipulative':
       return <LazyNumberManipulativeLab config={config} />;
+    case 'physics-workbench':
+      return <LazyPhysicsWorkbenchLab config={config} />;
   }
 }

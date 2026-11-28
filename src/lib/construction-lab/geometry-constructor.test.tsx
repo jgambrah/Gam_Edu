@@ -24,6 +24,7 @@ import {
 import {
   SUPPORTED_INTERACTIVE_ENGINES,
   assertValidLessonInteractives,
+  compareSemver,
   validateSlideInteractiveConfig,
   type GeometryCoordinateConfig,
   type GeometryTransformationConfig,
@@ -33,7 +34,7 @@ import { InteractiveEngineRegistry } from '@/components/narrated-lessons/Interac
 
 describe('Step 4F — Geometry Construction Laboratory (geometry-constructor 1.3.0)', () => {
   it('confirms construction-lab engineVersion >= 1.7.0 and productionVersion 1.3.0 (LIVE)', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion >= '1.7.0').toBe(true);
+    expect(compareSemver(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion, '1.7.0')! >= 0).toBe(true);
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 
