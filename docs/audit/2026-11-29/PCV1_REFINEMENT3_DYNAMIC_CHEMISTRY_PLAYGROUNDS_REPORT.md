@@ -59,4 +59,19 @@ All approved Refinement 3 capabilities were implemented inside the existing `con
 - **Production Build (`npm run build`):** **Exit 0 (`156/156` static pages)**.
   - Shared First Load JS: **`103 kB`** (unchanged from `103 kB` baseline)
   - `/narrated-lessons/[lessonId]` First Load JS: **`259 kB`** (`2.07 kB` route)
-- **Local Browser / Playwright Note:** Local Chromium headless shell binary (`chromium_headless_shell-1255`) remains uninstalled on this workstation; browser visual inspection is therefore not claimed and remains pending CI / post-promotion verification.
+- **Local Browser / Playwright Note:** Local Chromium headless shell binary (`chromium_headless_shell-1255`) remains uninstalled on this workstation; browser, mobile, accessibility, and live performance visual inspection are therefore **not claimed** and remain explicitly open pending owner practical testing and CI browser verification.
+
+---
+
+## 3. Controlled Production Deployment & Immutable CDN Publication (2026-11-28)
+
+1. **Verified Production Deployment (`cd041363` on `https://gam-it-service.app`):**
+   - Inspected live served Next.js chunks directly from `https://gam-it-service.app`:
+     - `/_next/static/chunks/4736-aeb84a5c3dedf6f2.js` → confirmed `construction-lab:atom-bond-builder: "1.9.0"`, `construction-lab:equation-balancer: "1.9.0"`, `productionVersion: "1.3.0"`, `maxTransferableElectrons`, and `isImpossibleTransfer`.
+     - `/_next/static/chunks/8171.9d37c0eb79cc600d.js` → confirmed `data-explore-further-panel` and `Unverified construction:`.
+     - `/_next/static/chunks/9442.b6cf20474931f5a4.js` → confirmed `maxTransferableElectrons`.
+   - Shared `construction-lab` `productionVersion` remains `1.3.0`; Measurement `1.4.0`, Data Statistics `1.5.0`, Extended Geometry `1.6.0`, and Primary Number Manipulatives `1.7.0` remain blocked.
+   - Student Enrichment Under-Construction restriction remains active (`NEXT_PUBLIC_STUDENT_ENRICHMENT_RELEASED` unset).
+2. **Immutable CDN Publication (`--skip-media`, 0 paid media regenerated):**
+   - `b8-sci-t1-atoms-and-the-periodic-table`: uploaded `packages/b8-sci-t1-atoms-and-the-periodic-table.64fb68126435.json` (`299,799` bytes, HTTP 200; prior `379856075c2c` & original `15080192a16a` preserved HTTP 200; catalogue backup `backups/catalogue.2026-11-28T15-58-48-838Z.json`) → `catalogue.json` `v102`.
+   - `cambridge-as-a-level-chemistry-hydrocarbons`: uploaded `packages/cambridge-as-a-level-chemistry-hydrocarbons.5c82c89a794b.json` (`878,913` bytes, HTTP 200; prior `d81bff77545d` & original `739c1252e89e` preserved HTTP 200; catalogue backup `backups/catalogue.2026-11-28T15-59-04-993Z.json`) → `catalogue.json` **`v103` (`49` published lessons — all 47 other lessons preserved untouched)**.
