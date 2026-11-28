@@ -135,7 +135,7 @@ export function computeMinimumGhanaPieces(
   const g = vals.reduce((acc, v) => intGcd(acc, v), targetPesewas);
   const scaledTarget = targetPesewas / g;
   const scaledVals = vals.map((v) => v / g);
-  if (scaledTarget > 5000) return null;
+  if (scaledTarget > 100_000) return null; // ~1.3M operations worst case; a GH₵200 target in 1 Gp pieces is 20,000
   const INF = 1e9;
   const dp = new Int32Array(scaledTarget + 1).fill(INF);
   dp[0] = 0;
@@ -360,11 +360,23 @@ export interface ManipulativeEvalResult {
   feedback: string;
 }
 
+/** Audit CP3: evaluators must fail closed on negative, fractional, non-finite or out-of-range learner state. */
+const isWhole = (n: unknown): n is number => typeof n === 'number' && Number.isSafeInteger(n) && n >= 0;
+const invalidInput = (what: string): ManipulativeEvalResult => ({
+  passed: false,
+  feedback: `${what} must be whole numbers (0 or greater) within the allowed range.`,
+});
+
 export function evaluateTenFrame(
   spec: CountingTenFrameSpec,
   firstCount: number,
   secondCount = 0,
 ): ManipulativeEvalResult {
+  if (!isWhole(firstCount) || !isWhole(secondCount)) return invalidInput('Counter counts');
+  const capacity = Math.min(NUMBER_MANIPULATIVE_LIMITS.maxTenFrameCount, (spec.frameCount ?? 2) * 10);
+  if (firstCount + secondCount > capacity) {
+    return { passed: false, feedback: `This ten frame holds at most ${capacity} counters.` };
+  }
   const total = firstCount + secondCount;
   if (spec.twoColorSplit) {
     const { firstColorTarget, secondColorTarget } = spec.twoColorSplit;
@@ -411,6 +423,10 @@ export function evaluateNumberBond(spec: NumberBondsSpec, learnerValue: number):
 }
 
 export function evaluateBaseTen(spec: BaseTenPlaceValueSpec, state: BaseTenState): ManipulativeEvalResult {
+  const maxBlocks = NUMBER_MANIPULATIVE_LIMITS.maxBaseTenBlocksPerPlace;
+  for (const v of [state.thousands, state.hundreds, state.tens, state.ones]) {
+    if (!isWhole(v) || v > maxBlocks) return invalidInput(`Block counts (at most ${maxBlocks} per place)`);
+  }
   const val = evaluateBaseTenValue(state);
   if (val !== spec.targetNumber) {
     return {
@@ -449,6 +465,9 @@ export function evaluateArraysGrouping(
   spec: ArraysGroupingSpec,
   input: { rows?: number; cols?: number; groups?: number; groupSize?: number; remainder?: number },
 ): ManipulativeEvalResult {
+  for (const v of [input.rows, input.cols, input.groups, input.groupSize, input.remainder]) {
+    if (v !== undefined && !isWhole(v)) return invalidInput('Rows, columns, groups, group sizes and remainders');
+  }
   if (spec.taskKind === 'multiplication-array') {
     const r = input.rows ?? 0;
     const c = input.cols ?? 0;
@@ -513,6 +532,11 @@ export function evaluateFractionsDecimals(
     const o = input.ones ?? 0;
     const t = input.tenths ?? 0;
     const h = input.hundredths ?? 0;
+    for (const v of [o, t, h]) {
+      if (!isWhole(v) || v > NUMBER_MANIPULATIVE_LIMITS.maxBaseTenBlocksPerPlace) {
+        return invalidInput(`Place-value counts (at most ${NUMBER_MANIPULATIVE_LIMITS.maxBaseTenBlocksPerPlace} per place)`);
+      }
+    }
     const totalHundredths = o * 100 + t * 10 + h;
     const target = spec.targetHundredths ?? 0;
     const fmt = (val: number) => `${Math.floor(val / 100)}.${String(val % 100).padStart(2, '0')}`;
@@ -529,7 +553,8 @@ export function evaluateFractionsDecimals(
   const d = input.denominator ?? 1;
   const tn = spec.targetNumerator ?? 0;
   const td = spec.targetDenominator ?? 1;
-  if (d <= 0) return { passed: false, feedback: 'Denominator must be positive.' };
+  if (!Number.isSafeInteger(d) || d <= 0) return { passed: false, feedback: 'Denominator must be a positive whole number.' };
+  if (!isWhole(n)) return invalidInput('The numerator');
 
   if (areFractionsEquivalent({ n, d }, { n: tn, d: td })) {
     if (spec.requireExactDenominator && d !== td) {
@@ -557,6 +582,15 @@ export function evaluateGhanaMoney(
   spec: GhanaMoneySpec,
   counts: Readonly<Record<string, number>>,
 ): ManipulativeEvalResult {
+  // Audit CP3: only task-approved denominations, with whole non-negative counts, may be graded.
+  const allowed = spec.allowedDenomIds && spec.allowedDenomIds.length > 0 ? new Set(spec.allowedDenomIds) : null;
+  for (const [id, qty] of Object.entries(counts)) {
+    if (!VALID_GHANA_DENOM_IDS.has(id)) return { passed: false, feedback: `"${id}" is not a Ghana coin or note.` };
+    if (!isWhole(qty)) return invalidInput('Coin and note counts');
+    if (qty > 0 && allowed && !allowed.has(id)) {
+      return { passed: false, feedback: `${GHANA_DENOM_BY_ID.get(id)!.label} is not one of the coins/notes allowed in this task.` };
+    }
+  }
   const totalP = sumGhanaCountsPesewas(counts);
   const pieceCount = Object.values(counts).reduce((a, b) => a + (Number.isInteger(b) && b > 0 ? b : 0), 0);
   const expectedP =
@@ -573,7 +607,11 @@ export function evaluateGhanaMoney(
 
   if (spec.taskKind === 'minimum-coins') {
     const minPieces = computeMinimumGhanaPieces(expectedP, spec.allowedDenomIds);
-    if (minPieces !== null && pieceCount > minPieces) {
+    if (minPieces === null) {
+      // Fail closed: if minimality cannot be established, never claim the learner used the minimum.
+      return { passed: false, feedback: 'The minimum number of coins/notes cannot be verified for this task, so it cannot be marked correct.' };
+    }
+    if (pieceCount > minPieces) {
       return {
         passed: false,
         feedback: `Your total ${formatGhanaPesewas(totalP)} is right, using ${pieceCount} pieces — try using fewer coins/notes (minimum possible is ${minPieces})!`,
