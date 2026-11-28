@@ -240,9 +240,19 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' | '1.7.0' | '1.8.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (
+    obj.labKind === 'atom-bond-builder' &&
+    obj.mode === 'atomic-structure' &&
+    (obj.interactionMode === 'free-exploration' ||
+      obj.interactionMode === 'independent-challenge' ||
+      obj.allowElementSelector === true ||
+      obj.startEmpty === true)
+  ) {
+    return '1.8.0';
   }
   if (obj.labKind === 'number-manipulative') {
     return '1.7.0';

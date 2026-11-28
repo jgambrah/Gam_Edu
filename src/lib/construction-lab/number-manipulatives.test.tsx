@@ -30,8 +30,8 @@ import {
 import { NumberManipulativeLab } from '@/components/narrated-lessons/construction/NumberManipulativeLab';
 
 describe('Step 5F — Primary Number Manipulatives (construction-lab: number-manipulative 1.7.0)', () => {
-  it('advances construction-lab to engineVersion 1.7.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.7.0');
+  it('keeps construction-lab engineVersion >= 1.7.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion >= '1.7.0').toBe(true);
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 

@@ -5,10 +5,12 @@
 ## Latest development commits (Step 5E Close-Out & Step 5F — 2026-11-28)
 - **Last reported development commit**: `512fca19` (`docs(enrichment): update Gemini progress, fix TS ratchet, and package Authoring Kit v2.5`).
 - **PCV-1 discovery checkpoint**: `1bd9eaab`.
-- **Current assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**) **Implementation Completed & Published (`--skip-media`, catalogue `v98`)** for owner live testing:
-  - Pilot A (`cambridge-as-a-level-chemistry-hydrocarbons`): original `739c1252e89e` → enriched `f1e9f251f1d5` (`18` enriched slides, `26` LIVE production-compatible activities).
-  - Pilot B (`b8-sci-t1-atoms-and-the-periodic-table`): original `15080192a16a` → enriched `f981f2d51c63` (`13` enriched slides, `17` LIVE production-compatible activities).
-  - Awaiting owner practical observations & ChatGPT review before enriching remaining lessons or starting Step 5G.
+- **PCV-1 implementation checkpoint**: `a35a207b` (published via `--skip-media`, catalogue `v98`).
+- **Current assignment**: **PCV-1 Refinement 1 (Open-Ended Atomic Structure Playground — `construction-lab 1.8.0`, `productionVersion` held at `1.3.0`)**:
+  - Added `interactionMode: 'free-exploration' | 'guided' | 'independent-challenge'`, reusable accessible Periodic Table Element Selector (`Z = 1..20` shells, `Z = 1..30` subshells), Empty Atom start, scientifically verified isotope/ion/ground-state feedback (`evaluateFreeAtomicExploration`), and multi-target independent challenges without premature answer disclosure.
+  - Corrected Hydrocarbons `a02` (`Mr` dimensionless + `Molar mass` `g mol⁻¹`) and Basic 8 `s21` premature answer disclosure (live-safe `1.2.0` CDN updates published via `--skip-media`).
+  - Prepared Basic 8 v1.8.0 Open-Ended Playground JSON ready for `--skip-media` publication after owner manual Vercel promotion & `1.8.0` activation.
+  - Codified the 5-tier Permanent Educational Authoring Standard in `docs/STUDENT_ENRICHMENT_STANDARD.md`.
 - `f5150330` — **Step 5E-A (Shared Accessibility Improvements: D-038, D-039, D-040, D-042)**: Implemented; independent browser accessibility verification outstanding.
 - `1e2ed1b9` — **Step 5E-B (Geometry Educational Close-Out: D-031)**: Geometry educational close-out implemented.
 - `d9c64274` — **Step 5E-C (Simultaneous Linear Equations D-032 & Positional Quartiles D-011)**: Simultaneous equations and selectable quartile convention implemented.

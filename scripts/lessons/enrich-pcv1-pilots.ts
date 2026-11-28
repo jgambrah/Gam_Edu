@@ -49,7 +49,8 @@ const HYDROCARBONS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
       ],
       readouts: [
         { id: 'r-h', label: 'Hydrogen atoms (2n + 2)', expr: '2 * n + 2' },
-        { id: 'r-mr', label: 'Relative molecular mass Mr (14n + 2)', expr: '14 * n + 2', unit: 'g/mol' },
+        { id: 'r-mr', label: 'Relative molecular mass Mr (dimensionless)', expr: '14 * n + 2' },
+        { id: 'r-mm', label: 'Molar mass M (14n + 2)', expr: '14 * n + 2', unit: 'g mol⁻¹' },
       ],
       prediction: {
         prompt: 'Moving from butane (C₄H₁₀) to pentane (C₅H₁₂) adds one –CH₂– group. How much does Mr increase?',
@@ -1035,18 +1036,18 @@ const ATOMS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
       curriculumLevel: 'introductory',
       subjectTag: 'Basic 8 Science · Independent Practice',
       title: 'Independent Practice: Build Chlorine (Z = 17)',
-      instructions: 'Construct the neutral electron arrangement of Chlorine (17 electrons) using the first-20-elements shell model.',
-      accessibilityLabel: 'Build Chlorine 2, 8, 7 electron arrangement',
-      fallbackText: 'Chlorine (Z = 17) has electron arrangement 2, 8, 7.',
-      modelNote: 'The 2, 8, 8, 2 shell-filling pattern applies to the first 20 elements (H through Ca).',
+      instructions: 'Using its atomic number (Z = 17), arrange the electrons of a neutral Chlorine atom across the energy levels.',
+      accessibilityLabel: 'Build neutral Chlorine electron arrangement from atomic number 17',
+      fallbackText: 'Chlorine (Z = 17) has 17 electrons arranged as 2, 8, 7.',
+      modelNote: 'The first-20-elements shell-filling pattern applies to elements H through Ca (Z = 1..20).',
       targetElement: 'Cl',
       targetMassNumber: 35,
       targetCharge: 0,
       initialProtons: 17,
       initialNeutrons: 18,
-      initialElectrons: 10,
+      initialElectrons: 0,
       lockNucleus: true,
-      hints: ['2 + 8 + 7 = 17 electrons.'],
+      hints: ['Fill Shell 1 (2) and Shell 2 (8) first, then place the remaining electrons in Shell 3.'],
     },
     {
       id: 'b8-s21-calcium-shells',
@@ -1059,17 +1060,17 @@ const ATOMS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
       curriculumLevel: 'introductory',
       subjectTag: 'Basic 8 Science · Independent Practice',
       title: 'Independent Practice: Build Calcium (Z = 20)',
-      instructions: 'Construct the neutral electron arrangement of Calcium (20 electrons: 2, 8, 8, 2).',
-      accessibilityLabel: 'Build Calcium 2, 8, 8, 2 electron arrangement',
-      fallbackText: 'Calcium (Z = 20) has electron arrangement 2, 8, 8, 2.',
+      instructions: 'Using its atomic number (Z = 20), construct the electron arrangement of a neutral Calcium atom.',
+      accessibilityLabel: 'Build neutral Calcium electron arrangement from atomic number 20',
+      fallbackText: 'Calcium (Z = 20) has 20 electrons arranged as 2, 8, 8, 2.',
       targetElement: 'Ca',
       targetMassNumber: 40,
       targetCharge: 0,
       initialProtons: 20,
       initialNeutrons: 20,
-      initialElectrons: 10,
+      initialElectrons: 0,
       lockNucleus: true,
-      hints: ['Fill Shell 3 with 8 electrons, then place the final 2 electrons in Shell 4.'],
+      hints: ['In the first-20 teaching model, fill Shells 1, 2, and 3 (2, 8, 8) before placing the remaining 2 electrons in Shell 4.'],
     },
   ],
   s22: [
@@ -1287,3 +1288,115 @@ function enrichAndVerify(lessonId: string, enrichments: Record<string, SlideInte
 
 enrichAndVerify('cambridge-as-a-level-chemistry-hydrocarbons', HYDROCARBONS_ENRICHMENTS);
 enrichAndVerify('b8-sci-t1-atoms-and-the-periodic-table', ATOMS_ENRICHMENTS);
+
+// Also generate the upgraded Basic 8 v1.8.0 Open-Ended Playground JSON (validated with allowDevOnlyEngines: true;
+// ready for 1-command --skip-media publication after owner manual Vercel promotion & 1.8.0 activation!)
+(() => {
+  const origPath = path.join(WORK_DIR, 'b8-sci-t1-atoms-and-the-periodic-table.original.json');
+  const baseEnriched = JSON.parse(
+    fs.readFileSync(path.join(WORK_DIR, 'b8-sci-t1-atoms-and-the-periodic-table.enriched.json'), 'utf8'),
+  ) as NarratedLesson;
+  const orig = JSON.parse(fs.readFileSync(origPath, 'utf8')) as NarratedLesson;
+
+  const s04 = baseEnriched.slides.find((s) => s.id === 's04');
+  if (s04) {
+    s04.interactive = [
+      {
+        id: 'b8-s04-atomic-playground',
+        engine: 'construction-lab',
+        labKind: 'atom-bond-builder',
+        mode: 'atomic-structure',
+        representation: 'shells',
+        interactionMode: 'free-exploration',
+        allowElementSelector: true,
+        maxElementZ: 20,
+        startEmpty: true,
+        schemaVersion: 1,
+        minEngineVersion: '1.8.0',
+        curriculumLevel: 'introductory',
+        subjectTag: 'Basic 8 Science · Open-Ended Playground',
+        title: 'Open-Ended Atomic Structure Playground (Elements 1–20)',
+        instructions:
+          'Start from an empty atom or pick any of the first 20 elements on the Periodic Table! Add or remove protons, neutrons, and electrons to discover how protons change the element, neutrons create isotopes (e.g. Carbon-12, 13, 14), and electrons form ions (e.g. Na⁺, Cl⁻, Mg²⁺, O²⁻).',
+        accessibilityLabel: 'Open-ended atomic structure playground for elements 1 to 20',
+        fallbackText: 'Explore any element Z = 1..20, isotopes, and ions using the first-20 shell model.',
+        modelNote:
+          'Shell rings represent quantised energy levels (not circular paths). The 2, 8, 8, 2 shell-filling pattern is a simplified teaching model for the first 20 elements.',
+        hints: [
+          'Change protons to change the element identity.',
+          'Keep protons fixed and change neutrons to explore isotopes (like C-12, C-13, C-14).',
+          'Add or remove electrons to see how net charge forms positive or negative ions.',
+        ],
+      },
+    ];
+  }
+
+  const s14 = baseEnriched.slides.find((s) => s.id === 's14');
+  if (s14) {
+    s14.interactive = [
+      {
+        id: 'b8-s14-periodic-explorer',
+        engine: 'construction-lab',
+        labKind: 'atom-bond-builder',
+        mode: 'atomic-structure',
+        representation: 'shells',
+        interactionMode: 'free-exploration',
+        allowElementSelector: true,
+        maxElementZ: 20,
+        startEmpty: false,
+        initialProtons: 1,
+        initialNeutrons: 0,
+        initialElectrons: 1,
+        schemaVersion: 1,
+        minEngineVersion: '1.8.0',
+        curriculumLevel: 'introductory',
+        subjectTag: 'Basic 8 Science · Periodic Table Explorer',
+        title: 'Interactive Periodic Table Explorer (First 20 Elements)',
+        instructions:
+          'Select elements across Periods 1–4 and Groups 1–18 to compare atomic numbers, shell counts (periods), and outer valence electrons (main groups).',
+        accessibilityLabel: 'Interactive first-20 periodic table explorer',
+        fallbackText: 'Period equals the number of occupied shells; main-group number relates to outer electrons.',
+      },
+    ];
+  }
+
+  const s21 = baseEnriched.slides.find((s) => s.id === 's21');
+  if (s21) {
+    s21.interactive = [
+      {
+        id: 'b8-s21-indep-challenges',
+        engine: 'construction-lab',
+        labKind: 'atom-bond-builder',
+        mode: 'atomic-structure',
+        representation: 'shells',
+        interactionMode: 'independent-challenge',
+        schemaVersion: 1,
+        minEngineVersion: '1.8.0',
+        curriculumLevel: 'introductory',
+        subjectTag: 'Basic 8 Science · Independent Challenge',
+        title: 'Independent Practice: Construct Electron Arrangements (H, O, Cl, Ca)',
+        instructions:
+          'Select each challenge tab and arrange the electrons for the neutral atom using its atomic number.',
+        accessibilityLabel: 'Multi-target independent electron arrangement challenge for H, O, Cl, and Ca',
+        fallbackText: 'Construct neutral electron arrangements for Hydrogen (Z=1), Oxygen (Z=8), Chlorine (Z=17), and Calcium (Z=20).',
+        modelNote: 'Uses the first-20-elements shell-filling model (H through Ca).',
+        challengeTargets: [
+          { id: 'ch-h', prompt: 'Challenge 1: Arrange the electrons for a neutral Hydrogen atom (Z = 1).', targetElement: 'H', targetMassNumber: 1, targetCharge: 0, lockNucleus: true, initialElectrons: 0 },
+          { id: 'ch-o', prompt: 'Challenge 2: Arrange the electrons for a neutral Oxygen atom (Z = 8).', targetElement: 'O', targetMassNumber: 16, targetCharge: 0, lockNucleus: true, initialElectrons: 0 },
+          { id: 'ch-cl', prompt: 'Challenge 3: Arrange the electrons for a neutral Chlorine atom (Z = 17).', targetElement: 'Cl', targetMassNumber: 35, targetCharge: 0, lockNucleus: true, initialElectrons: 0 },
+          { id: 'ch-ca', prompt: 'Challenge 4: Arrange the electrons for a neutral Calcium atom (Z = 20).', targetElement: 'Ca', targetMassNumber: 40, targetCharge: 0, lockNucleus: true, initialElectrons: 0 },
+        ],
+      },
+    ];
+  }
+
+  assertValidLessonInteractives(baseEnriched, { allowDevOnlyEngines: true });
+  const stripped = JSON.parse(JSON.stringify(baseEnriched)) as NarratedLesson;
+  for (const slide of stripped.slides) delete slide.interactive;
+  if (JSON.stringify(stripped) !== JSON.stringify(orig)) {
+    throw new Error('PRESERVATION CHECK FAILED for v1.8.0 playground Basic 8 JSON!');
+  }
+  const outV180 = path.join(WORK_DIR, 'b8-sci-t1-atoms-and-the-periodic-table.playground-v1.8.0.json');
+  fs.writeFileSync(outV180, JSON.stringify(baseEnriched, null, 2) + '\n', 'utf8');
+  console.log(JSON.stringify({ lessonId: 'b8-sci-t1-atoms-and-the-periodic-table (v1.8.0 playground)', devGate: 'PASSED (allowDevOnlyEngines: true)', preservationDiff: 'IDENTICAL', outV180 }));
+})();

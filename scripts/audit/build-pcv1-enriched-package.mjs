@@ -18,12 +18,19 @@ const hcOrig = JSON.parse(fs.readFileSync(path.join(WORK, 'cambridge-as-a-level-
 const hcEnr = JSON.parse(fs.readFileSync(path.join(WORK, 'cambridge-as-a-level-chemistry-hydrocarbons.enriched.json'), 'utf8'));
 const atOrig = JSON.parse(fs.readFileSync(path.join(WORK, 'b8-sci-t1-atoms-and-the-periodic-table.original.json'), 'utf8'));
 const atEnr = JSON.parse(fs.readFileSync(path.join(WORK, 'b8-sci-t1-atoms-and-the-periodic-table.enriched.json'), 'utf8'));
+const atPlay = JSON.parse(fs.readFileSync(path.join(WORK, 'b8-sci-t1-atoms-and-the-periodic-table.playground-v1.8.0.json'), 'utf8'));
 
 const files = {};
 files['lessons/cambridge-as-a-level-chemistry-hydrocarbons.original.json'] = strToU8(JSON.stringify(hcOrig, null, 2) + '\n');
 files['lessons/cambridge-as-a-level-chemistry-hydrocarbons.enriched.json'] = strToU8(JSON.stringify(hcEnr, null, 2) + '\n');
 files['lessons/b8-sci-t1-atoms-and-the-periodic-table.original.json'] = strToU8(JSON.stringify(atOrig, null, 2) + '\n');
-files['lessons/b8-sci-t1-atoms-and-the-periodic-table.enriched.json'] = strToU8(JSON.stringify(atEnr, null, 2) + '\n');
+files['lessons/b8-sci-t1-atoms-and-the-periodic-table.enriched-v1.2.0-live.json'] = strToU8(JSON.stringify(atEnr, null, 2) + '\n');
+files['lessons/b8-sci-t1-atoms-and-the-periodic-table.playground-v1.8.0-ready.json'] = strToU8(JSON.stringify(atPlay, null, 2) + '\n');
+files['engine/atom-bond-atomic.ts'] = new Uint8Array(fs.readFileSync(path.join(REPO, 'src/lib/construction-lab/atom-bond-atomic.ts')));
+files['engine/atom-bond-schema-validator.ts'] = new Uint8Array(fs.readFileSync(path.join(REPO, 'src/lib/construction-lab/atom-bond-schema-validator.ts')));
+files['engine/AtomBondLab.tsx'] = new Uint8Array(fs.readFileSync(path.join(REPO, 'src/components/narrated-lessons/construction/AtomBondLab.tsx')));
+files['engine/atom-playground.test.tsx'] = new Uint8Array(fs.readFileSync(path.join(REPO, 'src/lib/construction-lab/atom-playground.test.tsx')));
+files['docs/STUDENT_ENRICHMENT_STANDARD.md'] = new Uint8Array(fs.readFileSync(path.join(REPO, 'docs/STUDENT_ENRICHMENT_STANDARD.md')));
 
 files['01-slide-by-slide-implementation-matrix.md'] = strToU8(`# PCV-1 Slide-by-Slide Implementation Matrix
 
@@ -98,11 +105,11 @@ files['03-publication-rollback-and-testing-urls.md'] = strToU8(`# PCV-1 Controll
 
 *Production Compatibility*: **100% of added activities (43/43)** passed \`assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })\` using ONLY currently LIVE production engines (\`graph-slider 1.0.0\`, \`process-stepper 1.0.0\`, \`math-evaluator 1.1.0\`, \`equation-balancer 1.1.0\`, \`atom-bond-builder 1.2.0\`). No new engine activation was needed.
 
-## 2. Publication Ledger (Catalogue \`v96\` → \`v98\`, 2026-11-28)
-| Lesson ID | Original Immutable Package (Preserved) | New Enriched Immutable Package | Catalogue Backup |
+## 2. Publication Ledger (Catalogue \`v96\` → \`v100\`, 2026-11-28)
+| Lesson ID | Original Immutable Package (Preserved) | Current Live Enriched Package (\`1.2.0\` LIVE) | Next Playground Package (Ready for \`1.8.0\` Activation) |
 |---|---|---|---|
-| \`cambridge-as-a-level-chemistry-hydrocarbons\` | \`packages/cambridge-as-a-level-chemistry-hydrocarbons.739c1252e89e.json\` (\`739c1252e89e\`) | \`packages/cambridge-as-a-level-chemistry-hydrocarbons.f1e9f251f1d5.json\` (\`f1e9f251f1d5\`) | \`backups/catalogue.2026-11-28T09-57-12-709Z.json\` |
-| \`b8-sci-t1-atoms-and-the-periodic-table\` | \`packages/b8-sci-t1-atoms-and-the-periodic-table.15080192a16a.json\` (\`15080192a16a\`) | \`packages/b8-sci-t1-atoms-and-the-periodic-table.f981f2d51c63.json\` (\`f981f2d51c63\`) | \`backups/catalogue.2026-11-28T09-57-26-797Z.json\` |
+| \`cambridge-as-a-level-chemistry-hydrocarbons\` | \`packages/cambridge-as-a-level-chemistry-hydrocarbons.739c1252e89e.json\` (\`739c1252e89e\`) | \`packages/cambridge-as-a-level-chemistry-hydrocarbons.3e38184d5581.json\` (\`3e38184d5581\`, \`v99\`, fixed dimensionless \`Mr\` + \`Molar mass g mol⁻¹\`) | N/A |
+| \`b8-sci-t1-atoms-and-the-periodic-table\` | \`packages/b8-sci-t1-atoms-and-the-periodic-table.15080192a16a.json\` (\`15080192a16a\`) | \`packages/b8-sci-t1-atoms-and-the-periodic-table.379856075c2c.json\` (\`379856075c2c\`, \`v100\`, removed \`s21\` premature answer disclosure) | \`lessons/b8-sci-t1-atoms-and-the-periodic-table.playground-v1.8.0-ready.json\` (held until manual Vercel promotion + \`1.8.0\` activation) |
 
 - All 47 other catalogue entries remain untouched (\`49\` total entries in \`catalogue.json\` \`v98\`).
 - **Cache Behaviour**: \`catalogue.json\` uses \`Cache-Control: public, max-age=60, stale-while-revalidate=300\`. Rollback propagation completes within 60–360 seconds after updating \`catalogue.json\` (not described as instantaneous).

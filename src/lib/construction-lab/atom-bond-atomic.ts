@@ -11,6 +11,20 @@
  */
 
 export type AtomicRepresentation = 'shells' | 'subshells';
+export type AtomicInteractionMode = 'guided' | 'free-exploration' | 'independent-challenge';
+
+export interface AtomicChallengeTarget {
+  id?: string;
+  prompt: string;
+  targetElement: string;
+  targetMassNumber: number;
+  targetCharge?: number;
+  lockNucleus?: boolean;
+  initialProtons?: number;
+  initialNeutrons?: number;
+  initialElectrons?: number;
+  hint?: string;
+}
 
 export type SubshellId = '1s' | '2s' | '2p' | '3s' | '3p' | '4s' | '3d';
 
@@ -115,6 +129,232 @@ export function getElementByZ(z: number): ElementRecord | null {
     if (el.z === z) return el;
   }
   return null;
+}
+
+export function getApprovedElementsUpToZ(maxZ: number): ElementRecord[] {
+  return Object.values(APPROVED_ELEMENTS)
+    .filter((el) => el.z >= 1 && el.z <= maxZ)
+    .sort((a, b) => a.z - b.z);
+}
+
+export function formatIntroShellArrangement(shells: readonly number[]): string {
+  let lastNonZero = -1;
+  for (let i = shells.length - 1; i >= 0; i--) {
+    if (shells[i] > 0) {
+      lastNonZero = i;
+      break;
+    }
+  }
+  if (lastNonZero === -1) return '0 (no electrons)';
+  return shells.slice(0, lastNonZero + 1).join(', ');
+}
+
+export type FreeAtomicStatus =
+  | 'empty'
+  | 'unsupported-element'
+  | 'excited-or-invalid-shells'
+  | 'known-stable-neutral'
+  | 'known-radioactive-neutral'
+  | 'known-stable-ion'
+  | 'known-radioactive-ion'
+  | 'unverified-isotope'
+  | 'unverified-ion';
+
+export interface FreeAtomicEvaluationInput {
+  protons: number;
+  neutrons: number;
+  representation: AtomicRepresentation;
+  shells?: number[];
+  subshells?: Record<SubshellId, number>;
+  maxZ?: number;
+}
+
+export interface FreeAtomicEvaluationResult {
+  passed: boolean;
+  status: FreeAtomicStatus;
+  feedback: string;
+  element: ElementRecord | null;
+  actualSymbol: string | null;
+  actualMassNumber: number;
+  actualElectrons: number;
+  actualCharge: number;
+  isKnownIsotope: boolean;
+  isRadioactiveIsotope: boolean;
+  isotopeNote?: string;
+  isCommonIon: boolean;
+  isGroundStateConfig: boolean;
+  electronArrangementLabel: string;
+  groupPeriodNote: string | null;
+}
+
+/**
+ * Evaluates an open-ended learner-constructed atom, isotope, or ion in Free Exploration mode
+ * without comparing against any fixed target element. Distinguishes particle-count consistency,
+ * ground-state shell arrangement, verified stable/radioactive isotopes, common ions, and
+ * unverified/hypothetical combinations.
+ */
+export function evaluateFreeAtomicExploration(
+  input: FreeAtomicEvaluationInput,
+): FreeAtomicEvaluationResult {
+  const maxZ = input.maxZ ?? (input.representation === 'subshells' ? 30 : 20);
+  const actualElectrons =
+    input.representation === 'shells'
+      ? (input.shells ?? [0, 0, 0, 0]).reduce((a, b) => a + b, 0)
+      : SUBSHELL_ORDER.reduce((a, sub) => a + (input.subshells?.[sub] ?? 0), 0);
+  const actualMassNumber = input.protons + input.neutrons;
+  const actualCharge = input.protons - actualElectrons;
+  const arrangementLabel =
+    input.representation === 'shells'
+      ? formatIntroShellArrangement(input.shells ?? [0, 0, 0, 0])
+      : formatSubshellNotation(
+          input.subshells ?? { '1s': 0, '2s': 0, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 },
+        );
+
+  if (input.protons <= 0) {
+    return {
+      passed: false,
+      status: 'empty',
+      feedback:
+        'Empty atom: add at least 1 proton to define an element (proton number Z determines element identity).',
+      element: null,
+      actualSymbol: null,
+      actualMassNumber,
+      actualElectrons,
+      actualCharge,
+      isKnownIsotope: false,
+      isRadioactiveIsotope: false,
+      isCommonIon: false,
+      isGroundStateConfig: false,
+      electronArrangementLabel: arrangementLabel,
+      groupPeriodNote: null,
+    };
+  }
+
+  const el = getElementByZ(input.protons);
+  if (!el || el.z > maxZ) {
+    return {
+      passed: false,
+      status: 'unsupported-element',
+      feedback: `Proton count Z = ${input.protons} is outside this activity's verified teaching model (Z = 1..${maxZ}).`,
+      element: null,
+      actualSymbol: null,
+      actualMassNumber,
+      actualElectrons,
+      actualCharge,
+      isKnownIsotope: false,
+      isRadioactiveIsotope: false,
+      isCommonIon: false,
+      isGroundStateConfig: false,
+      electronArrangementLabel: arrangementLabel,
+      groupPeriodNote: null,
+    };
+  }
+
+  // Group / Period summary for main-group elements (Groups 1, 2, 13..18)
+  const mainGroupNum = el.group <= 2 ? el.group : el.group >= 13 ? el.group - 10 : null;
+  const groupPeriodNote =
+    mainGroupNum !== null
+      ? `Period ${el.period}, Group ${el.group} (main-group ${mainGroupNum}) · ${el.valenceElectrons} outer electron${el.valenceElectrons === 1 ? '' : 's'} when neutral`
+      : `Period ${el.period}, Group ${el.group} (d-block transition element)`;
+
+  // Check ground-state electron configuration within the active teaching model
+  let isGroundStateConfig = false;
+  let expectedConfigLabel = '';
+  if (input.representation === 'shells') {
+    if (actualElectrons <= 20) {
+      const exp = getExpectedIntroShells(actualElectrons);
+      expectedConfigLabel = formatIntroShellArrangement(exp);
+      const lrn = input.shells ?? [0, 0, 0, 0];
+      isGroundStateConfig = exp.every((v, i) => (lrn[i] ?? 0) === v);
+    } else {
+      expectedConfigLabel = 'max 20 electrons in first-20 shell model';
+      isGroundStateConfig = false;
+    }
+  } else {
+    const expSub = getExpectedSubshells(el.symbol, actualCharge);
+    if (expSub) {
+      expectedConfigLabel = formatSubshellNotation(expSub);
+      const lrn = input.subshells ?? { '1s': 0, '2s': 0, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 };
+      isGroundStateConfig = SUBSHELL_ORDER.every((s) => (lrn[s] ?? 0) === expSub[s]);
+    } else {
+      // Ion charge outside verified subshell list: check total count only
+      isGroundStateConfig = true;
+    }
+  }
+
+  const matchedIso = el.isotopes.find((iso) => iso.massNumber === actualMassNumber);
+  const isKnownIsotope = Boolean(matchedIso);
+  const isRadioactiveIsotope = Boolean(matchedIso?.radioactive);
+  const isCommonIon = el.supportedCharges.includes(actualCharge);
+
+  const chargeText =
+    actualCharge === 0
+      ? 'neutral atom (charge 0)'
+      : actualCharge > 0
+        ? `${el.symbol}${actualCharge === 1 ? '⁺' : `${actualCharge}⁺`} cation (charge +${actualCharge})`
+        : `${el.symbol}${actualCharge === -1 ? '⁻' : `${Math.abs(actualCharge)}⁻`} anion (charge ${actualCharge})`;
+
+  if (!isGroundStateConfig) {
+    return {
+      passed: false,
+      status: 'excited-or-invalid-shells',
+      feedback: `You built ${el.name}-${actualMassNumber} (${chargeText}), but your electron arrangement (${arrangementLabel}) is not in the ground state for ${actualElectrons} electron${actualElectrons === 1 ? '' : 's'} (fill inner levels first: ${expectedConfigLabel}).`,
+      element: el,
+      actualSymbol: el.symbol,
+      actualMassNumber,
+      actualElectrons,
+      actualCharge,
+      isKnownIsotope,
+      isRadioactiveIsotope,
+      isotopeNote: matchedIso?.note,
+      isCommonIon,
+      isGroundStateConfig: false,
+      electronArrangementLabel: arrangementLabel,
+      groupPeriodNote,
+    };
+  }
+
+  const isoClause = isKnownIsotope
+    ? isRadioactiveIsotope
+      ? `verified radioactive isotope${matchedIso?.note ? ` (${matchedIso.note})` : ''}`
+      : `verified stable isotope${matchedIso?.note ? ` (${matchedIso.note})` : ''}`
+    : `nuclear stability unverified in this dataset (hypothetical/unlisted neutron count for ${el.name})`;
+
+  const ionClause =
+    actualCharge === 0
+      ? 'electrically neutral atom'
+      : isCommonIon
+        ? `verified common ion (${chargeText})`
+        : `unverified/uncommon ion charge (${chargeText} is not a standard verified ion of ${el.name} in this dataset)`;
+
+  let status: FreeAtomicStatus;
+  if (!isKnownIsotope) {
+    status = 'unverified-isotope';
+  } else if (actualCharge !== 0 && !isCommonIon) {
+    status = 'unverified-ion';
+  } else if (actualCharge === 0) {
+    status = isRadioactiveIsotope ? 'known-radioactive-neutral' : 'known-stable-neutral';
+  } else {
+    status = isRadioactiveIsotope ? 'known-radioactive-ion' : 'known-stable-ion';
+  }
+
+  return {
+    passed: true,
+    status,
+    feedback: `Constructed ${el.name}-${actualMassNumber} (${el.symbol}, Z = ${el.z}, A = ${actualMassNumber}): ${ionClause}; ${isoClause}; ground-state arrangement ${arrangementLabel}.`,
+    element: el,
+    actualSymbol: el.symbol,
+    actualMassNumber,
+    actualElectrons,
+    actualCharge,
+    isKnownIsotope,
+    isRadioactiveIsotope,
+    isotopeNote: matchedIso?.note,
+    isCommonIon,
+    isGroundStateConfig: true,
+    electronArrangementLabel: arrangementLabel,
+    groupPeriodNote,
+  };
 }
 
 /**

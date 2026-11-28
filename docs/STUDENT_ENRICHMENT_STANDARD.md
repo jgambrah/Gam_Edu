@@ -36,6 +36,17 @@ GAM EDU is fundamentally a **comprehensive school management system** (administr
 - **Publish-Time Gates (`scripts/lessons/publish-lesson.ts`)**: Every publish must validate schema/IDs, pronunciation coverage (`assertPronunciationCoverage`), SVG safety (`assertSafeSvg`), absence of protected teacher keys, and automatically back up the prior `catalogue.json` generation for instant rollback.
 - **Preserve Approved Pedagogy**: Architectural refactoring must preserve approved educational quality, narration, illustrations, transitions, mobile readability, and accessibility.
 
+## 4B. Permanent Educational Authoring Standard — Five Pedagogical Modes
+
+Every interactive engine and enriched lesson should clearly distinguish and support, where appropriate:
+1. **Demonstration**: Teacher-guided or narrated visual/worked illustration of a concept.
+2. **Free Exploration (Open-Ended Playground)**: No predetermined fixed target; learners manipulate scientific or mathematical variables freely (e.g. selecting any verified element/isotope/ion, varying parameters, or building circuits/constructions) and receive scientifically accurate feedback on what they constructed rather than rejection against an unrelated fixed target.
+3. **Guided Practice**: Fixed-target construction or problem solving with progressive hints, scaffolding, and misconception-specific feedback.
+4. **Independent Practice**: One or more validated targets where the prompt does **not** prematurely disclose the answer (answers live only in hints and post-attempt feedback).
+5. **Mastery Assessment**: End-of-lesson or summative checks; ephemeral playground/practice completion must never be misrepresented as graded teacher-gradebook mastery.
+
+This principle applies permanently across atomic structure, chemical bonding, circuits, geometry, mathematical exploration, probability, measurement, and future physics simulations (Step 5G+).
+
 ## 5. Approval, Under-Construction Gate & Release Discipline
 
 - **Owner's Revised Accelerated Development Policy (Student Enrichment Only)**: Because participating schools have been notified that Student Enrichment is **Under Construction**, the owner has authorised accelerated implementation, automated verification, controlled integration into `fixed-version`, and curriculum lesson development using available capabilities — without requiring repeated individual preview acceptance cycles for every approved foundation step. Official release to ordinary students remains strictly subject to the owner's explicit approval.

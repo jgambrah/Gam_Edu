@@ -44,6 +44,11 @@ const SHARED_ATOM_BOND_KEYS = [
 const ATOMIC_STRUCTURE_KEYS = new Set([
   ...SHARED_ATOM_BOND_KEYS,
   'representation',
+  'interactionMode',
+  'allowElementSelector',
+  'maxElementZ',
+  'startEmpty',
+  'challengeTargets',
   'targetElement',
   'targetMassNumber',
   'targetCharge',
@@ -199,33 +204,92 @@ export function validateAtomBondBuilderConfig(
       errors.push('atomic-structure "representation" must be "shells" or "subshells".');
       return;
     }
-    const sym = typeof obj.targetElement === 'string' ? obj.targetElement : '';
-    const el = getElementBySymbol(sym);
-    if (!el) {
-      errors.push(`atomic-structure "targetElement" "${sym}" is not in the approved element set.`);
+    const iMode = obj.interactionMode === undefined ? 'guided' : obj.interactionMode;
+    if (iMode !== 'guided' && iMode !== 'free-exploration' && iMode !== 'independent-challenge') {
+      errors.push('atomic-structure "interactionMode" must be "guided", "free-exploration", or "independent-challenge".');
       return;
     }
-    if (rep === 'shells' && el.z > 20) {
-      errors.push(`atomic-structure "shells" representation supports Z = 1..20 only (got ${el.symbol}, Z = ${el.z}). Use "subshells" for Z = 21..30.`);
+    if (obj.allowElementSelector !== undefined && typeof obj.allowElementSelector !== 'boolean') {
+      errors.push('atomic-structure "allowElementSelector" must be a boolean.');
     }
-    if (rep === 'subshells' && (el.z > 30 || !el.neutralSubshells)) {
-      errors.push(`atomic-structure "subshells" representation supports Z = 1..30 only (got ${el.symbol}, Z = ${el.z}).`);
+    if (obj.startEmpty !== undefined && typeof obj.startEmpty !== 'boolean') {
+      errors.push('atomic-structure "startEmpty" must be a boolean.');
     }
-    const charge = obj.targetCharge === undefined ? 0 : obj.targetCharge;
-    if (typeof charge !== 'number' || !Number.isInteger(charge) || !el.supportedCharges.includes(charge)) {
-      errors.push(`atomic-structure "targetCharge" ${String(charge)} is not a scientifically supported charge for ${el.symbol}.`);
-    } else if (rep === 'subshells' && !getExpectedSubshells(el.symbol, charge)) {
-      errors.push(`atomic-structure cannot derive valid subshell configuration for ${el.symbol} with charge ${charge}.`);
-    }
-    const mass = obj.targetMassNumber;
-    if (typeof mass !== 'number' || !Number.isInteger(mass) || mass < el.z || mass > el.z * 3 + 10) {
-      errors.push(`atomic-structure "targetMassNumber" must be a valid integer >= Z (${el.z}).`);
-    } else if (obj.allowHypotheticalIsotope !== true) {
-      const known = el.isotopes.some((iso) => iso.massNumber === mass);
-      if (!known) {
-        errors.push(`atomic-structure targetMassNumber ${mass} is not a physically supported isotope of ${el.symbol} (set allowHypotheticalIsotope: true only for hypothetical particle-count reasoning).`);
+    const maxCapZ = rep === 'subshells' ? 30 : 20;
+    if (obj.maxElementZ !== undefined) {
+      if (typeof obj.maxElementZ !== 'number' || !Number.isInteger(obj.maxElementZ) || obj.maxElementZ < 1 || obj.maxElementZ > maxCapZ) {
+        errors.push(`atomic-structure "maxElementZ" must be an integer in 1..${maxCapZ} for "${rep}".`);
       }
     }
+
+    const validateSingleTarget = (
+      tSym: unknown,
+      tMass: unknown,
+      tCharge: unknown,
+      allowHyp: boolean,
+      ctx: string,
+    ) => {
+      const sym = typeof tSym === 'string' ? tSym : '';
+      const el = getElementBySymbol(sym);
+      if (!el) {
+        errors.push(`${ctx} "targetElement" "${sym}" is not in the approved element set.`);
+        return;
+      }
+      if (rep === 'shells' && el.z > 20) {
+        errors.push(`${ctx} "shells" representation supports Z = 1..20 only (got ${el.symbol}, Z = ${el.z}). Use "subshells" for Z = 21..30.`);
+      }
+      if (rep === 'subshells' && (el.z > 30 || !el.neutralSubshells)) {
+        errors.push(`${ctx} "subshells" representation supports Z = 1..30 only (got ${el.symbol}, Z = ${el.z}).`);
+      }
+      const charge = tCharge === undefined ? 0 : tCharge;
+      if (typeof charge !== 'number' || !Number.isInteger(charge) || !el.supportedCharges.includes(charge)) {
+        errors.push(`${ctx} "targetCharge" ${String(charge)} is not a scientifically supported charge for ${el.symbol}.`);
+      } else if (rep === 'subshells' && !getExpectedSubshells(el.symbol, charge)) {
+        errors.push(`${ctx} cannot derive valid subshell configuration for ${el.symbol} with charge ${charge}.`);
+      }
+      if (typeof tMass !== 'number' || !Number.isInteger(tMass) || tMass < el.z || tMass > el.z * 3 + 10) {
+        errors.push(`${ctx} "targetMassNumber" must be a valid integer >= Z (${el.z}).`);
+      } else if (!allowHyp) {
+        const known = el.isotopes.some((iso) => iso.massNumber === tMass);
+        if (!known) {
+          errors.push(`${ctx} targetMassNumber ${tMass} is not a physically supported isotope of ${el.symbol} (set allowHypotheticalIsotope: true only for hypothetical particle-count reasoning).`);
+        }
+      }
+    };
+
+    if (iMode === 'independent-challenge') {
+      const targets = obj.challengeTargets;
+      if (!Array.isArray(targets) || targets.length < 1 || targets.length > 8) {
+        errors.push('atomic-structure(independent-challenge) requires 1..8 "challengeTargets".');
+      } else {
+        targets.forEach((t, idx) => {
+          if (!t || typeof t !== 'object' || Array.isArray(t)) {
+            errors.push(`challengeTargets[${idx}] must be an object.`);
+            return;
+          }
+          const rec = t as Record<string, unknown>;
+          if (typeof rec.prompt !== 'string' || !rec.prompt.trim()) {
+            errors.push(`challengeTargets[${idx}].prompt must be a non-empty string.`);
+          }
+          validateSingleTarget(
+            rec.targetElement,
+            rec.targetMassNumber,
+            rec.targetCharge,
+            obj.allowHypotheticalIsotope === true,
+            `challengeTargets[${idx}]`,
+          );
+        });
+      }
+    } else if (iMode === 'guided') {
+      validateSingleTarget(
+        obj.targetElement,
+        obj.targetMassNumber,
+        obj.targetCharge,
+        obj.allowHypotheticalIsotope === true,
+        'atomic-structure',
+      );
+    }
+
     for (const field of ['initialProtons', 'initialNeutrons', 'initialElectrons'] as const) {
       if (obj[field] !== undefined) {
         const v = obj[field];

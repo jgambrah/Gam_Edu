@@ -44,6 +44,8 @@ import type {
 import { BIO_SEQUENCE_LIMITS, type BioSequenceMode } from '@/lib/construction-lab/bio-sequence-engine';
 import type {
   AtomBondMode,
+  AtomicChallengeTarget,
+  AtomicInteractionMode,
   AtomicRepresentation,
   CovalentAtomNode,
   CovalentBondDef,
@@ -140,11 +142,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.7.0',
+    engineVersion: '1.8.0',
     productionVersion: '1.3.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 extensions; measurement-lab 1.4.0; data-stats-lab 1.5.0; number-manipulative 1.7.0).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0 LIVE + open-ended atomic playground 1.8.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0; measurement-lab 1.4.0; data-stats-lab 1.5.0; number-manipulative 1.7.0).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -293,6 +295,12 @@ export interface AtomBondBuilderConstructionConfig extends ConstructionLabShared
   initialElectrons?: number;
   lockNucleus?: boolean;
   allowHypotheticalIsotope?: boolean;
+  // atomic-structure open-ended playground & multi-target challenge (1.8.0)
+  interactionMode?: AtomicInteractionMode;
+  allowElementSelector?: boolean;
+  maxElementZ?: number;
+  startEmpty?: boolean;
+  challengeTargets?: AtomicChallengeTarget[];
   // ionic-bonding
   cationElement?: string;
   anionElement?: string;

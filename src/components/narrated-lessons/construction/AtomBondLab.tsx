@@ -10,14 +10,20 @@ import {
   computeExpectedValenceElectrons,
   evaluateAtomicConstruction,
   evaluateCovalentBonding,
+  evaluateFreeAtomicExploration,
   evaluateIonicBonding,
   evaluateVseprConstruction,
   formatEmpiricalFormula,
+  formatIntroShellArrangement,
   formatSubshellNotation,
+  getApprovedElementsUpToZ,
   getElementBySymbol,
   getElementByZ,
+  getExpectedIntroShells,
+  getExpectedSubshells,
   lookupVseprEntry,
   type CovalentBondDef,
+  type ElementRecord,
   type SubshellId,
   type VseprShapeId,
 } from '@/lib/construction-lab/atom-bond-engine';
@@ -93,17 +99,43 @@ interface LabSnapshot {
   polarity: 'polar' | 'non-polar' | null;
 }
 
-function makeInitialSnapshot(config: AtomBondBuilderConstructionConfig): LabSnapshot {
-  const targetEl = config.targetElement ? getElementBySymbol(config.targetElement) : null;
-  const initP = config.initialProtons ?? (config.lockNucleus && targetEl ? targetEl.z : targetEl?.z ?? 1);
-  const initN =
-    config.initialNeutrons ??
-    (config.lockNucleus && targetEl && config.targetMassNumber
-      ? Math.max(0, config.targetMassNumber - targetEl.z)
-      : targetEl
-        ? targetEl.z
-        : 0);
-  const initE = config.initialElectrons ?? 0;
+function makeInitialSnapshot(
+  config: AtomBondBuilderConstructionConfig,
+  challengeIdx = 0,
+): LabSnapshot {
+  const iMode = config.interactionMode ?? 'guided';
+  const activeChallenge =
+    iMode === 'independent-challenge' && config.challengeTargets?.length
+      ? config.challengeTargets[Math.min(challengeIdx, config.challengeTargets.length - 1)]
+      : null;
+
+  const effTargetSymbol = activeChallenge?.targetElement ?? config.targetElement;
+  const effTargetMass = activeChallenge?.targetMassNumber ?? config.targetMassNumber;
+  const effLock = activeChallenge?.lockNucleus ?? config.lockNucleus;
+  const targetEl = effTargetSymbol ? getElementBySymbol(effTargetSymbol) : null;
+
+  let initP: number;
+  let initN: number;
+  let initE: number;
+  if (config.startEmpty && iMode === 'free-exploration') {
+    initP = 0;
+    initN = 0;
+    initE = 0;
+  } else {
+    initP =
+      activeChallenge?.initialProtons ??
+      config.initialProtons ??
+      (effLock && targetEl ? targetEl.z : targetEl?.z ?? (iMode === 'free-exploration' ? 0 : 1));
+    initN =
+      activeChallenge?.initialNeutrons ??
+      config.initialNeutrons ??
+      (effLock && targetEl && effTargetMass
+        ? Math.max(0, effTargetMass - targetEl.z)
+        : targetEl
+          ? Math.max(0, (targetEl.isotopes[0]?.massNumber ?? targetEl.z * 2) - targetEl.z)
+          : 0);
+    initE = activeChallenge?.initialElectrons ?? config.initialElectrons ?? 0;
+  }
 
   const initLone: Record<string, number> = {};
   for (const a of config.atoms ?? []) {
@@ -129,9 +161,58 @@ function makeInitialSnapshot(config: AtomBondBuilderConstructionConfig): LabSnap
 }
 
 export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionConfig }) {
-  const [state, setState] = useState<LabSnapshot>(() => makeInitialSnapshot(config));
+  const interactionMode = config.interactionMode ?? 'guided';
+  const [challengeIdx, setChallengeIdx] = useState<number>(0);
+  const [completedChallenges, setCompletedChallenges] = useState<Record<number, boolean>>({});
+  const [state, setState] = useState<LabSnapshot>(() => makeInitialSnapshot(config, 0));
   const [history, setHistory] = useState<LabSnapshot[]>([]);
   const [feedback, setFeedback] = useState<{ passed: boolean; message: string } | null>(null);
+
+  const activeChallenge =
+    interactionMode === 'independent-challenge' && config.challengeTargets?.length
+      ? config.challengeTargets[Math.min(challengeIdx, config.challengeTargets.length - 1)]
+      : null;
+
+  const maxZ = config.maxElementZ ?? (config.representation === 'subshells' ? 30 : 20);
+  const selectableElements = useMemo(
+    () => (config.mode === 'atomic-structure' ? getApprovedElementsUpToZ(maxZ) : []),
+    [config.mode, maxZ],
+  );
+  const showElementSelector =
+    config.mode === 'atomic-structure' &&
+    (config.allowElementSelector === true || interactionMode === 'free-exploration');
+
+  const selectElementPreset = (el: ElementRecord) => {
+    const primaryIso = el.isotopes[0];
+    const massNum = primaryIso ? primaryIso.massNumber : el.z * 2;
+    const nCount = Math.max(0, massNum - el.z);
+    const eCount = el.z;
+    const subCfg = getExpectedSubshells(el.symbol, 0) ?? initialSubshellsFromCount(eCount);
+    commit((prev) => ({
+      ...prev,
+      protons: el.z,
+      neutrons: nCount,
+      shells: getExpectedIntroShells(Math.min(20, eCount)),
+      subshells: subCfg,
+    }));
+  };
+
+  const clearToEmptyAtom = () => {
+    commit((prev) => ({
+      ...prev,
+      protons: 0,
+      neutrons: 0,
+      shells: [0, 0, 0, 0],
+      subshells: emptySubshells(),
+    }));
+  };
+
+  const switchChallenge = (idx: number) => {
+    setChallengeIdx(idx);
+    setHistory([]);
+    setState(makeInitialSnapshot(config, idx));
+    setFeedback(null);
+  };
 
   // Covalent bond-editor pair selectors (keyboard & touch friendly on 360px mobile)
   const atoms = config.atoms ?? [];
@@ -154,16 +235,33 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
 
   const handleReset = () => {
     setHistory([]);
-    setState(makeInitialSnapshot(config));
+    setState(makeInitialSnapshot(config, challengeIdx));
     setFeedback(null);
   };
 
   const handleCheck = () => {
     if (config.mode === 'atomic-structure') {
+      if (interactionMode === 'free-exploration') {
+        const res = evaluateFreeAtomicExploration({
+          protons: state.protons,
+          neutrons: state.neutrons,
+          representation: config.representation ?? 'shells',
+          shells: state.shells,
+          subshells: state.subshells,
+          maxZ,
+        });
+        setFeedback({ passed: res.passed, message: res.feedback });
+        return;
+      }
+
+      const tEl = activeChallenge?.targetElement ?? config.targetElement ?? 'H';
+      const tMass = activeChallenge?.targetMassNumber ?? config.targetMassNumber ?? 1;
+      const tCharge = activeChallenge?.targetCharge ?? config.targetCharge ?? 0;
+
       const res = evaluateAtomicConstruction({
-        targetElement: config.targetElement ?? 'H',
-        targetMassNumber: config.targetMassNumber ?? 1,
-        targetCharge: config.targetCharge ?? 0,
+        targetElement: tEl,
+        targetMassNumber: tMass,
+        targetCharge: tCharge,
         representation: config.representation ?? 'shells',
         protons: state.protons,
         neutrons: state.neutrons,
@@ -171,6 +269,9 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
         subshells: state.subshells,
         allowHypotheticalIsotope: config.allowHypotheticalIsotope,
       });
+      if (res.passed && interactionMode === 'independent-challenge') {
+        setCompletedChallenges((prev) => ({ ...prev, [challengeIdx]: true }));
+      }
       setFeedback({
         passed: res.passed,
         message: res.passed && config.successExplanation ? `${res.feedback} ${config.successExplanation}` : res.feedback,
@@ -320,23 +421,172 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
       feedback={feedback}
     >
       {/* MODE 1: ATOMIC STRUCTURE */}
-      {config.mode === 'atomic-structure' && (
+      {config.mode === 'atomic-structure' && (() => {
+        const liveEval = evaluateFreeAtomicExploration({
+          protons: state.protons,
+          neutrons: state.neutrons,
+          representation: config.representation ?? 'shells',
+          shells: state.shells,
+          subshells: state.subshells,
+          maxZ,
+        });
+        const lockNuc = Boolean(activeChallenge?.lockNucleus ?? config.lockNucleus);
+        const minProtons = interactionMode === 'free-exploration' ? 0 : 1;
+        const periods = maxZ <= 20 ? [1, 2, 3, 4] : [1, 2, 3, 4];
+        const useCompactMainGroupGrid = maxZ <= 20;
+        const gridCols = useCompactMainGroupGrid ? [1, 2, 13, 14, 15, 16, 17, 18] : Array.from({ length: 18 }, (_, i) => i + 1);
+
+        return (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-            <span className="font-bold text-slate-800">
-              Built Species:{' '}
-              <span className="font-mono text-indigo-700">
-                {currentAtomicEl ? `${currentAtomicEl.symbol}-${state.protons + state.neutrons}` : `Z=${state.protons}`}
-                {currentCharge === 0 ? '' : currentCharge > 0 ? ` (${currentCharge}+)` : ` (${Math.abs(currentCharge)}−)`}
+          {/* Independent Challenge Selector (Multi-target mode) */}
+          {interactionMode === 'independent-challenge' && config.challengeTargets && config.challengeTargets.length > 0 && (
+            <div className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-3 space-y-2">
+              <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Atomic structure challenges">
+                {config.challengeTargets.map((ch, idx) => (
+                  <button
+                    key={ch.id ?? idx}
+                    type="button"
+                    role="tab"
+                    aria-selected={challengeIdx === idx}
+                    onClick={() => switchChallenge(idx)}
+                    className={`min-h-[44px] rounded-lg px-3 text-xs font-bold transition ${
+                      challengeIdx === idx
+                        ? 'bg-indigo-700 text-white'
+                        : completedChallenges[idx]
+                          ? 'border border-emerald-400 bg-emerald-50 text-emerald-900'
+                          : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-100'
+                    }`}
+                  >
+                    Challenge {idx + 1} {completedChallenges[idx] ? '✓' : ''}
+                  </button>
+                ))}
+              </div>
+              {activeChallenge && (
+                <p className="text-xs font-bold text-indigo-950">{activeChallenge.prompt}</p>
+              )}
+            </div>
+          )}
+
+          {/* Reusable Periodic-Table Element Selector (touch, mouse, keyboard + list alternative) */}
+          {showElementSelector && (
+            <div className="rounded-xl border border-sky-200 bg-sky-50/50 p-3 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-extrabold text-sky-950">
+                  Periodic Table Element Selector (Z = 1–{maxZ})
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                    <span>List:</span>
+                    <select
+                      aria-label="Select element from list"
+                      value={currentAtomicEl ? String(currentAtomicEl.z) : ''}
+                      onChange={(e) => {
+                        const zNum = Number(e.target.value);
+                        const found = selectableElements.find((el) => el.z === zNum);
+                        if (found) selectElementPreset(found);
+                      }}
+                      className="min-h-[44px] rounded-lg border border-slate-300 bg-white px-2 text-xs font-bold text-slate-800"
+                    >
+                      <option value="">Empty atom (Z = 0)</option>
+                      {selectableElements.map((el) => (
+                        <option key={el.z} value={el.z}>
+                          {el.z}. {el.name} ({el.symbol}) — Group {el.group}, Period {el.period}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={clearToEmptyAtom}
+                    className="min-h-[44px] rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-800 hover:bg-slate-100"
+                  >
+                    Empty Atom
+                  </button>
+                </div>
+              </div>
+              <div
+                tabIndex={0}
+                role="region"
+                aria-label={`Interactive periodic table for elements 1 to ${maxZ}`}
+                className="overflow-x-auto pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 rounded-lg"
+              >
+                <div
+                  className="grid gap-1"
+                  style={{ gridTemplateColumns: `repeat(${gridCols.length}, minmax(44px, 1fr))` }}
+                >
+                  {gridCols.map((g) => (
+                    <div key={`gh-${g}`} className="text-center text-[10px] font-bold text-slate-600">
+                      G{g}
+                    </div>
+                  ))}
+                  {periods.flatMap((per) =>
+                    gridCols.map((grp) => {
+                      const el = selectableElements.find((e) => e.period === per && e.group === grp);
+                      if (!el) return <div key={`empty-${per}-${grp}`} aria-hidden="true" className="h-11" />;
+                      const selected = currentAtomicEl?.z === el.z;
+                      return (
+                        <button
+                          key={el.symbol}
+                          type="button"
+                          aria-pressed={selected}
+                          aria-label={`Select ${el.name}, symbol ${el.symbol}, atomic number ${el.z}, Group ${el.group}, Period ${el.period}`}
+                          onClick={() => selectElementPreset(el)}
+                          className={`flex min-h-[44px] flex-col items-center justify-center rounded-lg border text-center transition ${
+                            selected
+                              ? 'border-sky-700 bg-sky-700 text-white'
+                              : el.isMetal
+                                ? 'border-amber-200 bg-amber-50/70 text-slate-900 hover:bg-amber-100'
+                                : 'border-indigo-200 bg-white text-slate-900 hover:bg-indigo-50'
+                          }`}
+                        >
+                          <span className="text-[9px] font-bold leading-none opacity-80">{el.z}</span>
+                          <span className="text-xs font-extrabold leading-tight">{el.symbol}</span>
+                        </button>
+                      );
+                    }),
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Live Element Identity, Isotope, Charge & Electron Arrangement Banner */}
+          <div className="space-y-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-bold text-slate-800">
+                Built Species:{' '}
+                <span className="font-mono text-indigo-800">
+                  {state.protons === 0
+                    ? 'Empty atom (add protons)'
+                    : currentAtomicEl
+                      ? `${currentAtomicEl.name} (${currentAtomicEl.symbol}-${state.protons + state.neutrons})`
+                      : `Z=${state.protons}`}
+                  {state.protons > 0 && currentCharge !== 0
+                    ? currentCharge > 0
+                      ? ` · ${currentCharge}+ ion`
+                      : ` · ${Math.abs(currentCharge)}− ion`
+                    : state.protons > 0
+                      ? ' · Neutral'
+                      : ''}
+                </span>
               </span>
-            </span>
-            <span className="font-mono text-slate-600">
-              p⁺={state.protons} · n⁰={state.neutrons} · e⁻={currentTotalE} · A={state.protons + state.neutrons}
-            </span>
+              <span className="font-mono text-slate-700">
+                p⁺={state.protons} · n⁰={state.neutrons} · e⁻={currentTotalE} · A={state.protons + state.neutrons} · Charge={currentCharge > 0 ? `+${currentCharge}` : currentCharge}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-700">
+              <span>
+                <strong>Arrangement:</strong>{' '}
+                {config.representation === 'subshells'
+                  ? formatSubshellNotation(state.subshells)
+                  : formatIntroShellArrangement(state.shells)}
+              </span>
+              {liveEval.groupPeriodNote && <span>{liveEval.groupPeriodNote}</span>}
+            </div>
           </div>
 
           {/* Nucleus Controls */}
-          {!config.lockNucleus && (
+          {!lockNuc && (
             <div className="grid gap-2 sm:grid-cols-2">
               <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2">
                 <span className="text-xs font-bold text-slate-700">Protons (Z)</span>
@@ -344,7 +594,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
                   <button
                     type="button"
                     aria-label="Decrease protons"
-                    onClick={() => commit((p) => ({ ...p, protons: Math.max(1, p.protons - 1) }))}
+                    onClick={() => commit((p) => ({ ...p, protons: Math.max(minProtons, p.protons - 1) }))}
                     className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 text-sm font-extrabold text-slate-800 hover:bg-slate-100"
                   >
                     −
@@ -356,7 +606,7 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
                     onClick={() =>
                       commit((p) => ({
                         ...p,
-                        protons: Math.min(config.representation === 'subshells' ? 30 : 20, p.protons + 1),
+                        protons: Math.min(maxZ, p.protons + 1),
                       }))
                     }
                     className="min-h-[44px] min-w-[44px] rounded-lg border border-slate-300 bg-slate-50 text-sm font-extrabold text-slate-800 hover:bg-slate-100"
@@ -539,7 +789,8 @@ export function AtomBondLab({ config }: { config: AtomBondBuilderConstructionCon
             </div>
           )}
         </div>
-      )}
+        );
+      })()}
 
       {/* MODE 2: IONIC BONDING */}
       {config.mode === 'ionic-bonding' && (
