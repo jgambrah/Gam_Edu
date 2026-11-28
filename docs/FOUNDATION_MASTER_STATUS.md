@@ -28,8 +28,11 @@ SVG sanitiser (DOMPurify 3.5.0, 33 vectors + 1,500 fuzz) · Python sandbox (opaq
 ## Verification posture
 Executed: math (oracle + 37 adversarial), geometry cube nets (exhaustive), statistics, chemistry, biology, DC circuits, SQL, pseudocode, sanitiser. **Not yet examined:** browser/mobile/accessibility, performance measurement, measuring-instrument rendering, curriculum documents, publication/rollback lifecycle, live deployment.
 
-## Tests (latest full run recorded in `docs/audit/2026-11-29/CHECKPOINT_2_EXECUTIVE_REPORT.md`)
-## Evidence-based quality assessment: see the checkpoint report (qualitative, never adjusted to a target).
+## Tests (checkpoint 2 end; detail in `docs/audit/2026-11-29/CHECKPOINT_2_EXECUTIVE_REPORT.md`)
+Whole repository **3,823 / 3,823 passing** (92 files) · Student Enrichment scope 433 tests (39 files), 0 failing · TypeScript errors 351 (ratchet baseline) · production build exit 0 (156 static pages) · math oracle 10,000 executed / 9,248 structurally distinct, 0 discrepancies.
+
+## Evidence-based quality assessment
+**75 / 100** at checkpoint 2 (67 at checkpoint 1): qualitative and never adjusted to a target; the gap to 95 is mainly unverified areas (browser, accessibility, performance, curriculum, instrument rendering, emulator results).
 
 ## Where things are
 `docs/CONSOLIDATED_DEFECT_REGISTER.csv` (all findings, classified) · `docs/AGENT_COORDINATION_PROTOCOL.md` · `docs/GEMINI_DEVELOPMENT_ROADMAP.md` / `_PROGRESS.md` · `docs/CLAUDE_AUDIT_ROADMAP.md` / `_PROGRESS.md` · `docs/audit/2026-11-28/` (checkpoint 1) · `docs/audit/2026-11-29/` (checkpoint 2).
