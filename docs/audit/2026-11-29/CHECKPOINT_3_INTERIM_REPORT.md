@@ -59,3 +59,8 @@ Gemini **may resume** new curriculum content, provided it: (a) ships complete le
 7. Owner actions: manual Vercel promotion decision for Next 15.5.29; real iPhone/Safari check for the Python sandbox.
 
 Owner's unrelated `src/lib/narrated-lessons/pronunciation.ts` modification was preserved and not committed.
+
+## 7. Late updates (after the report above was drafted)
+- **Full vitest, run alone on the merged tree (Next 15.5.29): 3,851 tests, 0 failed (EXECUTED).** The earlier "1 unexplained failure" appeared only in a run concurrent with the sweep/build (load/timeouts); it did not reproduce. Item closed.
+- **WebKit sweep complete: 166/166 slides, 0 runtime errors, 0 overflow, BUT 8 slides where the activity title was not visible (Chromium: 1).** New finding **D-044 (Medium, VERIFICATION_REQUIRED)**: possible WebKit-specific rendering/timing difference. Slide ids are in `audit-output/summary.json` (webkit-desktop.notRendered) - regenerate with the sweep. Could be timing (1.2 s wait) rather than a defect; inspect with SHOTS=1.
+- Pushed: `origin/fixed-version` = `ae2aa1f3` (Next patch commit `9d58062c`, tests/fixes/report `ae2aa1f3`). Remote CI result for this push **not yet read**.
