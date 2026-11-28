@@ -31,7 +31,10 @@ for (const file of fixtures) {
       await page.goto(`/?fixture=${fixture}&slide=${slide.id}`);
       await page.waitForFunction(() => (window as any).__ready === true, null, { timeout: 30_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
-      await page.waitForTimeout(1200);
+      // The harness loads Tailwind from a CDN at runtime (cdn.tailwindcss.com); metrics taken before it has generated its CSS
+      // are unstyled and wrong (audit CP3: 102 phantom small controls at 360px with a 1.2 s wait, 0 once settled). Wait for it.
+      await page.waitForFunction(() => getComputedStyle(document.body).getPropertyValue('--tw-ring-offset-width') !== '' || document.querySelector('style[id^="tailwind"], style[data-tailwind]') !== null || getComputedStyle(document.documentElement).getPropertyValue('--tw-border-spacing-x') !== '', null, { timeout: 8_000 }).catch(() => {});
+      await page.waitForTimeout(2500);
 
       const rendered: boolean[] = [];
       for (const a of acts) {

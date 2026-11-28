@@ -27,6 +27,7 @@ const GATED: Array<[string, string, string]> = [
   ['data-stats-lab 1.5.0', 'step5d-data-stats-pilot.json', 'data-stats-lab'],
   ['geometry-constructor 5E 1.6.0', 'step5e-geometry-extensions-pilot.json', 'geometry-constructor'],
   ['number-manipulative 1.7.0', 'step5f-number-manipulatives-pilot.json', 'number-manipulative'],
+  ['physics-workbench 1.10.0 (Step 5G, dev-only)', 'step5g-physics-workbench-pilot.json', 'physics-workbench'],
 ];
 
 describe('scoped capability gate: version-declaration bypass attempts', () => {
