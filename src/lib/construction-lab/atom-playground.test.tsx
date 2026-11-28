@@ -35,10 +35,39 @@ describe('PCV-1 Refinement 1 — Open-Ended Atomic Structure Playground (constru
       expect(res.passed).toBe(true);
       expect(res.actualSymbol).toBe(el.symbol);
       expect(res.actualCharge).toBe(0);
+      expect(res.isCommonIon).toBe(false); // Neutral atoms MUST NOT be classified as common ions!
       expect(res.isKnownIsotope).toBe(true);
       expect(res.isGroundStateConfig).toBe(true);
       expect(res.groupPeriodNote).toContain(`Period ${el.period}`);
+      expect(res.groupPeriodNote).toMatch(/never Group or Period/i);
     }
+  });
+
+  it('rejects malformed/negative/fractional/over-capacity particle counts and classifies unsupported subshell ions as unverified', () => {
+    // Negative, fractional, NaN particle counts
+    expect(evaluateFreeAtomicExploration({ protons: -1, neutrons: 0, representation: 'shells', shells: [0, 0, 0, 0] }).status).toBe('invalid-input');
+    expect(evaluateFreeAtomicExploration({ protons: 6.5, neutrons: 6, representation: 'shells', shells: [2, 4, 0, 0] }).status).toBe('invalid-input');
+    expect(evaluateFreeAtomicExploration({ protons: Number.NaN, neutrons: 0, representation: 'shells', shells: [0, 0, 0, 0] }).status).toBe('invalid-input');
+    // Over-capacity shell occupancy (independent of UI!)
+    expect(evaluateFreeAtomicExploration({ protons: 6, neutrons: 6, representation: 'shells', shells: [5, 1, 0, 0] }).status).toBe('invalid-input');
+    // Over-capacity subshell occupancy (independent of UI!)
+    expect(
+      evaluateFreeAtomicExploration({
+        protons: 6,
+        neutrons: 6,
+        representation: 'subshells',
+        subshells: { '1s': 4, '2s': 2, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 },
+      }).status,
+    ).toBe('invalid-input');
+    // Unsupported subshell ion (e.g. Na5+): MUST be classified as unverified-subshells (passed: false), NEVER true!
+    const unvSub = evaluateFreeAtomicExploration({
+      protons: 11,
+      neutrons: 12,
+      representation: 'subshells',
+      subshells: { '1s': 2, '2s': 2, '2p': 2, '3s': 0, '3p': 0, '4s': 0, '3d': 0 },
+    });
+    expect(unvSub.passed).toBe(false);
+    expect(unvSub.status).toBe('unverified-subshells');
   });
 
   it('distinguishes Carbon-12/13/14 isotopes, common ions (Na+, Cl-, Mg2+, O2-), empty atom, invalid shells, and unverified species', () => {

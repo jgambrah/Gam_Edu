@@ -42,8 +42,9 @@ const HYDROCARBONS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
       xVar: 'x',
       axes: { xMin: 1, xMax: 10, yMin: 0, yMax: 24, xLabel: 'Carbon count (n)', yLabel: 'Hydrogen atoms (2n + 2)' },
       sliders: [
-        { id: 'n', label: 'Carbon count n (integer)', min: 1, max: 10, step: 1, defaultValue: 1, presets: [1, 4, 8] },
+        { id: 'n', label: 'Carbon count n (integer)', min: 1, max: 10, step: 1, defaultValue: 1, presets: [1, 2, 3, 4, 5, 8, 10] },
       ],
+      showDataTable: true,
       curves: [
         { id: 'h-count', label: 'H = 2x + 2 (open-chain alkanes)', expr: '2 * x + 2', color: '#0369a1' },
       ],
@@ -126,8 +127,9 @@ const HYDROCARBONS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
       xVar: 'x',
       axes: { xMin: 1, xMax: 8, yMin: -180, yMax: 150, xLabel: 'Carbon count n (integer molecules only)', yLabel: 'Normal boiling point (°C)' },
       sliders: [
-        { id: 'n', label: 'Alkane carbon count (n = 1..8)', min: 1, max: 8, step: 1, defaultValue: 1, presets: [1, 4, 5, 8] },
+        { id: 'n', label: 'Alkane carbon count (n = 1..8)', min: 1, max: 8, step: 1, defaultValue: 1, presets: [1, 2, 3, 4, 5, 6, 7, 8] },
       ],
+      showDataTable: true,
       curves: [
         {
           id: 'alkane-bp',
@@ -335,6 +337,9 @@ const HYDROCARBONS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
           title: '1. Initiation — UV Homolytic Fission',
           summary: 'UV light breaks the Cl–Cl covalent bond homolytically (two half-headed fishhook arrows, one electron to each Cl atom), generating two chlorine radicals.',
           equation: 'Cl–Cl  —(UV)→  Cl• + Cl•',
+          whatChanges: 'A neutral Cl–Cl molecule splits symmetrically into two reactive Cl• radicals.',
+          whyItMatters: 'Without UV photons supplying ≥242 kJ mol⁻¹, methane and chlorine do not react in the dark.',
+          reactionMeta: { reactants: ['Cl₂'], products: ['2 Cl•'], bondsBroken: ['Cl–Cl'], electronMovement: 'Two half-headed arrows (1 e⁻ to each Cl)' },
           stateSnapshot: [
             { id: 'stageType', label: 'Phase', value: 'Initiation' },
             { id: 'radicals', label: 'Active Radicals', value: '2 Cl•' },
@@ -572,7 +577,7 @@ const HYDROCARBONS_ENRICHMENTS: Record<string, SlideInteractiveConfig[]> = {
       fallbackText: '1. Polar Hδ+–Brδ- approaches C=C. 2. π-bond electron pair attacks Hδ+. 3. H–Br breaks heterolytically. 4. CH3CH2+ carbocation + :Br- intermediate. 5. :Br- lone pair attacks C+. 6. Bromoethane CH3CH2Br.',
       stages: [
         { id: 'ea-1', title: '1. Reactants & Bond Polarity', summary: 'Bromine is more electronegative than hydrogen, creating a permanent dipole Hδ⁺–Brδ⁻ near the electron-rich C=C π bond.', equation: 'CH₂=CH₂  +  Hδ⁺–Brδ⁻', stateSnapshot: [{ id: 'chg', label: 'Net Charge', value: '0' }, { id: 'atoms', label: 'Atoms', value: 'C₂H₅Br' }] },
-        { id: 'ea-2', title: '2. π-Bond Electron-Pair Movement', summary: 'A full-headed curly arrow starts from the C=C π bond and points to the electrophilic Hδ⁺ atom.', equation: 'C=C (π pair)  ⟶  Hδ⁺', stateSnapshot: [{ id: 'chg', label: 'Net Charge', value: '0' }, { id: 'arrow', label: 'Curly Arrow', value: 'Full-headed (2 e⁻)' }] },
+        { id: 'ea-2', title: '2. π-Bond Electron-Pair Movement', summary: 'A full-headed curly arrow starts from the C=C π bond and points to the electrophilic Hδ⁺ atom.', equation: 'C=C (π pair)  ⟶  Hδ⁺', whatChanges: 'The exposed π electron cloud donates an electron pair to Hδ⁺.', reactionMeta: { bondsBroken: ['C=C π bond'], bondsFormed: ['C–H σ bond'], electronMovement: 'Full-headed arrow from C=C π bond to Hδ⁺' }, stateSnapshot: [{ id: 'chg', label: 'Net Charge', value: '0' }, { id: 'arrow', label: 'Curly Arrow', value: 'Full-headed (2 e⁻)' }] },
         { id: 'ea-3', title: '3. Heterolytic Cleavage of H–Br', summary: 'Simultaneously, the H–Br bonding electron pair moves entirely onto Br (heterolytic fission).', equation: 'H–Br  ⟶  H (bonded to C) + :Br⁻', stateSnapshot: [{ id: 'chg', label: 'Net Charge', value: '0' }, { id: 'fission', label: 'Bond Fission', value: 'Heterolytic' }] },
         { id: 'ea-4', title: '4. Carbocation & Bromide Intermediate', summary: 'A positively charged ethyl carbocation (CH₃–CH₂⁺) and a negatively charged bromide ion (:Br⁻) form; overall charge remains 0.', equation: 'CH₃–CH₂⁺  +  :Br⁻', stateSnapshot: [{ id: 'chg', label: 'Net Charge', value: '+1 + (−1) = 0' }, { id: 'inter', label: 'Intermediate', value: 'CH₃CH₂⁺ + Br⁻' }] },
         { id: 'ea-5', title: '5. Bromide Lone-Pair Donation', summary: 'A full-headed curly arrow starts from a lone pair on :Br⁻ and points directly to the positively charged carbon atom.', equation: ':Br⁻ (lone pair)  ⟶  ⁺CH₂–CH₃', stateSnapshot: [{ id: 'chg', label: 'Net Charge', value: '0' }, { id: 'role', label: 'Br⁻ Role', value: 'Nucleophile' }] },

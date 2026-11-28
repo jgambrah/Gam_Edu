@@ -6,11 +6,11 @@
 - **Last reported development commit**: `512fca19` (`docs(enrichment): update Gemini progress, fix TS ratchet, and package Authoring Kit v2.5`).
 - **PCV-1 discovery checkpoint**: `1bd9eaab`.
 - **PCV-1 implementation checkpoint**: `a35a207b` (published via `--skip-media`, catalogue `v98`).
-- **Current assignment**: **PCV-1 Refinement 1 (Open-Ended Atomic Structure Playground — `construction-lab 1.8.0`, `productionVersion` held at `1.3.0`)**:
-  - Added `interactionMode: 'free-exploration' | 'guided' | 'independent-challenge'`, reusable accessible Periodic Table Element Selector (`Z = 1..20` shells, `Z = 1..30` subshells), Empty Atom start, scientifically verified isotope/ion/ground-state feedback (`evaluateFreeAtomicExploration`), and multi-target independent challenges without premature answer disclosure.
-  - Corrected Hydrocarbons `a02` (`Mr` dimensionless + `Molar mass` `g mol⁻¹`) and Basic 8 `s21` premature answer disclosure (live-safe `1.2.0` CDN updates published via `--skip-media`).
-  - Prepared Basic 8 v1.8.0 Open-Ended Playground JSON ready for `--skip-media` publication after owner manual Vercel promotion & `1.8.0` activation.
-  - Codified the 5-tier Permanent Educational Authoring Standard in `docs/STUDENT_ENRICHMENT_STANDARD.md`.
+- **PCV-1 Refinement 1 checkpoint**: `5103e762` (`construction-lab 1.8.0` open-ended atomic playground, Periodic Table selector, 5-tier standard, live `Mr` & `s21` fixes at CDN `v100`).
+- **Current assignment**: **PCV-1 Refinement 2 (Dynamic Playground Architecture & Scientific Corrections)**:
+  - Completed all 6 scientific corrections in `evaluateFreeAtomicExploration` (`atom-bond-atomic.ts`): strict input integrity rejection (negative/fractional/NaN/over-capacity), independent shell/subshell capacity validation, unsupported subshell ions classified as `unverified-subshells` (`passed: false`), neutral atoms excluded from `isCommonIon`, isotope verification preserved, and explicit Group/Period invariance note for ion formation.
+  - Applied configuration-only dynamic improvements (`showDataTable`, full integer presets, `whatChanges`/`whyItMatters`/`reactionMeta`) to LIVE Hydrocarbons activities (`1.0.0–1.2.0`) and published via `--skip-media`.
+  - Audited all 43 pilot activities (A–E classification) and produced the complete 16-engine Dynamic Capability Matrix + proposed small reusable extensions (selectable banks for ionic/covalent/equation-balancer & isolated Explore Further control) for ChatGPT's review before implementation.
 - `f5150330` — **Step 5E-A (Shared Accessibility Improvements: D-038, D-039, D-040, D-042)**: Implemented; independent browser accessibility verification outstanding.
 - `1e2ed1b9` — **Step 5E-B (Geometry Educational Close-Out: D-031)**: Geometry educational close-out implemented.
 - `d9c64274` — **Step 5E-C (Simultaneous Linear Equations D-032 & Positional Quartiles D-011)**: Simultaneous equations and selectable quartile convention implemented.

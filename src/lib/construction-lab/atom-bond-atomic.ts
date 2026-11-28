@@ -151,8 +151,10 @@ export function formatIntroShellArrangement(shells: readonly number[]): string {
 
 export type FreeAtomicStatus =
   | 'empty'
+  | 'invalid-input'
   | 'unsupported-element'
   | 'excited-or-invalid-shells'
+  | 'unverified-subshells'
   | 'known-stable-neutral'
   | 'known-radioactive-neutral'
   | 'known-stable-ion'
@@ -197,6 +199,61 @@ export function evaluateFreeAtomicExploration(
   input: FreeAtomicEvaluationInput,
 ): FreeAtomicEvaluationResult {
   const maxZ = input.maxZ ?? (input.representation === 'subshells' ? 30 : 20);
+
+  // 1. Strict input integrity validation (independent of UI!): reject non-finite, fractional, negative, or over-capacity counts
+  const invalidBase = (msg: string): FreeAtomicEvaluationResult => ({
+    passed: false,
+    status: 'invalid-input',
+    feedback: msg,
+    element: null,
+    actualSymbol: null,
+    actualMassNumber: 0,
+    actualElectrons: 0,
+    actualCharge: 0,
+    isKnownIsotope: false,
+    isRadioactiveIsotope: false,
+    isCommonIon: false,
+    isGroundStateConfig: false,
+    electronArrangementLabel: 'invalid',
+    groupPeriodNote: null,
+  });
+
+  if (
+    !Number.isFinite(input.protons) ||
+    !Number.isInteger(input.protons) ||
+    input.protons < 0 ||
+    !Number.isFinite(input.neutrons) ||
+    !Number.isInteger(input.neutrons) ||
+    input.neutrons < 0
+  ) {
+    return invalidBase('Particle counts (protons and neutrons) must be non-negative whole integers.');
+  }
+
+  if (input.representation === 'shells') {
+    const sh = input.shells ?? [0, 0, 0, 0];
+    if (!Array.isArray(sh) || sh.length !== INTRO_SHELL_FILL_CAPS.length) {
+      return invalidBase('Shell occupancy must specify exactly 4 energy levels.');
+    }
+    for (let i = 0; i < INTRO_SHELL_FILL_CAPS.length; i++) {
+      const v = sh[i];
+      if (!Number.isFinite(v) || !Number.isInteger(v) || v < 0 || v > INTRO_SHELL_FILL_CAPS[i]) {
+        return invalidBase(
+          `Invalid electron count in Energy Level ${i + 1}: must be a whole integer between 0 and ${INTRO_SHELL_FILL_CAPS[i]}.`,
+        );
+      }
+    }
+  } else {
+    const sub = input.subshells ?? { '1s': 0, '2s': 0, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 };
+    for (const k of SUBSHELL_ORDER) {
+      const v = sub[k];
+      if (!Number.isFinite(v) || !Number.isInteger(v) || v < 0 || v > SUBSHELL_MAX_CAPACITY[k]) {
+        return invalidBase(
+          `Invalid electron count in subshell ${k}: must be a whole integer between 0 and ${SUBSHELL_MAX_CAPACITY[k]}.`,
+        );
+      }
+    }
+  }
+
   const actualElectrons =
     input.representation === 'shells'
       ? (input.shells ?? [0, 0, 0, 0]).reduce((a, b) => a + b, 0)
@@ -210,7 +267,7 @@ export function evaluateFreeAtomicExploration(
           input.subshells ?? { '1s': 0, '2s': 0, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 },
         );
 
-  if (input.protons <= 0) {
+  if (input.protons === 0) {
     return {
       passed: false,
       status: 'empty',
@@ -250,12 +307,25 @@ export function evaluateFreeAtomicExploration(
     };
   }
 
-  // Group / Period summary for main-group elements (Groups 1, 2, 13..18)
+  // Group / Period summary explicitly stating that ion formation never changes an element's Group or Period
   const mainGroupNum = el.group <= 2 ? el.group : el.group >= 13 ? el.group - 10 : null;
   const groupPeriodNote =
     mainGroupNum !== null
-      ? `Period ${el.period}, Group ${el.group} (main-group ${mainGroupNum}) · ${el.valenceElectrons} outer electron${el.valenceElectrons === 1 ? '' : 's'} when neutral`
-      : `Period ${el.period}, Group ${el.group} (d-block transition element)`;
+      ? `Period ${el.period}, Group ${el.group} (main-group ${mainGroupNum}) · ${el.valenceElectrons} outer electron${el.valenceElectrons === 1 ? '' : 's'} when neutral (forming an ion changes charge only, never Group or Period)`
+      : `Period ${el.period}, Group ${el.group} (d-block transition element; forming an ion never changes Group or Period)`;
+
+  const matchedIso = el.isotopes.find((iso) => iso.massNumber === actualMassNumber);
+  const isKnownIsotope = Boolean(matchedIso);
+  const isRadioactiveIsotope = Boolean(matchedIso?.radioactive);
+  // Neutral atoms (charge === 0) are NOT ions — isCommonIon is true ONLY for verified non-zero ions!
+  const isCommonIon = actualCharge !== 0 && el.supportedCharges.includes(actualCharge);
+
+  const chargeText =
+    actualCharge === 0
+      ? 'neutral atom (charge 0)'
+      : actualCharge > 0
+        ? `${el.symbol}${actualCharge === 1 ? '⁺' : `${actualCharge}⁺`} cation (charge +${actualCharge})`
+        : `${el.symbol}${actualCharge === -1 ? '⁻' : `${Math.abs(actualCharge)}⁻`} anion (charge ${actualCharge})`;
 
   // Check ground-state electron configuration within the active teaching model
   let isGroundStateConfig = false;
@@ -272,27 +342,30 @@ export function evaluateFreeAtomicExploration(
     }
   } else {
     const expSub = getExpectedSubshells(el.symbol, actualCharge);
-    if (expSub) {
-      expectedConfigLabel = formatSubshellNotation(expSub);
-      const lrn = input.subshells ?? { '1s': 0, '2s': 0, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 };
-      isGroundStateConfig = SUBSHELL_ORDER.every((s) => (lrn[s] ?? 0) === expSub[s]);
-    } else {
-      // Ion charge outside verified subshell list: check total count only
-      isGroundStateConfig = true;
+    if (!expSub) {
+      // Unsupported/unverified subshell ion configuration MUST be classified as unverified, NEVER passed as verified!
+      return {
+        passed: false,
+        status: 'unverified-subshells',
+        feedback: `Subshell configuration for ${el.name}-${actualMassNumber} (${chargeText}) is unverified in this dataset (${arrangementLabel}); only verified neutral atoms and supported ions can be certified in the subshell model.`,
+        element: el,
+        actualSymbol: el.symbol,
+        actualMassNumber,
+        actualElectrons,
+        actualCharge,
+        isKnownIsotope,
+        isRadioactiveIsotope,
+        isotopeNote: matchedIso?.note,
+        isCommonIon,
+        isGroundStateConfig: false,
+        electronArrangementLabel: arrangementLabel,
+        groupPeriodNote,
+      };
     }
+    expectedConfigLabel = formatSubshellNotation(expSub);
+    const lrn = input.subshells ?? { '1s': 0, '2s': 0, '2p': 0, '3s': 0, '3p': 0, '4s': 0, '3d': 0 };
+    isGroundStateConfig = SUBSHELL_ORDER.every((s) => (lrn[s] ?? 0) === expSub[s]);
   }
-
-  const matchedIso = el.isotopes.find((iso) => iso.massNumber === actualMassNumber);
-  const isKnownIsotope = Boolean(matchedIso);
-  const isRadioactiveIsotope = Boolean(matchedIso?.radioactive);
-  const isCommonIon = el.supportedCharges.includes(actualCharge);
-
-  const chargeText =
-    actualCharge === 0
-      ? 'neutral atom (charge 0)'
-      : actualCharge > 0
-        ? `${el.symbol}${actualCharge === 1 ? '⁺' : `${actualCharge}⁺`} cation (charge +${actualCharge})`
-        : `${el.symbol}${actualCharge === -1 ? '⁻' : `${Math.abs(actualCharge)}⁻`} anion (charge ${actualCharge})`;
 
   if (!isGroundStateConfig) {
     return {
@@ -324,7 +397,7 @@ export function evaluateFreeAtomicExploration(
     actualCharge === 0
       ? 'electrically neutral atom'
       : isCommonIon
-        ? `verified common ion (${chargeText})`
+        ? `verified common ion (${chargeText}; Group ${el.group}, Period ${el.period} unchanged)`
         : `unverified/uncommon ion charge (${chargeText} is not a standard verified ion of ${el.name} in this dataset)`;
 
   let status: FreeAtomicStatus;
