@@ -79,9 +79,12 @@ describe('Teacher Pointer acceptance tests', () => {
     fireEvent.change(slider, { target: { value: '16.0' } });
     expect(container.querySelector('[data-testid="teacher-pointer-overlay"]')).not.toBeNull();
 
-    const toggle = screen.getByRole('button', { name: /Pointer: On/i });
+    // The pointer toggle now lives in the collapsible "Lesson settings" popover.
+    fireEvent.click(screen.getByRole('button', { name: /Lesson settings/i }));
+    const toggle = screen.getByRole('button', { name: /Teacher Pointer\s*On/i });
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
     fireEvent.click(toggle);
-    expect(screen.getByRole('button', { name: /Pointer: Off/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Teacher Pointer\s*Off/i }).getAttribute('aria-pressed')).toBe('false');
     expect(container.querySelector('[data-testid="teacher-pointer-overlay"]')).toBeNull();
     expect(localStorage.getItem('gamedu_narrated_lesson_pointer_enabled_v1')).toBe('false');
   });
@@ -112,6 +115,7 @@ describe('Teacher Pointer acceptance tests', () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     window.history.replaceState({}, '', '/narrated-lessons/water-cycle?slide=s03');
     render(<NarratedLessonPlayer lesson={lesson} />);
+    fireEvent.click(screen.getByRole('button', { name: /Lesson settings/i }));
     fireEvent.click(screen.getByRole('button', { name: /Low-Data/i }));
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();

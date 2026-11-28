@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { isSafeguardingConcern } from './safeguarding';
 
 const MUST_TRIGGER: string[] = [
@@ -82,12 +83,22 @@ export function runSafeguardingChecks(): { passed: number; failed: string[] } {
   return { passed, failed };
 }
 
-if (require.main === module) {
-  const res = runSafeguardingChecks();
-  const total = MUST_TRIGGER.length + MUST_NOT_TRIGGER.length;
-  if (res.failed.length > 0) {
-    console.error('Safeguarding checks FAILED:\n - ' + res.failed.join('\n - '));
-    process.exit(1);
-  }
-  console.log(`Safeguarding checks PASSED (${res.passed}/${total} phrases).`);
-}
+// This file previously contained no vitest suite ("No test suite found"), so these 60 safeguarding phrases
+// were never actually executed by `vitest run`. It is now a real suite.
+describe('safeguarding detector', () => {
+  it('detects every genuine disclosure phrase (no missed safeguarding concerns)', () => {
+    const missed = MUST_TRIGGER.filter(p => !isSafeguardingConcern(p));
+    expect(missed).toEqual([]);
+  });
+
+  it('does not flag benign science / environment questions (no false positives)', () => {
+    const falsePositives = MUST_NOT_TRIGGER.filter(p => isSafeguardingConcern(p));
+    expect(falsePositives).toEqual([]);
+  });
+
+  it('reports all phrases through the combined checker', () => {
+    const res = runSafeguardingChecks();
+    expect(res.failed).toEqual([]);
+    expect(res.passed).toBe(MUST_TRIGGER.length + MUST_NOT_TRIGGER.length);
+  });
+});
